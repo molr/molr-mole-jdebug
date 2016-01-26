@@ -8,26 +8,24 @@ package cern.jarrace.inspector.entry;
 
 import java.lang.reflect.Method;
 
-import cern.jarrace.inspector.Inspector;
-
 /**
- * An immutable representation of a method within a class (interfaced or not) that fulfills the criteria for for
- * inspection by an {@link Inspector}. Right now the only criteria is that the method name cannot appear more than once
+ * An immutable representation of an {@link Method} that can act as an entry-point (see
+ * {@link cern.jarrace.inspector.EntryState}). Currently the method name must not appear more than once
  * (cannot be overloaded) because JDI has a hard time distinguishing between overloaded methods.
- * 
+ *
  * @author jepeders
  */
-public class InspectableMethod {
+public class EntryMethod {
 
     private final Class<?> inspectableClass;
     private final String methodName;
 
-    private InspectableMethod(Class<?> inspectableClass, String methodName) {
+    private EntryMethod(Class<?> inspectableClass, String methodName) {
         this.inspectableClass = inspectableClass;
         this.methodName = methodName;
     }
 
-    public Class<?> getInspectableClass() {
+    public Class<?> getMethodClass() {
         return inspectableClass;
     }
 
@@ -35,10 +33,10 @@ public class InspectableMethod {
         return methodName;
     }
 
-    public static InspectableMethod ofClassAndMethod(Class<?> inspectableClass, String methodName)
+    public static EntryMethod ofClassAndMethod(Class<?> inspectableClass, String methodName)
             throws SecurityException, NoSuchMethodException {
         verifyNotOverloaded(inspectableClass, methodName);
-        return new InspectableMethod(inspectableClass, methodName);
+        return new EntryMethod(inspectableClass, methodName);
     }
 
     private static void verifyNotOverloaded(Class<?> classWithMethod, String methodName) throws NoSuchMethodException {

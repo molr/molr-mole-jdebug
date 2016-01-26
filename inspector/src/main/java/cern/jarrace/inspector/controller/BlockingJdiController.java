@@ -9,8 +9,8 @@ package cern.jarrace.inspector.controller;
 import cern.jarrace.inspector.EntryState;
 import cern.jarrace.inspector.entry.BlockingCallbackFactory;
 import cern.jarrace.inspector.entry.BlockingEntryListener;
-import cern.jarrace.inspector.entry.InspectableMethod;
-import cern.jarrace.inspector.entry.InterfaceImplementationListener;
+import cern.jarrace.inspector.entry.EntryMethod;
+import cern.jarrace.inspector.jdi.ClassInstantiationListener;
 import com.sun.jdi.*;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.VMStartException;
@@ -85,7 +85,7 @@ public class BlockingJdiController implements JdiController, Closeable {
     public static class Builder {
 
         private VMLauncher launcher;
-        private InspectableMethod inspectableMethod;
+        private EntryMethod inspectableMethod;
         private Class<?> interfaceToListen;
         private BlockingCallbackFactory callbackFactory;
 
@@ -101,7 +101,7 @@ public class BlockingJdiController implements JdiController, Closeable {
 
             ExecutorService executorService = Executors.newFixedThreadPool(1);
             executorService.execute(() -> {
-                InterfaceImplementationListener interfaceImplementationCounter = new InterfaceImplementationListener(
+                ClassInstantiationListener interfaceImplementationCounter = new ClassInstantiationListener(
                         interfaceToListen, classType -> {
                     register(jdi, eventHandler, classType, inspectableMethod);
                 });
@@ -118,13 +118,13 @@ public class BlockingJdiController implements JdiController, Closeable {
             return this;
         }
 
-        public Builder setInspectableMethod(InspectableMethod method) {
+        public Builder setInspectableMethod(EntryMethod method) {
             this.inspectableMethod = method;
             return this;
         }
 
         public static void register(JDIScript jdi, JdiEventHandler eventHandler,
-                                    ClassType classType, InspectableMethod inspectableMethod) {
+                                    ClassType classType, EntryMethod inspectableMethod) {
             Method runMethod = classType.methodsByName(inspectableMethod.getMethodName()).get(0);
             try {
                 List<Location> lineList = new ArrayList<>(runMethod.allLineLocations());

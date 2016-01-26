@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 import cern.jarrace.inspector.controller.JdiController;
-import cern.jarrace.inspector.entry.InspectableMethod;
+import cern.jarrace.inspector.entry.EntryMethod;
 import org.jdiscript.util.VMLauncher;
 
 import com.sun.jdi.ThreadReference;
@@ -103,7 +103,7 @@ public class Inspector implements Closeable {
             Objects.requireNonNull(sourcePath, "Path to sources not set");
 
             Class<?> inspectableClass = Class.forName(inspectableClassName);
-            InspectableMethod method = InspectableMethod.ofClassAndMethod(inspectableClass, inspectableMethodName);
+            EntryMethod method = EntryMethod.ofClassAndMethod(inspectableClass, inspectableMethodName);
 
             VMLauncher launcher = new VMLauncher(CLASSPATH_PREFIX + binaryPath.toString(), mainClassName);
 

@@ -6,7 +6,7 @@
 
 package cern.jarrace.inspector;
 
-import cern.jarrace.inspector.entry.LocationRange;
+import cern.jarrace.inspector.jdi.LocationRange;
 import com.sun.jdi.Location;
 
 /**
