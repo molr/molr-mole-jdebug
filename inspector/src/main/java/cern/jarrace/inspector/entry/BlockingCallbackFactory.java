@@ -4,7 +4,7 @@
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
-package cern.jarrace.inspector.inspectable;
+package cern.jarrace.inspector.entry;
 
 import cern.jarrace.inspector.ThreadState;
 import cern.accsoft.lhc.inspector.controller.JdiMethodRegistry;

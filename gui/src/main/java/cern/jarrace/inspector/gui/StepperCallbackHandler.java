@@ -7,7 +7,7 @@
 package cern.jarrace.inspector.gui;
 
 import cern.jarrace.inspector.ThreadState;
-import cern.jarrace.inspector.inspectable.EntryListener;
+import cern.jarrace.inspector.entry.EntryListener;
 
 /**
  * An implementation of the {@link EntryListener} which handles event callbacks for the {@link Stepper}

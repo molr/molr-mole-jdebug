@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import cern.jarrace.inspector.inspectable.EntryListener;
+import cern.jarrace.inspector.entry.EntryListener;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -27,7 +27,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import cern.jarrace.inspector.Inspector;
 import cern.jarrace.inspector.ThreadState;
-import cern.jarrace.inspector.inspectable.CallbackFactory;
+import cern.jarrace.inspector.entry.CallbackFactory;
 
 import com.sun.jdi.ThreadReference;
 

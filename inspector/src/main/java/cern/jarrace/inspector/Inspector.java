@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 import cern.jarrace.inspector.controller.JdiController;
-import cern.jarrace.inspector.inspectable.InspectableMethod;
+import cern.jarrace.inspector.entry.InspectableMethod;
 import org.jdiscript.util.VMLauncher;
 
 import com.sun.jdi.ThreadReference;

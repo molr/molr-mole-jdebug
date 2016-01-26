@@ -11,9 +11,9 @@ import java.util.Map;
 
 import cern.jarrace.inspector.ThreadState;
 import cern.jarrace.inspector.Inspector;
-import cern.jarrace.inspector.inspectable.EntryListener;
-import cern.jarrace.inspector.inspectable.CallbackFactory;
-import cern.jarrace.inspector.inspectable.LocationRange;
+import cern.jarrace.inspector.entry.EntryListener;
+import cern.jarrace.inspector.entry.CallbackFactory;
+import cern.jarrace.inspector.entry.LocationRange;
 import org.jdiscript.JDIScript;
 import org.jdiscript.requests.ChainingStepRequest;
 

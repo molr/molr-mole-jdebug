@@ -4,13 +4,13 @@
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
-package cern.jarrace.inspector.inspectable;
+package cern.jarrace.inspector.entry;
 
 import cern.jarrace.inspector.ThreadState;
 import com.sun.jdi.ThreadReference;
 
 /**
- * A listener for new inspectable instances. The method {@link #onBreakpoint(ThreadReference, ThreadState)} is called
+ * A listener for new entry instances. The method {@link #onBreakpoint(ThreadReference, ThreadState)} is called
  * every time a new instance has been created and reached the first breakpoint defined in the class. This factory
  * produces {@link EntryListener}s which will receive callback events from the running JDI whenever
  * a new line is stepped over ({@link EntryListener#onLocationChange(ThreadState)}) or whenever this

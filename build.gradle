@@ -4,19 +4,19 @@ subprojects {
     apply plugin: "java"
 }
 
-project(":controller") {
+project(":agent") {
     dependencies {
         compile project(":inspector")
+    }
+}
+
+project(":controller") {
+    dependencies {
+        compile project(":agent")
     }
 }
 
 project(":gui") {
-    dependencies {
-        compile project(":inspector")
-    }
-}
-
-project(":agent") {
     dependencies {
         compile project(":inspector")
     }

@@ -4,7 +4,7 @@
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
-package cern.jarrace.inspector.inspectable;
+package cern.jarrace.inspector.entry;
 
 import java.util.ArrayList;
 import java.util.List;

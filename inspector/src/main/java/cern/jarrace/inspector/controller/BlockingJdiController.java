@@ -7,10 +7,10 @@
 package cern.jarrace.inspector.controller;
 
 import cern.jarrace.inspector.EntryState;
-import cern.jarrace.inspector.inspectable.BlockingCallbackListener;
-import cern.jarrace.inspector.inspectable.CallbackFactory;
-import cern.jarrace.inspector.inspectable.InspectableMethod;
-import cern.jarrace.inspector.inspectable.InterfaceImplementationListener;
+import cern.jarrace.inspector.entry.BlockingCallbackListener;
+import cern.jarrace.inspector.entry.CallbackFactory;
+import cern.jarrace.inspector.entry.InspectableMethod;
+import cern.jarrace.inspector.entry.InterfaceImplementationListener;
 import com.sun.jdi.*;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.VMStartException;
