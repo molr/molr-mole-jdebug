@@ -1,1 +1,23 @@
 apply plugin: "java"
+
+subprojects {
+    apply plugin: "java"
+}
+
+project(":controller") {
+    dependencies {
+        compile project(":inspector")
+    }
+}
+
+project(":gui") {
+    dependencies {
+        compile project(":inspector")
+    }
+}
+
+project(":agent") {
+    dependencies {
+        compile project(":inspector")
+    }
+}
