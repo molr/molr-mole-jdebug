@@ -6,7 +6,7 @@
 
 package cern.jarrace.inspector.controller;
 
-import cern.jarrace.inspector.EntryState;
+import cern.jarrace.inspector.jdi.EntryState;
 import cern.jarrace.inspector.entry.BlockingCallbackFactory;
 import cern.jarrace.inspector.entry.BlockingEntryListener;
 import cern.jarrace.inspector.entry.EntryMethod;

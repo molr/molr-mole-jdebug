@@ -6,7 +6,6 @@
 
 package cern.jarrace.inspector.controller;
 
-import cern.jarrace.inspector.EntryState;
 import cern.jarrace.inspector.entry.EntryListener;
 import com.sun.jdi.ThreadReference;
 

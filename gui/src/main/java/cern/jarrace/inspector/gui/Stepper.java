@@ -26,7 +26,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import cern.jarrace.inspector.Inspector;
-import cern.jarrace.inspector.ThreadState;
+import cern.jarrace.inspector.jdi.ThreadState;
 import cern.jarrace.inspector.entry.CallbackFactory;
 
 import com.sun.jdi.ThreadReference;

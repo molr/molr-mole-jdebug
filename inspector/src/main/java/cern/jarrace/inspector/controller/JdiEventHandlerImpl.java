@@ -6,23 +6,22 @@
 
 package cern.jarrace.inspector.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import cern.jarrace.inspector.ThreadState;
 import cern.jarrace.inspector.Inspector;
-import cern.jarrace.inspector.entry.EntryListener;
 import cern.jarrace.inspector.entry.CallbackFactory;
+import cern.jarrace.inspector.entry.EntryListener;
 import cern.jarrace.inspector.jdi.LocationRange;
-import org.jdiscript.JDIScript;
-import org.jdiscript.requests.ChainingStepRequest;
-
+import cern.jarrace.inspector.jdi.ThreadState;
 import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.event.BreakpointEvent;
 import com.sun.jdi.event.StepEvent;
 import com.sun.jdi.event.VMStartEvent;
 import com.sun.jdi.request.StepRequest;
+import org.jdiscript.JDIScript;
+import org.jdiscript.requests.ChainingStepRequest;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An event handler for the {@link Inspector} main class.
@@ -55,7 +54,7 @@ public class JdiEventHandlerImpl extends JdiEventHandler {
             classNamesToThreads.put(sourcePath, event.thread());
 
             final EntryListener callbackListener = callbackHandler.onBreakpoint(
-                    event.thread(), new ThreadState(ThreadState.StepDirection.FORWARD, range, event.location()));
+                    event.thread(), new ThreadState(range, event.location()));
             final InspectableState state = new InspectableState(callbackListener, range);
             threads.put(event.thread(), state);
         } catch (AbsentInformationException e) {
@@ -72,7 +71,7 @@ public class JdiEventHandlerImpl extends JdiEventHandler {
         InspectableState state = threads.get(e.thread());
         if (state != null) {
             if (state.methodRange.isWithin(e.location())) {
-                threads.get(e.thread()).listener.onLocationChange(new ThreadState(ThreadState.StepDirection.FORWARD,
+                threads.get(e.thread()).listener.onLocationChange(new ThreadState(
                         state.methodRange, e.location()));
                 e.thread().suspend();
             } else {

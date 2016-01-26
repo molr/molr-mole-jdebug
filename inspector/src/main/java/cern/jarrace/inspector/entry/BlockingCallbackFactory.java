@@ -6,7 +6,7 @@
 
 package cern.jarrace.inspector.entry;
 
-import cern.jarrace.inspector.ThreadState;
+import cern.jarrace.inspector.jdi.ThreadState;
 import cern.jarrace.inspector.controller.JdiEntryRegistry;
 import com.sun.jdi.ThreadReference;
 

@@ -6,8 +6,8 @@
 
 package cern.jarrace.inspector.entry;
 
-import cern.jarrace.inspector.EntryState;
-import cern.jarrace.inspector.ThreadState;
+import cern.jarrace.inspector.jdi.EntryState;
+import cern.jarrace.inspector.jdi.ThreadState;
 
 import java.time.Duration;
 import java.util.concurrent.SynchronousQueue;

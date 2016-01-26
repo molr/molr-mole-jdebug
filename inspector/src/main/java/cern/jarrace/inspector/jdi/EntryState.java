@@ -4,7 +4,7 @@
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
-package cern.jarrace.inspector;
+package cern.jarrace.inspector.jdi;
 
 /**
  * The state of a single entry running in JDI (Java Debugging Interface). An entry is defined as a single method in

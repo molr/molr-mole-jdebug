@@ -6,11 +6,13 @@
 
 package cern.jarrace.inspector.entry;
 
+import cern.jarrace.inspector.jdi.EntryState;
+
 import java.lang.reflect.Method;
 
 /**
  * An immutable representation of an {@link Method} that can act as an entry-point (see
- * {@link cern.jarrace.inspector.EntryState}). Currently the method name must not appear more than once
+ * {@link EntryState}). Currently the method name must not appear more than once
  * (cannot be overloaded) because JDI has a hard time distinguishing between overloaded methods.
  *
  * @author jepeders

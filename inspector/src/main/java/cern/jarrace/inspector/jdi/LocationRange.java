@@ -14,7 +14,8 @@ import com.sun.jdi.Location;
 import com.sun.jdi.Method;
 
 /**
- * The range for a piece of code inside a {@link Method} of a {@link Class} measured in {@link com.sun.jdi.Location}s.
+ * An immutable range for a piece of code inside a {@link Method} of a {@link Class} measured in
+ * {@link com.sun.jdi.Location}s.
  */
 public class LocationRange {
 

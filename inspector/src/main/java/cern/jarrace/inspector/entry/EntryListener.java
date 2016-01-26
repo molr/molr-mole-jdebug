@@ -6,7 +6,7 @@
 
 package cern.jarrace.inspector.entry;
 
-import cern.jarrace.inspector.ThreadState;
+import cern.jarrace.inspector.jdi.ThreadState;
 
 /**
  * Handles callbacks from the running VM for a single method entry.

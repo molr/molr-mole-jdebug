@@ -6,7 +6,7 @@
 
 package cern.jarrace.inspector.gui;
 
-import cern.jarrace.inspector.ThreadState;
+import cern.jarrace.inspector.jdi.ThreadState;
 import cern.jarrace.inspector.entry.EntryListener;
 
 /**
