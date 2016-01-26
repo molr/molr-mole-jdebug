@@ -11,16 +11,16 @@ import cern.jarrace.inspector.EntryState;
 import java.io.Closeable;
 
 /**
- * A controller for a JDI instance that can
+ * A controller for a JDI instance that can control
  */
 public interface JdiController extends Closeable {
 
     /**
-     * Takes one <i>step</i> in a class file by executing one line / instruction in the given class running instance.
+     * Takes one <i>step</i> in a entry by executing one line / instruction inside the entry.
      *
-     * @param className The name of the class to advance.
+     * @param entry The name of the entry to step forward inside.
      * @return A {@link EntryState} indicating the current state of the class.
      */
-    EntryState stepForward(String className);
+    EntryState stepForward(String entry);
 
 }

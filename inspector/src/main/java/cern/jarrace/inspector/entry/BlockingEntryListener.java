@@ -6,20 +6,27 @@
 
 package cern.jarrace.inspector.entry;
 
+import cern.jarrace.inspector.EntryState;
 import cern.jarrace.inspector.ThreadState;
-import com.sun.jdi.Location;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.time.Duration;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
- * 
+ *
  */
-public class BlockingCallbackListener implements EntryListener {
+public class BlockingEntryListener implements EntryListener {
 
-    AtomicReference<Location> location = new AtomicReference<>();
+    private final SynchronousQueue<EntryState> stateQueue = new SynchronousQueue<>();
+    private final Duration timeout;
 
-    public BlockingCallbackListener() {
-        /* Should only be instantiated via the static method listen() */
+    public BlockingEntryListener(Duration timeout) {
+        this.timeout = timeout;
+    }
+
+    public EntryState waitForNextEntry() throws InterruptedException {
+        return stateQueue.poll(timeout.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     @Override

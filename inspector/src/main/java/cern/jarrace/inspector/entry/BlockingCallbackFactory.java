@@ -7,22 +7,22 @@
 package cern.jarrace.inspector.entry;
 
 import cern.jarrace.inspector.ThreadState;
-import cern.accsoft.lhc.inspector.controller.JdiMethodRegistry;
+import cern.jarrace.inspector.controller.JdiEntryRegistry;
 import com.sun.jdi.ThreadReference;
 
 /**
  * A {@link CallbackFactory} which
  */
-public class BlockingCallbackFactory implements CallbackFactory<BlockingCallbackListener> {
+public class BlockingCallbackFactory implements CallbackFactory<BlockingEntryListener> {
 
-    private final JdiMethodRegistry classRegistry;
+    private final JdiEntryRegistry entryRegistry;
 
-    public BlockingCallbackFactory(JdiMethodRegistry classRegistry) {
-        this.classRegistry = classRegistry;
+    public BlockingCallbackFactory(JdiEntryRegistry entryRegistry) {
+        this.entryRegistry = entryRegistry;
     }
 
     @Override
-    public BlockingCallbackListener onBreakpoint(ThreadReference thread, ThreadState state) {
+    public BlockingEntryListener onBreakpoint(ThreadReference thread, ThreadState state) {
         return null;
     }
 

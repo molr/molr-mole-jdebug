@@ -7,15 +7,14 @@
 package cern.jarrace.inspector.controller;
 
 import cern.jarrace.inspector.EntryState;
-import cern.jarrace.inspector.entry.BlockingCallbackListener;
-import cern.jarrace.inspector.entry.CallbackFactory;
+import cern.jarrace.inspector.entry.BlockingCallbackFactory;
+import cern.jarrace.inspector.entry.BlockingEntryListener;
 import cern.jarrace.inspector.entry.InspectableMethod;
 import cern.jarrace.inspector.entry.InterfaceImplementationListener;
 import com.sun.jdi.*;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.VMStartException;
 import com.sun.jdi.request.StepRequest;
-import demo.Inspectable;
 import org.jdiscript.JDIScript;
 import org.jdiscript.requests.ChainingStepRequest;
 import org.jdiscript.util.VMLauncher;
@@ -33,13 +32,15 @@ import java.util.concurrent.Executors;
  */
 public class BlockingJdiController implements JdiController, Closeable {
 
+    private final JdiEntryRegistry<BlockingEntryListener> entryRegistry;
     private final ExecutorService executorService;
     private final JDIScript jdi;
     private final JdiEventHandler eventHandler;
 
-    private BlockingJdiController(JDIScript jdi, JdiEventHandler eventHandler, JdiMethodRegistry classRegistry, ExecutorService executorService) {
+    private BlockingJdiController(JDIScript jdi, JdiEventHandler eventHandler, JdiEntryRegistry<BlockingEntryListener> entryRegistry, ExecutorService executorService) {
         this.jdi = jdi;
         this.eventHandler = eventHandler;
+        this.entryRegistry = entryRegistry;
         this.executorService = executorService;
     }
 
@@ -62,41 +63,46 @@ public class BlockingJdiController implements JdiController, Closeable {
     }
 
     @Override
-    public EntryState stepForward(String className) {
-        ThreadReference reference = eventHandler.getReferenceForClass(className);
-        if (reference == null) {
-            throw new IllegalArgumentException("No running thread for class " + className);
+    public EntryState stepForward(String entry) {
+        ThreadReference threadReference = entryRegistry.getThreadReference(entry);
+        if (threadReference == null) {
+            throw new IllegalArgumentException("No active entry called " + entry);
         }
+        BlockingEntryListener listener = entryRegistry.getEntryListener(entry);
 
         clearStepCallbacks();
         ChainingStepRequest stepRequest = jdi
-                .stepRequest(reference, StepRequest.STEP_LINE, StepRequest.STEP_OVER);
+                .stepRequest(threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OVER);
         stepRequest.enable();
 
-
+        try {
+            return listener.waitForNextEntry();
+        } catch (InterruptedException e) {
+            return null;
+        }
     }
 
     public static class Builder {
 
         private VMLauncher launcher;
         private InspectableMethod inspectableMethod;
-        private final BlockingCallbackListener callbackListener = new BlockingCallbackListener();
-        private CallbackFactory<BlockingCallbackListener> inspectableListener = () -> callbackListener;
+        private Class<?> interfaceToListen;
+        private BlockingCallbackFactory callbackFactory;
 
         public BlockingJdiController build() throws IOException, IllegalConnectorArgumentsException, VMStartException {
             Objects.requireNonNull(launcher, "Launcher must be set");
             Objects.requireNonNull(inspectableMethod, "Method to inspect must be set");
-            Objects.requireNonNull(inspectableListener, "Listener factory must be set");
 
             VirtualMachine virtualMachine = launcher.safeStart();
             JDIScript jdi = new JDIScript(virtualMachine);
-            JdiEventHandler eventHandler = new JdiEventHandlerImpl(jdi, inspectableListener);
-            JdiMethodRegistry classRegistry = new JdiMethodRegistry();
+            JdiEntryRegistry<BlockingEntryListener> entryRegistry = new JdiEntryRegistry<>();
+            BlockingCallbackFactory callbackFactory = new BlockingCallbackFactory(entryRegistry);
+            JdiEventHandler eventHandler = new JdiEventHandlerImpl(jdi, callbackFactory);
 
             ExecutorService executorService = Executors.newFixedThreadPool(1);
             executorService.execute(() -> {
                 InterfaceImplementationListener interfaceImplementationCounter = new InterfaceImplementationListener(
-                        Inspectable.class, classType -> {
+                        interfaceToListen, classType -> {
                     register(jdi, eventHandler, classType, inspectableMethod);
                 });
                 jdi.onClassPrep(interfaceImplementationCounter);
@@ -104,7 +110,7 @@ public class BlockingJdiController implements JdiController, Closeable {
                 jdi.run(eventHandler);
             });
 
-            return new BlockingJdiController(jdi, eventHandler, classRegistry, executorService);
+            return new BlockingJdiController(jdi, eventHandler, entryRegistry, executorService);
         }
 
         public Builder setLauncher(VMLauncher launcher) {
@@ -118,7 +124,7 @@ public class BlockingJdiController implements JdiController, Closeable {
         }
 
         public static void register(JDIScript jdi, JdiEventHandler eventHandler,
-                             ClassType classType, InspectableMethod inspectableMethod) {
+                                    ClassType classType, InspectableMethod inspectableMethod) {
             Method runMethod = classType.methodsByName(inspectableMethod.getMethodName()).get(0);
             try {
                 List<Location> lineList = new ArrayList<>(runMethod.allLineLocations());
