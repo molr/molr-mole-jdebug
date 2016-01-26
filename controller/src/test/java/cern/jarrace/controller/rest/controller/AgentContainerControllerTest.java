@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -77,7 +78,7 @@ public class AgentContainerControllerTest {
         for (HttpMethod httpMethod : HttpMethod.values()) {
             MockHttpServletRequestBuilder request = request(httpMethod, "/jarrace/SampleContainer/service/register")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content("{\"agentName\":\"SampleAgent\",\"clazz\":\"cern.something.SampleClass\",\"endpoints\":[\"Entrypoint1\",\"Entrypoint2\"]}");
+                    .content("{\"agentName\":\"SampleAgent\",\"clazz\":\"cern.something.SampleClass\",\"entrypoints\":[\"Entrypoint1\",\"Entrypoint2\"]}");
             ResultActions perform = mockMvc.perform(request);
 
             if (HttpMethod.POST.equals(httpMethod) || HttpMethod.OPTIONS.equals(httpMethod) || HttpMethod.TRACE.equals(httpMethod)) {
@@ -187,10 +188,10 @@ public class AgentContainerControllerTest {
     @Test
     public void testListServicesWithNonexistentOrEmptyContainer() throws Exception {
         agentContainerController.entrypoints.put("SampleContainer", new ArrayList<>());
-        mockMvc.perform(get("/jarrace/NonexistantContainer/entrypoint/list"))
+        mockMvc.perform(get("/jarrace/NonexistantContainer/service/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
-        mockMvc.perform(get("/jarrace/SampleContainer/entrypoint/list"))
+        mockMvc.perform(get("/jarrace/SampleContainer/service/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
@@ -198,13 +199,13 @@ public class AgentContainerControllerTest {
     @Test
     public void testListServicesWithOneOrMoreNonEmptyContainer() throws Exception {
         agentContainerController.entrypoints.put("SampleContainer",
-                Collections.singletonList(new Service("Agent1", "Path1")));
-        mockMvc.perform(get("/jarrace/SampleContainer/entrypoint/list"))
+                Collections.singletonList(new Service("Agent1", "Class1", Collections.singletonList("Entrypoint1"))));
+        mockMvc.perform(get("/jarrace/SampleContainer/service/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
         agentContainerController.entrypoints.put("SampleContainer1",
-                Arrays.asList(new Service("Service1", "Path1"), new Service("Service2", "Path2")));
-        mockMvc.perform(get("/jarrace/SampleContainer1/entrypoint/list"))
+                Arrays.asList(new Service("Service1", "Path1"), new Service("Agent1", "Class1", Collections.singletonList("Entrypoint1"))));
+        mockMvc.perform(get("/jarrace/SampleContainer1/service/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
 
