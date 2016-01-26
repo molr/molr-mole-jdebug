@@ -1,6 +1,6 @@
 package cern.jarrace.controller.rest.controller;
 
-import cern.jarrace.controller.domain.Entrypoint;
+import cern.jarrace.controller.domain.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -10,10 +10,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author timartin
- * Controller that exposes services to manage {@link Entrypoint}s
+ * Controller that exposes services to manage {@link Service}s
  */
 @RestController
 @RequestMapping("/jarrace")
@@ -22,7 +23,7 @@ public class AgentContainerController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentContainerController.class);
     private static final File DEPLOYMENT_DIR = new File(System.getProperty("java.io.tmpdir"));
 
-    final Map<String, List<Entrypoint>> entrypoints = new HashMap<>();
+    final Map<String, List<Service>> entrypoints = new HashMap<>();
     final Map<String, String> paths = new HashMap<>();
 
     @RequestMapping(value = "/container/deploy/{name}", method = RequestMethod.POST)
@@ -38,16 +39,23 @@ public class AgentContainerController {
         startContainer(path, args);
     }
 
-    @RequestMapping(value = "/service/register/{name}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void registerService(@PathVariable(value = "name") String name, @RequestBody Entrypoint entrypoint){
+    @RequestMapping(value = "/{containerName}/service/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void registerService(@PathVariable(value = "containerName") String containerName, @RequestBody Service service){
 
-        if(entrypoint.getAgentName() == null || entrypoint.getAgentName().isEmpty()) {
+        if(service.getAgentName() == null || service.getAgentName().isEmpty()) {
             throw new IllegalArgumentException("Agent name must be different than null and not empty");
         }
-        if(entrypoint.getPath() == null || entrypoint.getPath().isEmpty()) {
-            throw new IllegalArgumentException("Path must be different than null and not empty");
+        if(service.getClazz() == null || service.getClazz().isEmpty()) {
+            throw new IllegalArgumentException("Clazz must be different than null and not empty");
         }
-        entrypoints.get(name).add(entrypoint);
+        if(service.getEndpoints() == null || service.getEndpoints().size() == 0) {
+            throw new IllegalArgumentException("Endpoints must be different than null and not empty");
+        }
+        if(containerName == null || entrypoints.get(containerName) == null) {
+            throw new IllegalArgumentException("Provided container name does not exists.");
+        }
+
+        entrypoints.get(containerName).add(service);
         LOGGER.info(entrypoints.toString());
     }
 
@@ -56,9 +64,9 @@ public class AgentContainerController {
         return entrypoints.keySet();
     }
 
-    @RequestMapping(value = "/{name}/entrypoint/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Entrypoint> listServices(@PathVariable(value = "name") String containerName) {
-        List<Entrypoint> toReturn = this.entrypoints.get(containerName);
+    @RequestMapping(value = "/{containerName}/service/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Service> listServices(@PathVariable(value = "containerName") String containerName) {
+        List<Service> toReturn = this.entrypoints.get(containerName);
         if (toReturn == null) {
             toReturn = new ArrayList<>();
         }
@@ -67,12 +75,13 @@ public class AgentContainerController {
 
     @RequestMapping(value = "/{name}/{entrypoint}/start", method = RequestMethod.GET)
     public String runService(@PathVariable("name") String name, @PathVariable int entrypoint) throws IOException {
-        List<Entrypoint> entries = entrypoints.get(name);
-        Entrypoint entryPoint = entries.get(entrypoint);
+        List<Service> entries = entrypoints.get(name);
+        Service entryPoint = entries.get(entrypoint);
         List<String> args = new ArrayList<>();
         args.add("cern.jarrace.agent.AgentRunner");
         args.add(entryPoint.getAgentName());
-        args.add(entryPoint.getPath());
+        args.add(entryPoint.getClazz());
+        args.add(entryPoint.getEndpoints().stream().collect(Collectors.joining(",")));
         startContainer(paths.get(name), args);
         return null;
     }
