@@ -33,7 +33,7 @@ public class RunnableAgent implements Agent {
     public void run(Object... args) throws IOException {
         String entry = (String) args[0];
         try {
-            Class<?> c = Class.forName(entry.substring(0, entry.indexOf(' ')));
+            Class<?> c = Class.forName(entry);
             Runnable runnable = (Runnable)c.getConstructor().newInstance();
             runnable.run();
         } catch (Exception e) {

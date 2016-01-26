@@ -21,24 +21,24 @@ public class Service {
     String clazz;
 
     /**
-     * {@link List} of endpoints exposed by this service in the specific class
+     * {@link List} of entrypoints exposed by this service in the specific class
      */
-    List<String> endpoints;
+    List<String> entrypoints;
 
     public Service() {
-        endpoints = new ArrayList<>();
+        entrypoints = new ArrayList<>();
     }
 
     public Service(String agentName, String clazz) {
         this.agentName = agentName;
         this.clazz = clazz;
-        endpoints = new ArrayList<>();
+        entrypoints = new ArrayList<>();
     }
 
-    public Service(String agentName, String clazz, List<String> endpoints) {
+    public Service(String agentName, String clazz, List<String> entrypoints) {
         this.agentName = agentName;
         this.clazz = clazz;
-        this.endpoints = endpoints;
+        this.entrypoints = entrypoints;
     }
 
     public String getAgentName() {
@@ -57,11 +57,11 @@ public class Service {
         this.clazz = clazz;
     }
 
-    public List<String> getEndpoints() {
-        return endpoints;
+    public List<String> getEntrypoints() {
+        return entrypoints;
     }
 
-    public void setEndpoints(List<String> endpoints) {
-        this.endpoints = endpoints;
+    public void setEntrypoints(List<String> entrypoints) {
+        this.entrypoints = entrypoints;
     }
 }

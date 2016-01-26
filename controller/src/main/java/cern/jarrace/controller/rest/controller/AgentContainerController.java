@@ -41,20 +41,18 @@ public class AgentContainerController {
 
     @RequestMapping(value = "/{containerName}/service/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void registerService(@PathVariable(value = "containerName") String containerName, @RequestBody Service service){
-
         if(service.getAgentName() == null || service.getAgentName().isEmpty()) {
             throw new IllegalArgumentException("Agent name must be different than null and not empty");
         }
         if(service.getClazz() == null || service.getClazz().isEmpty()) {
             throw new IllegalArgumentException("Clazz must be different than null and not empty");
         }
-        if(service.getEndpoints() == null || service.getEndpoints().size() == 0) {
+        if(service.getEntrypoints() == null || service.getEntrypoints().size() == 0) {
             throw new IllegalArgumentException("Endpoints must be different than null and not empty");
         }
         if(containerName == null || entrypoints.get(containerName) == null) {
             throw new IllegalArgumentException("Provided container name does not exists.");
         }
-
         entrypoints.get(containerName).add(service);
         LOGGER.info(entrypoints.toString());
     }
@@ -81,7 +79,7 @@ public class AgentContainerController {
         args.add("cern.jarrace.agent.AgentRunner");
         args.add(entryPoint.getAgentName());
         args.add(entryPoint.getClazz());
-        args.add(entryPoint.getEndpoints().stream().collect(Collectors.joining(",")));
+        args.add(entryPoint.getEntrypoints().stream().collect(Collectors.joining(",")));
         startContainer(paths.get(name), args);
         return null;
     }
