@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -64,16 +65,12 @@ public class BlockingJdiController implements JdiController, Closeable {
 
     @Override
     public EntryState stepForward(String entry) {
-        ThreadReference threadReference = entryRegistry.getThreadReference(entry);
-        if (threadReference == null) {
-            throw new IllegalArgumentException("No active entry called " + entry);
-        }
-        BlockingEntryListener listener = entryRegistry.getEntryListener(entry);
+        ThreadReference threadReference = entryRegistry.getThreadReference(entry)
+                .orElseThrow(() -> new IllegalArgumentException("No active entry called " + entry));
+        BlockingEntryListener listener = entryRegistry.getEntryListener(entry).get();
 
         clearStepCallbacks();
-        ChainingStepRequest stepRequest = jdi
-                .stepRequest(threadReference, StepRequest.STEP_LINE, StepRequest.STEP_OVER);
-        stepRequest.enable();
+        threadReference.resume();
 
         try {
             return listener.waitForNextEntry();
@@ -84,13 +81,18 @@ public class BlockingJdiController implements JdiController, Closeable {
 
     public static class Builder {
 
-        private VMLauncher launcher;
+        private static final String CLASSPATH_PREFIX = "-cp ";
+
+        private String classPath;
+        private String mainClass;
         private EntryMethod inspectableMethod;
 
         public BlockingJdiController build() throws IOException, IllegalConnectorArgumentsException, VMStartException {
-            Objects.requireNonNull(launcher, "Launcher must be set");
+            Objects.requireNonNull(classPath, "Classpath must be set");
+            Objects.requireNonNull(mainClass, "Entry class with a main method must be set");
             Objects.requireNonNull(inspectableMethod, "Method to inspect must be set");
             final Class<?> methodClass = inspectableMethod.getMethodClass();
+            final VMLauncher launcher = new VMLauncher(CLASSPATH_PREFIX + classPath, mainClass);
 
             VirtualMachine virtualMachine = launcher.safeStart();
             JDIScript jdi = new JDIScript(virtualMachine);
@@ -116,8 +118,13 @@ public class BlockingJdiController implements JdiController, Closeable {
             return this;
         }
 
-        public Builder setLauncher(VMLauncher launcher) {
-            this.launcher = launcher;
+        public Builder setClassPath(String path) {
+            this.classPath = path;
+            return this;
+        }
+
+        public Builder setMainClass(String mainClass) {
+            this.mainClass = mainClass;
             return this;
         }
 

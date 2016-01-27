@@ -11,6 +11,7 @@ import com.sun.jdi.ThreadReference;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * A registry for entries in a JDI instance.
@@ -21,12 +22,12 @@ public class JdiEntryRegistry<Listener extends EntryListener> {
     Map<String, ThreadReference> stateMap = new HashMap<>();
     Map<String, Listener> listenerMap = new HashMap<>();
 
-    public ThreadReference getThreadReference(String entry) {
-        return stateMap.get(entry);
+    public Optional<ThreadReference> getThreadReference(String entry) {
+        return Optional.ofNullable(stateMap.get(entry));
     }
 
-    public Listener getEntryListener(String entry) {
-        return listenerMap.get(entry);
+    public Optional<Listener> getEntryListener(String entry) {
+        return Optional.ofNullable(listenerMap.get(entry));
     }
 
     public void register(String entry, ThreadReference reference, Listener listener) {

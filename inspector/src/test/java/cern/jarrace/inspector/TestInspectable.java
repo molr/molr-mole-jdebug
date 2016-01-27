@@ -7,16 +7,16 @@
 package cern.jarrace.inspector;
 
 /**
- * Created by jepeders on 1/27/16.
+ * A class that can be used for testing the use of an inspectable class.
  */
-public class Demo {
+public class TestInspectable {
 
-    public void test() {
-
+    public void run() {
+        System.out.println("Test");
     }
 
     public static void main(String[] args) {
-        System.out.println("Hello from demo");
+        new TestInspectable().run();
     }
 
 }

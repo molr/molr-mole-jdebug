@@ -8,22 +8,37 @@ package cern.jarrace.inspector.entry;
 
 import cern.jarrace.inspector.jdi.ThreadState;
 import cern.jarrace.inspector.controller.JdiEntryRegistry;
+import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.ThreadReference;
+
+import java.time.Duration;
 
 /**
  * A {@link CallbackFactory} which
  */
 public class BlockingCallbackFactory implements CallbackFactory<BlockingEntryListener> {
 
-    private final JdiEntryRegistry entryRegistry;
+    private static final Duration TIMEOUT_DURATION = Duration.ofSeconds(2);
 
-    public BlockingCallbackFactory(JdiEntryRegistry entryRegistry) {
+    private final JdiEntryRegistry<BlockingEntryListener> entryRegistry;
+
+    public BlockingCallbackFactory(JdiEntryRegistry<BlockingEntryListener> entryRegistry) {
         this.entryRegistry = entryRegistry;
     }
 
     @Override
     public BlockingEntryListener onBreakpoint(ThreadReference thread, ThreadState state) {
-        return null;
+        final BlockingEntryListener listener = new BlockingEntryListener(TIMEOUT_DURATION);
+        try {
+            String sourceName = state.getCurrentLocation().sourcePath().replaceAll("/", ".");
+            String className = sourceName.substring(0, sourceName.length() - 5);
+            String methodName = state.getCurrentLocation().method().name();
+            String entryName = className + " " + methodName;
+            entryRegistry.register(entryName, thread, listener);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listener;
     }
 
 }
