@@ -23,50 +23,50 @@ import static org.mockito.Mockito.*;
 public class ClassInstantiationListenerTest {
 
     private static final Class<?> CLASS = ClassInstantiationListenerTest.class;
-    private Consumer mockConsumer;
+    private Consumer mockedConsumer;
     private ClassInstantiationListener listener;
-    private ClassPrepareEvent mockEvent;
-    private ClassType mockType;
+    private ClassPrepareEvent mockedEvent;
+    private ClassType mockedType;
 
     @Before
     public void setup() {
-        mockConsumer = mock(Consumer.class);
-        mockEvent = mock(ClassPrepareEvent.class);
-        mockType = mock(ClassType.class);
-        when(mockEvent.referenceType()).thenReturn(mockType);
-        when(mockType.name()).thenReturn(CLASS.getName());
-        listener = new ClassInstantiationListener(CLASS, mockConsumer);
+        mockedConsumer = mock(Consumer.class);
+        mockedEvent = mock(ClassPrepareEvent.class);
+        mockedType = mock(ClassType.class);
+        when(mockedEvent.referenceType()).thenReturn(mockedType);
+        when(mockedType.name()).thenReturn(CLASS.getName());
+        listener = new ClassInstantiationListener(CLASS, mockedConsumer);
     }
 
     @Test
     public void canVerifyIfClassTypeAndClassAreEqual() {
-        assertTrue(isClassEquals(mockType, CLASS));
+        assertTrue(isClassEquals(mockedType, CLASS));
     }
 
     @Test
     public void canVerifyIfClassTypeAndClassAreDifferent() {
-        when(mockType.name()).thenReturn("another name");
-        assertFalse(isClassEquals(mockType, CLASS));
+        when(mockedType.name()).thenReturn("another name");
+        assertFalse(isClassEquals(mockedType, CLASS));
     }
 
     @Test
     public void canCallCallback() {
-        listener.classPrepare(mockEvent);
-        verify(mockConsumer).accept(mockType);
+        listener.classPrepare(mockedEvent);
+        verify(mockedConsumer).accept(mockedType);
     }
 
     @Test
     public void canNotFailIfReferenceTypeIsNull() {
-        when(mockEvent.referenceType()).thenReturn(null);
-        listener.classPrepare(mockEvent);
-        verify(mockConsumer, never()).accept(Matchers.any(ClassType.class));
+        when(mockedEvent.referenceType()).thenReturn(null);
+        listener.classPrepare(mockedEvent);
+        verify(mockedConsumer, never()).accept(Matchers.any(ClassType.class));
     }
 
     @Test
     public void canNotCallCallbackIfClassTypeIsNotSameAsClass() {
-        when(mockType.name()).thenReturn("I don't exist");
-        listener.classPrepare(mockEvent);
-        verify(mockConsumer, never()).accept(Matchers.any(ClassType.class));
+        when(mockedType.name()).thenReturn("I don't exist");
+        listener.classPrepare(mockedEvent);
+        verify(mockedConsumer, never()).accept(Matchers.any(ClassType.class));
     }
 
 }

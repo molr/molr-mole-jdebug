@@ -23,37 +23,37 @@ import static org.mockito.Mockito.when;
 
 public class LocationRangeTest {
 
-    private Method mockMethod;
-    private Location mockLocation;
+    private Method mockedMethod;
+    private Location mockedLocation;
 
     @Before
     public void setup() {
-        mockMethod = mock(Method.class);
-        mockLocation = mock(Location.class);
+        mockedMethod = mock(Method.class);
+        mockedLocation = mock(Location.class);
     }
 
     @Test
     public void canCreateARangeFromAMethod() throws AbsentInformationException {
         List<Location> locations = new ArrayList<>();
-        locations.add(mockLocation);
-        locations.add(mockLocation);
-        when(mockMethod.allLineLocations()).thenReturn(locations);
-        assertNotNull(LocationRange.ofMethod(mockMethod));
+        locations.add(mockedLocation);
+        locations.add(mockedLocation);
+        when(mockedMethod.allLineLocations()).thenReturn(locations);
+        assertNotNull(LocationRange.ofMethod(mockedMethod));
     }
 
     @Test
     public void canCreateARangeFromAMethodWithOneLine() throws AbsentInformationException {
-        List<Location> locations = Collections.singletonList(mockLocation);
-        when(mockMethod.allLineLocations()).thenReturn(locations);
-        LocationRange range = LocationRange.ofMethod(mockMethod);
-        assertEquals(mockLocation, range.getStart());
-        assertEquals(mockLocation, range.getEnd());
+        List<Location> locations = Collections.singletonList(mockedLocation);
+        when(mockedMethod.allLineLocations()).thenReturn(locations);
+        LocationRange range = LocationRange.ofMethod(mockedMethod);
+        assertEquals(mockedLocation, range.getStart());
+        assertEquals(mockedLocation, range.getEnd());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void canFailWhenCreatingARangeFromAMethodWithNoLines() throws AbsentInformationException {
-        when(mockMethod.allLineLocations()).thenReturn(Collections.emptyList());
-        LocationRange.ofMethod(mockMethod);
+        when(mockedMethod.allLineLocations()).thenReturn(Collections.emptyList());
+        LocationRange.ofMethod(mockedMethod);
     }
 
 }
