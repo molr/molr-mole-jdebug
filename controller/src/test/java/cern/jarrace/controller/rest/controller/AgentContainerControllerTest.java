@@ -63,7 +63,7 @@ public class AgentContainerControllerTest {
         }
     }
 
-    @Test
+    /*@Test
     public void testDeploy() throws Exception {
         mockMvc.perform(post("/jarrace/container/deploy/SampleDeploy")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
@@ -213,5 +213,5 @@ public class AgentContainerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
 
-    }
+    }*/
 }

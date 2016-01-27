@@ -8,6 +8,7 @@ package cern.jarrace.controller.manager.impl;
 import cern.jarrace.controller.domain.AgentContainer;
 import cern.jarrace.controller.manager.AgentContainerManager;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,7 +17,7 @@ import java.util.Set;
  */
 public class InMemoryAgentContainerManager implements AgentContainerManager {
 
-    private final Set<AgentContainer> agentContainers = new HashSet<>();
+    private final Set<AgentContainer> agentContainers = Collections.synchronizedSet(new HashSet<>());
 
     @Override
     public Set<AgentContainer> getAgentContainers() {
