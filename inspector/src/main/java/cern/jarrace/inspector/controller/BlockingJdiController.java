@@ -53,7 +53,7 @@ public class BlockingJdiController implements JdiController, Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         try {
             jdi.vm().exit(0);
             executorService.shutdown();
@@ -86,12 +86,11 @@ public class BlockingJdiController implements JdiController, Closeable {
 
         private VMLauncher launcher;
         private EntryMethod inspectableMethod;
-        private Class<?> interfaceToListen;
-        private BlockingCallbackFactory callbackFactory;
 
         public BlockingJdiController build() throws IOException, IllegalConnectorArgumentsException, VMStartException {
             Objects.requireNonNull(launcher, "Launcher must be set");
             Objects.requireNonNull(inspectableMethod, "Method to inspect must be set");
+            final Class<?> methodClass = inspectableMethod.getMethodClass();
 
             VirtualMachine virtualMachine = launcher.safeStart();
             JDIScript jdi = new JDIScript(virtualMachine);
@@ -101,11 +100,10 @@ public class BlockingJdiController implements JdiController, Closeable {
 
             ExecutorService executorService = Executors.newFixedThreadPool(1);
             executorService.execute(() -> {
-                ClassInstantiationListener interfaceImplementationCounter = new ClassInstantiationListener(
-                        interfaceToListen, classType -> {
-                    register(jdi, eventHandler, classType, inspectableMethod);
-                });
-                jdi.onClassPrep(interfaceImplementationCounter);
+                ClassInstantiationListener instantiationListener =
+                        new ClassInstantiationListener(methodClass,
+                                classType -> register(jdi, eventHandler, classType, inspectableMethod));
+                jdi.onClassPrep(instantiationListener);
 
                 jdi.run(eventHandler);
             });
@@ -113,13 +111,13 @@ public class BlockingJdiController implements JdiController, Closeable {
             return new BlockingJdiController(jdi, eventHandler, entryRegistry, executorService);
         }
 
-        public Builder setLauncher(VMLauncher launcher) {
-            this.launcher = launcher;
+        public Builder setInspectableMethod(EntryMethod method) {
+            this.inspectableMethod = method;
             return this;
         }
 
-        public Builder setInspectableMethod(EntryMethod method) {
-            this.inspectableMethod = method;
+        public Builder setLauncher(VMLauncher launcher) {
+            this.launcher = launcher;
             return this;
         }
 

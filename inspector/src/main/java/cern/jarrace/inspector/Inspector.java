@@ -6,35 +6,37 @@
 
 package cern.jarrace.inspector;
 
+import cern.jarrace.inspector.cli.CliApplication;
+import cern.jarrace.inspector.controller.BlockingJdiController;
+import cern.jarrace.inspector.controller.JdiController;
+import cern.jarrace.inspector.entry.EntryMethod;
+import com.sun.jdi.ThreadReference;
+import com.sun.jdi.connect.IllegalConnectorArgumentsException;
+import com.sun.jdi.connect.VMStartException;
+import org.jdiscript.util.VMLauncher;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import cern.jarrace.inspector.controller.JdiController;
-import cern.jarrace.inspector.entry.EntryMethod;
-import org.jdiscript.util.VMLauncher;
-
-import com.sun.jdi.ThreadReference;
-import com.sun.jdi.connect.IllegalConnectorArgumentsException;
-import com.sun.jdi.connect.VMStartException;
+import java.util.Scanner;
 
 /**
  * The main entry point to inspect a Java application.
  */
-public class Inspector implements Closeable {
+public class Inspector extends CliApplication implements Closeable {
 
     private final JdiController controller;
-    private final Path sourcePath;
     private final Process process;
 
-    private Inspector(JdiController controller, Path sourcePath, Process process) {
+    private Inspector(JdiController controller, Process process) {
+        super(Collections.emptyList());
         this.controller = controller;
-        this.sourcePath = sourcePath;
         this.process = process;
     }
 
@@ -44,9 +46,19 @@ public class Inspector implements Closeable {
 
     public static void main(String[] args) {
         try {
-            builder().setBinaryPath(Paths.get("/opt/jepeders/workspace/lhc-inspector/out/production/inspector/"))
-                    .setSourcePath(Paths.get("/opt/jepeders/workspace/lhc-inspector/src/main/java/"))
-                    .setInspectable("demo.Inspectable", "run").setMainClass("demo.HelloWorld").build();
+            Inspector inspector = builder()
+                    .setBinaryPath(Paths.get("/opt/jepeders/workspace/lhc-inspector/out/production/inspector/"))
+                    .setInspectable("cern.jarrace.inspector.Demo", "test").setMainClass("cern.jarrace.inspector.Demo").build();
+
+            Runtime.getRuntime().addShutdownHook(new Thread(inspector::close));
+
+//            Scanner input = new Scanner(System.in);
+//            String line;
+//            while ((line = input.next()) != null) {
+//                inspector.execute(line, System.out);
+//            }
+            Thread.sleep(1000);
+            inspector.execute("exit", System.out);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,14 +72,6 @@ public class Inspector implements Closeable {
             e.printStackTrace();
         }
     }
-
-    public List<String> getCode(String className) throws IOException {
-        return Files.readAllLines(Paths.get(sourcePath.toString(), className));
-    }
-
-    // public void stepBack() {
-    //
-    // }
 
     public InputStream getStandardOut() {
         return process.getInputStream();
@@ -85,6 +89,11 @@ public class Inspector implements Closeable {
         }
     }
 
+    @Override
+    public String getHelp() {
+        return "Available commands: none";
+    }
+
     public static class Builder {
 
         private static final String CLASSPATH_PREFIX = "-cp ";
@@ -92,7 +101,6 @@ public class Inspector implements Closeable {
         private String inspectableClassName = null;
         private String inspectableMethodName = null;
         private Path binaryPath = null;
-        private Path sourcePath = null;
         private String mainClassName = null;
 
         public Inspector build() throws ClassNotFoundException, SecurityException, NoSuchMethodException, IOException,
@@ -100,20 +108,18 @@ public class Inspector implements Closeable {
             Objects.requireNonNull(inspectableClassName, "Class name not set");
             Objects.requireNonNull(inspectableMethodName, "Method name not set");
             Objects.requireNonNull(binaryPath, "Path to binaries not set");
-            Objects.requireNonNull(sourcePath, "Path to sources not set");
 
             Class<?> inspectableClass = Class.forName(inspectableClassName);
             EntryMethod method = EntryMethod.ofClassAndMethod(inspectableClass, inspectableMethodName);
 
             VMLauncher launcher = new VMLauncher(CLASSPATH_PREFIX + binaryPath.toString(), mainClassName);
 
-//            JdiController controller = JdiController.builder().setInspectableListener(Stepper.INSTANCE_LISTENER)
-//                    .setInspectableMethod(method).setLauncher(launcher).build();
-//            Inspector inspector = new Inspector(controller, sourcePath, launcher.getProcess());
-////            Stepper.start(inspector);
-//
-//            return inspector;
-            return null;
+            BlockingJdiController controller = BlockingJdiController
+                    .builder()
+                    .setInspectableMethod(method)
+                    .setLauncher(launcher)
+                    .build();
+            return new Inspector(controller, launcher.getProcess());
         }
 
         /**
@@ -133,20 +139,12 @@ public class Inspector implements Closeable {
         }
 
         /**
-         * @param className The full class name of the class to inspect. Example: org.example.ClassName
+         * @param className  The full class name of the class to inspect. Example: org.example.ClassName
          * @param methodName The name of the method to inspect.
          */
         public Builder setInspectable(String className, String methodName) {
             this.inspectableClassName = className;
             this.inspectableMethodName = methodName;
-            return this;
-        }
-
-        /**
-         * @param path A {@link Path} to the root of the source files that are being inspected.
-         */
-        public Builder setSourcePath(Path path) {
-            this.sourcePath = path;
             return this;
         }
 

@@ -4,17 +4,19 @@
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
-package cern.jarrace.inspector.entry;
-
-import cern.jarrace.inspector.jdi.ThreadState;
+package cern.jarrace.inspector;
 
 /**
- * Handles callbacks from the running VM for a single method entry.
+ * Created by jepeders on 1/27/16.
  */
-public interface EntryListener {
+public class Demo {
 
-    void onLocationChange(ThreadState state);
+    public void test() {
 
-    void onInspectionEnd(ThreadState state);
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Hello from demo");
+    }
 
 }

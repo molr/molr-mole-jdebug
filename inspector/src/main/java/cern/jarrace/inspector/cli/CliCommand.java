@@ -4,17 +4,22 @@
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
-package cern.jarrace.inspector.entry;
+package cern.jarrace.inspector.cli;
 
-import cern.jarrace.inspector.jdi.ThreadState;
+import java.io.PrintStream;
+import java.util.List;
 
 /**
- * Handles callbacks from the running VM for a single method entry.
+ * A command in a command line interface.
  */
-public interface EntryListener {
+public interface CliCommand {
 
-    void onLocationChange(ThreadState state);
+    int expectedArguments();
 
-    void onInspectionEnd(ThreadState state);
+    String getDescription();
+
+    String getName();
+
+    void run(List<String> arguments, PrintStream output);
 
 }

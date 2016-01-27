@@ -70,12 +70,12 @@ public class JdiEventHandlerImpl extends JdiEventHandler {
     public synchronized void step(StepEvent e) {
         InspectableState state = threads.get(e.thread());
         if (state != null) {
+            final ThreadState threadState = new ThreadState(state.methodRange, e.location());
             if (state.methodRange.isWithin(e.location())) {
-                threads.get(e.thread()).listener.onLocationChange(new ThreadState(
-                        state.methodRange, e.location()));
+                threads.get(e.thread()).listener.onLocationChange(threadState);
                 e.thread().suspend();
             } else {
-                threads.remove(e.thread()).listener.onInspectionEnd();
+                threads.remove(e.thread()).listener.onInspectionEnd(threadState);
             }
         }
     }

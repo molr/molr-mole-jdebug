@@ -369,7 +369,7 @@ public class JDIScript {
         return proxy(erm.createMonitorWaitedRequest(),
                      ChainingMonitorWaitedRequest.class).addHandler(handler);
     }
-    
+
     /**
      * @see EventRequestManager#createMonitorWaitRequest
      */
@@ -383,7 +383,7 @@ public class JDIScript {
     public ChainingMonitorWaitRequest monitorWaitRequest(OnMonitorWait handler) {
         return proxy(erm.createMonitorWaitRequest(),
                      ChainingMonitorWaitRequest.class).addHandler(handler);
-    }    
+    }
 
     /**
      * @see EventRequestManager#createStepRequest
@@ -579,12 +579,12 @@ public class JDIScript {
                        "could not retrieve frames **");
         }
     }
-    
+
     /**
      * Shortcut for the common pattern of decorating any class
      * on preparation.
      * <p>
-     * Builds a {@link ClassPrepareRequest}, and adds the given 
+     * Builds a {@link ClassPrepareRequest}, and adds the given
      * {@link OnClassPrepare} handler.
      * <p>
      * TODO: what should this return?
@@ -638,7 +638,7 @@ public class JDIScript {
     public void onFieldAccess(final String className,
                               final String fieldName,
                               final OnAccessWatchpoint handler) {
-        onClassPrep(className, ev -> { 
+        onClassPrep(className, ev -> {
             Field field = ev.referenceType().fieldByName(fieldName);
             accessWatchpointRequest(field, handler).enable();
         });
@@ -664,7 +664,7 @@ public class JDIScript {
     public void onFieldModification(final String className,
                                     final String fieldName,
                                     final OnModificationWatchpoint handler) {
-        onClassPrep(className, ev -> { 
+        onClassPrep(className, ev -> {
             Field field = ev.referenceType().fieldByName(fieldName);
             modificationWatchpointRequest(field, handler).enable();
         });
@@ -701,7 +701,7 @@ public class JDIScript {
                                    final String methodName,
                                    final OnBreakpoint handler) {
         onClassPrep(className, ev -> {
-            ev.referenceType().methodsByName(methodName).forEach(m -> 
+            ev.referenceType().methodsByName(methodName).forEach(m ->
                 breakpointRequest(m.location(), handler).enable()
             );
         });
@@ -728,26 +728,26 @@ public class JDIScript {
                                    final String methodName,
                                    final String methodSig,
                                    final OnBreakpoint handler) {
-        onClassPrep(className, ev -> { 
+        onClassPrep(className, ev -> {
             ev.referenceType().methodsByName(methodName, methodSig).forEach(m ->
                 breakpointRequest(m.location(), handler).enable()
             );
         });
     }
-    
+
     /**
-     * Creates a breakpointRequest for the exit from the currently executing method 
+     * Creates a breakpointRequest for the exit from the currently executing method
      * on the given thread.
-     * 
+     *
      * @param thread
      * @param handler
-     * @throws IncompatibleThreadStateException 
-     * @throws AbsentInformationException 
+     * @throws IncompatibleThreadStateException
+     * @throws AbsentInformationException
      */
     public void onCurrentMethodExit(final ThreadReference thread,
-                                    //final OnMethodExit handler) 
-                                    final OnBreakpoint handler) 
-        throws IncompatibleThreadStateException, AbsentInformationException 
+                                    //final OnMethodExit handler)
+                                    final OnBreakpoint handler)
+        throws IncompatibleThreadStateException, AbsentInformationException
     {
         List<Location> locs = thread.frame(0).location().method().allLineLocations();
         Location last = locs.get(locs.size()-1);
@@ -758,7 +758,7 @@ public class JDIScript {
 
     /**
      * Create a stepRequest and enable it.
-     * 
+     *
      * @param thread
      * @param size
      * @param depth
@@ -776,35 +776,35 @@ public class JDIScript {
      * @param thread
      * @param handler
      */
-    public void onStepInto(final ThreadReference thread, 
+    public void onStepInto(final ThreadReference thread,
     		               final OnStep handler) {
     	onStep(thread, StepRequest.STEP_MIN, StepRequest.STEP_INTO, handler);
     }
-    
+
     /**
      * onStep with size=StepRequest.STEP_MIN, depth=StepRequest.STEP_OVER
      * @param thread
      * @param handler
-     */    
+     */
     public void onStepOver(final ThreadReference thread,
     					   final OnStep handler) {
     	onStep(thread, StepRequest.STEP_MIN, StepRequest.STEP_OVER, handler);
     }
-    
+
     /**
      * onStep with size=StepRequest.STEP_MIN, depth=StepRequest.STEP_OUT
      * @param thread
      * @param handler
-     */    
+     */
     public void onStepOut(final ThreadReference thread,
     					  final OnStep handler) {
-        onStep(thread, StepRequest.STEP_MIN, StepRequest.STEP_OUT, handler); 
-    }    
-    
+        onStep(thread, StepRequest.STEP_MIN, StepRequest.STEP_OUT, handler);
+    }
+
     /**
      * Create a handler that runs the given handler once and then disables
      * the event request that caused the handler to be invoked.
-     * 
+     *
      * @param <K> The type of the inner handler
      * @param handler  The inner handler
      * @return An instance of {@link Once} cast to the same type as the inner handler.
@@ -813,7 +813,7 @@ public class JDIScript {
     public <K extends DebugEventHandler> K once(K handler) {
     	return (K)new Once(vm, handler);
     }
-    
+
     public String fullName(Method method) {
     	final String refType = method.declaringType().name();
     	final String methName = method.name();
