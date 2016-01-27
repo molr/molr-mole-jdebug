@@ -1,8 +1,16 @@
+/**
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
 package cern.jarrace.controller.rest.controller;
 
+import cern.jarrace.controller.domain.AgentContainer;
 import cern.jarrace.controller.domain.Service;
+import cern.jarrace.controller.manager.AgentContainerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,8 +21,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @author timartin
- * Controller that exposes services to manage {@link Service}s
+ * {@link RestController} that exposes REST endpoints to manage {@link cern.jarrace.controller.domain.AgentContainer}s
+ * @author tiagomr
  */
 @RestController
 @RequestMapping("/jarrace")
@@ -23,7 +31,10 @@ public class AgentContainerController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentContainerController.class);
     private static final File DEPLOYMENT_DIR = new File(System.getProperty("java.io.tmpdir"));
 
-    final Map<String, List<Service>> entrypoints = new HashMap<>();
+    @Autowired
+    private AgentContainerManager agentContainerManager;
+
+    final Map<String, List<Service>> entryPoints = new HashMap<>();
     final Map<String, String> paths = new HashMap<>();
 
     @RequestMapping(value = "/container/deploy/{name}", method = RequestMethod.POST)
@@ -31,7 +42,7 @@ public class AgentContainerController {
         System.out.println("Deployed " + name);
         String path = writeFile(name, jar);
         paths.put(name, path);
-        entrypoints.put(name, new ArrayList<>());
+        entryPoints.put(name, new ArrayList<>());
         List<String> args = new ArrayList<>();
         args.add("cern.jarrace.agent.AgentContainer");
         args.add(name);
@@ -39,32 +50,20 @@ public class AgentContainerController {
         startContainer(path, args);
     }
 
-    @RequestMapping(value = "/{containerName}/service/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void registerService(@PathVariable(value = "containerName") String containerName, @RequestBody Service service){
-        if(service.getAgentName() == null || service.getAgentName().isEmpty()) {
-            throw new IllegalArgumentException("Agent name must be different than null and not empty");
-        }
-        if(service.getClazz() == null || service.getClazz().isEmpty()) {
-            throw new IllegalArgumentException("Clazz must be different than null and not empty");
-        }
-        if(service.getEntrypoints() == null || service.getEntrypoints().size() == 0) {
-            throw new IllegalArgumentException("Endpoints must be different than null and not empty");
-        }
-        if(containerName == null || entrypoints.get(containerName) == null) {
-            throw new IllegalArgumentException("Provided container name does not exists.");
-        }
-        entrypoints.get(containerName).add(service);
-        LOGGER.info(entrypoints.toString());
+    @RequestMapping(value = "container/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void registerService(@RequestBody AgentContainer agentContainer){
+        agentContainerManager.registerAgentContainer(agentContainer);
+        LOGGER.info("Registered new AgentContainer: [{}]", agentContainer);
     }
 
     @RequestMapping(value = "/container/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<String> listContainers() {
-        return entrypoints.keySet();
+    public Set<AgentContainer> listContainers() {
+        return agentContainerManager.getAgentContainers();
     }
 
     @RequestMapping(value = "/{containerName}/service/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Service> listServices(@PathVariable(value = "containerName") String containerName) {
-        List<Service> toReturn = this.entrypoints.get(containerName);
+        List<Service> toReturn = this.entryPoints.get(containerName);
         if (toReturn == null) {
             toReturn = new ArrayList<>();
         }
@@ -73,13 +72,13 @@ public class AgentContainerController {
 
     @RequestMapping(value = "/{name}/{entrypoint}/start", method = RequestMethod.GET)
     public String runService(@PathVariable("name") String name, @PathVariable int entrypoint) throws IOException {
-        List<Service> entries = entrypoints.get(name);
+        List<Service> entries = entryPoints.get(name);
         Service entryPoint = entries.get(entrypoint);
         List<String> args = new ArrayList<>();
         args.add("cern.jarrace.agent.AgentRunner");
         args.add(entryPoint.getAgentName());
         args.add(entryPoint.getClazz());
-        args.add(entryPoint.getEntrypoints().stream().collect(Collectors.joining(",")));
+        args.add(entryPoint.getEntryPoints().stream().collect(Collectors.joining(",")));
         startContainer(paths.get(name), args);
         return null;
     }

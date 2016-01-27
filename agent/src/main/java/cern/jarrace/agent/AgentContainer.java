@@ -57,7 +57,7 @@ public class AgentContainer {
             connection.setDoOutput(true);
             String methodsToSend = methods.stream().map(Method::getName).collect(Collectors.joining("\",\""));
             String response = "{\"agentName\":\"" + agent.getClass().getName() + "\",\"clazz\":\"" + clazz.getName()
-                    + "\",\"entrypoints\":[\"" + methodsToSend + "\"]}";
+                    + "\",\"entryPoints\":[\"" + methodsToSend + "\"]}";
             System.out.println(response);
             connection.getOutputStream().write(response.getBytes());
             System.out.println(connection.getResponseCode());
