@@ -6,7 +6,7 @@
 
 package cern.jarrace.inspector.controller;
 
-import cern.jarrace.inspector.jdi.EntryState;
+import cern.jarrace.inspector.entry.EntryState;
 
 import java.io.Closeable;
 

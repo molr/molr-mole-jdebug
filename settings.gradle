@@ -1,5 +1,7 @@
 include 'agent'
 include 'controller'
-include 'inspector'
+include 'gradle'
 include 'gui'
+include 'inspector'
+include 'jdiscript'
 

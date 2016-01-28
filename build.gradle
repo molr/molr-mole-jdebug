@@ -27,3 +27,13 @@ project(":gui") {
         compile project(":inspector")
     }
 }
+
+project(":inspector") {
+    dependencies {
+        compile project(":jdiscript")
+    }
+}
+
+project(":jdiscript") {
+
+}

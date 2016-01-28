@@ -6,16 +6,28 @@
 
 package cern.jarrace.inspector.entry;
 
-import cern.jarrace.inspector.jdi.EntryState;
-import cern.jarrace.inspector.jdi.ThreadState;
-
 /**
- * Handles callbacks from the running VM for a single method entry.
+ * Handles callbacks from a JVM running an <i>entry</i>. This class is unique for each entry encountered in the running
+ * VM.
  */
 public interface EntryListener {
 
+    /**
+     * Called by the running JVM instance when an entry is resumed and the location changes to a new line. The VM is
+     * paused immediately after an entry has been reached, so the state <i>should</i> be real-time. However,
+     * the controller will resume execution upon request, so the state might have changed by the time this method is
+     * called.
+     *
+     * @param state The state of this entry.
+     */
     void onLocationChange(EntryState state);
 
+    /**
+     * Called by the running JVM instance when an entry reaches the end of its execution. After this call, the entry
+     * will be deleted and this listener instance will never be called again.
+     *
+     * @param state The state of the entry. The position of the entry will point to the last line of the method.
+     */
     void onInspectionEnd(EntryState state);
 
 }
