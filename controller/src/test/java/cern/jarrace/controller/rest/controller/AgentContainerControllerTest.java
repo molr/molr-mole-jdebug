@@ -6,7 +6,6 @@
 package cern.jarrace.controller.rest.controller;
 
 import cern.jarrace.controller.domain.Service;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
@@ -15,18 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.util.NestedServletException;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 

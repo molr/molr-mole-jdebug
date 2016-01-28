@@ -16,6 +16,14 @@ import java.util.Set;
  * @author tiagomr
  */
 public interface AgentContainerManager {
+
+    /**
+     * Searches for a specific container by name
+     * @param containerName
+     * @return The container with the specified name if it exists, null otherwise
+     */
+    AgentContainer getAgentContainer(String containerName);
+
     /**
      * Provides a {@link List} with all the registered {@link AgentContainer}s
      * @return {@link List} of {@link AgentContainer}s

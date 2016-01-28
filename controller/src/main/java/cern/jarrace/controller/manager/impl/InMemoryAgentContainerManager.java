@@ -10,14 +10,27 @@ import cern.jarrace.controller.manager.AgentContainerManager;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
  * Implementation of {@link AgentContainerManager} that stores the information in an "in memory" set
+ * @author tiagomr
  */
 public class InMemoryAgentContainerManager implements AgentContainerManager {
 
     private final Set<AgentContainer> agentContainers = Collections.synchronizedSet(new HashSet<>());
+
+    @Override
+    public AgentContainer getAgentContainer(String containerName) {
+        synchronized (agentContainers) {
+            Optional<AgentContainer> toReturn = agentContainers.stream().filter(agentContainer -> {
+                return containerName.equals(agentContainer.getContainerName()) ? true : false;
+            }).findFirst();
+
+            return toReturn.isPresent() ? toReturn.get() : null;
+        }
+    }
 
     @Override
     public Set<AgentContainer> getAgentContainers() {

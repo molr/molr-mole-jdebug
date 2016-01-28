@@ -5,8 +5,11 @@
  */
 package cern.jarrace.controller.rest.controller;
 
-import cern.jarrace.controller.domain.AgentContainer;
+import cern.jarrace.commons.domain.AgentContainer;
+import cern.jarrace.commons.domain.Service;
+import cern.jarrace.controller.io.JarWriter;
 import cern.jarrace.controller.jvm.AgentContainerSpawner;
+import cern.jarrace.controller.jvm.AgentRunnerSpawner;
 import cern.jarrace.controller.manager.AgentContainerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * {@link RestController} that exposes REST endpoints to manage {@link cern.jarrace.controller.domain.AgentContainer}s
@@ -35,13 +37,17 @@ public class AgentContainerController {
     private AgentContainerManager agentContainerManager;
     @Autowired
     private AgentContainerSpawner agentContainerSpawner;
+    @Autowired
+    private AgentRunnerSpawner agentRunnerSpawner;
+    @Autowired
+    private JarWriter jarWriter;
 
 
     @RequestMapping(value = "/deploy/{" + CONTAINER_NAME_VARIABLE_NAME + "}", method = RequestMethod.POST)
     public void deploy(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName, @RequestBody byte[] jar) throws Exception {
         LOGGER.debug("Started deployment process for container: [{}]", containerName);
-        String path = writeFile(containerName, jar);
-        agentContainerSpawner.spawnJvm(containerName, path);
+        String path = jarWriter.writeFile(containerName, jar);
+        agentContainerSpawner.spawnAgentContainer(containerName, path);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -54,40 +60,19 @@ public class AgentContainerController {
     public Set<AgentContainer> listContainers() {
         return agentContainerManager.getAgentContainers();
     }
-/*
-    @RequestMapping(value = "/{containerName}/service/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Service> listServices(@PathVariable(value = "containerName") String containerName) {
-        List<Service> toReturn = this.entryPoints.get(containerName);
-        if (toReturn == null) {
-            toReturn = new ArrayList<>();
-        }
-        return toReturn;
-    }
 
-    @RequestMapping(value = "/{name}/{entrypoint}/start", method = RequestMethod.GET)
-    public String runService(@PathVariable("name") String name, @PathVariable int entrypoint) throws IOException {
-        List<Service> entries = entryPoints.get(name);
-        Service entryPoint = entries.get(entrypoint);
-        List<String> args = new ArrayList<>();
-        args.add("cern.jarrace.agent.AgentRunner");
-        args.add(entryPoint.getAgentName());
-        args.add(entryPoint.getClazz());
-        args.add(entryPoint.getEntryPoints().stream().collect(Collectors.joining(",")));
-        startContainer(paths.get(name), args);
-        return null;
-    }
-*/
+    @RequestMapping(value = "/{containerName}/start", method = RequestMethod.GET)
+    public void runService(@PathVariable("containerName") String containerName,
+                           @RequestParam(value = "service") String serviceName,
+                           @RequestParam(value = "entryPoints", defaultValue = "") String entryPoints) throws Exception {
+        AgentContainer agentContainer = agentContainerManager.getAgentContainer(containerName);
+        Optional<Service> serviceOptional = agentContainer.getServices().stream().filter(service -> {
+            return service.getClazz().equals(serviceName) ? true : false;
+        }).findFirst();
+        if(serviceOptional.isPresent()) {
 
-    private String writeFile(String name, byte[] jar) throws IOException {
-        File deploymentFile = DEPLOYMENT_DIR.toPath().resolve(name + ".jar").toFile();
-        if (deploymentFile.exists()) {
-            deploymentFile.delete();
+            agentRunnerSpawner.spawnAgentContainer(serviceOptional.get(), agentContainer.getContainerPath(),
+                    entryPoints.split(","));
         }
-        deploymentFile.createNewFile();
-        FileOutputStream outputStream = new FileOutputStream(deploymentFile);
-        outputStream.write(jar);
-        outputStream.close();
-        LOGGER.info("Deployed file + " + deploymentFile.getAbsolutePath());
-        return deploymentFile.getAbsolutePath();
     }
 }

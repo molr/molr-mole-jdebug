@@ -22,14 +22,16 @@ public class SimpleAgentContainerSpawner implements AgentContainerSpawner {
     private String controllerInterface;
 
     @Override
-    public void spawnJvm(String containerName, String jarPath) throws Exception {
+    public void spawnAgentContainer(String containerName, String jarPath) throws Exception {
         List<String> command = new ArrayList<>();
         command.add(String.format("%s/bin/java", System.getProperty("java.home")));
         command.add("-cp");
+        command.add(jarPath);
         command.add(AGENT_CONTAINER_MAIN_CASS);
+        command.add(containerName);
         command.add(String.format("%s:%s", controllerInterface, controllerPort));
 
-        LOGGER.info(String.format("Starting agent container [%s]", command.toString()));
+        LOGGER.info("Starting agent container [{}]", command.toString());
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.inheritIO().start();
     }

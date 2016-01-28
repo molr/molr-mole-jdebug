@@ -3,10 +3,10 @@
  * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
-package cern.jarrace.controller.domain;
+package cern.jarrace.commons.domain;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Responsible for the representation of a deployment to the controller. It couples all necessary information to
@@ -23,31 +23,31 @@ public class AgentContainer {
     /**
      * Identifies the binary file sent in the deployment process
      */
-    private String agentPath;
+    private String containerPath;
 
     /**
      * A list of services that is provided by this {@link AgentContainer}, and can be executed
      */
-    private final Set<Service> services = new HashSet<>();
+    private final List<Service> services = new ArrayList();
 
     public AgentContainer() {
 
     }
 
-    public AgentContainer(String containerName, String agentPath) {
+    public AgentContainer(String containerName, String containerPath) {
         this.containerName = containerName;
-        this.agentPath = agentPath;
+        this.containerPath = containerPath;
     }
 
     public String getContainerName() {
         return containerName;
     }
 
-    public String getAgentPath() {
-        return agentPath;
+    public String getContainerPath() {
+        return containerPath;
     }
 
-    public Set<Service> getServices() {
+    public List<Service> getServices() {
         return services;
     }
 
