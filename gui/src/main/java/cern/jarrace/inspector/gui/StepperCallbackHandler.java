@@ -28,8 +28,9 @@ public class StepperCallbackHandler implements EntryListener {
     }
 
     @Override
-    public void onInspectionEnd() {
+    public void onInspectionEnd(ThreadState state) {
         tab.close();
     }
+
 
 }
