@@ -1,6 +1,6 @@
 package cern.jarrace.controller.jvm;
 
-import cern.jarrace.controller.domain.Service;
+import cern.jarrace.commons.domain.Service;
 
 /**
  * Created by timartin on 28/01/2016.

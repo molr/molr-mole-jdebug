@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class SimpleAgentContainerSpawner implements AgentContainerSpawner {
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAgentContainerSpawner.class);
-    private static final String AGENT_CONTAINER_MAIN_CASS = "cern.jarrace.agent.AgentContainer";
+    private static final String AGENT_CONTAINER_MAIN_CASS = "cern.jarrace.agent.ContainerRegistry";
 
     @Value("${server.port}")
     private int controllerPort;
@@ -29,6 +29,7 @@ public class SimpleAgentContainerSpawner implements AgentContainerSpawner {
         command.add(jarPath);
         command.add(AGENT_CONTAINER_MAIN_CASS);
         command.add(containerName);
+        command.add(jarPath);
         command.add(String.format("%s:%s", controllerInterface, controllerPort));
 
         LOGGER.info("Starting agent container [{}]", command.toString());

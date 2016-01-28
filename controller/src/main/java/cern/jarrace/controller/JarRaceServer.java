@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Import;
 @Import({ManagementConfiguration.class, RestConfiguration.class, JvmConfiguration.class, IOConfiguration.class})
 public class JarRaceServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(JarRaceServer.class);
-
     public static void main(String args[]) {
         ApplicationContext context = SpringApplication.run(JarRaceServer.class, args);
         LOGGER.debug("******** Bean Definitions ********");

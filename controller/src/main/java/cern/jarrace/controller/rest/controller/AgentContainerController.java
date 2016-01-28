@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * {@link RestController} that exposes REST endpoints to manage {@link cern.jarrace.controller.domain.AgentContainer}s
+ * {@link RestController} that exposes endpoints to manage {@link AgentContainer}s
  * @author tiagomr
  */
 @RestController
@@ -61,18 +61,35 @@ public class AgentContainerController {
         return agentContainerManager.getAgentContainers();
     }
 
-    @RequestMapping(value = "/{containerName}/start", method = RequestMethod.GET)
-    public void runService(@PathVariable("containerName") String containerName,
+    @RequestMapping(value = "/{" + CONTAINER_NAME_VARIABLE_NAME + "}/start", method = RequestMethod.GET)
+    public void runService(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
                            @RequestParam(value = "service") String serviceName,
                            @RequestParam(value = "entryPoints", defaultValue = "") String entryPoints) throws Exception {
         AgentContainer agentContainer = agentContainerManager.getAgentContainer(containerName);
         Optional<Service> serviceOptional = agentContainer.getServices().stream().filter(service -> {
-            return service.getClazz().equals(serviceName) ? true : false;
+            String className = service.getClazz();
+            className = className.substring(className.lastIndexOf(".") + 1);
+            return className.equals(serviceName) ? true : false;
         }).findFirst();
         if(serviceOptional.isPresent()) {
-
             agentRunnerSpawner.spawnAgentContainer(serviceOptional.get(), agentContainer.getContainerPath(),
                     entryPoints.split(","));
         }
+    }
+
+    public void setAgentContainerManager(AgentContainerManager agentContainerManager) {
+        this.agentContainerManager = agentContainerManager;
+    }
+
+    public void setAgentContainerSpawner(AgentContainerSpawner agentContainerSpawner) {
+        this.agentContainerSpawner = agentContainerSpawner;
+    }
+
+    public void setAgentRunnerSpawner(AgentRunnerSpawner agentRunnerSpawner) {
+        this.agentRunnerSpawner = agentRunnerSpawner;
+    }
+
+    public void setJarWriter(JarWriter jarWriter) {
+        this.jarWriter = jarWriter;
     }
 }

@@ -34,9 +34,10 @@ public class AgentContainer {
 
     }
 
-    public AgentContainer(String containerName, String containerPath) {
+    public AgentContainer(String containerName, String containerPath, List<Service> services) {
         this.containerName = containerName;
         this.containerPath = containerPath;
+        this.services.addAll(services);
     }
 
     public String getContainerName() {

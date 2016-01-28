@@ -1,6 +1,6 @@
 package cern.jarrace.controller.jvm.impl;
 
-import cern.jarrace.controller.domain.Service;
+import cern.jarrace.commons.domain.Service;
 import cern.jarrace.controller.jvm.AgentRunnerSpawner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +26,12 @@ public class SimpleAgentRunnerSpawner implements AgentRunnerSpawner {
         command.add(AGENT_RUNNER_MAIN_CASS);
         command.add(service.getAgentName());
         command.add(service.getClazz());
-        for (String argument : args) {
-            command.add(argument);
+        if(args != null) {
+            for (String argument : args) {
+                if(!argument.isEmpty()) {
+                    command.add(argument);
+                }
+            }
         }
 
         LOGGER.info("Starting agent runner [{}]", command.toString());

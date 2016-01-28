@@ -10,15 +10,23 @@ subprojects {
     }
 }
 
+project(":demo") {
+    dependencies {
+        compile project(":agent")
+        compile project(":gradle")
+    }
+}
+
 project(":agent") {
     dependencies {
         compile project(":inspector")
+        compile project(":commons")
     }
 }
 
 project(":controller") {
     dependencies {
-        compile project(":agent")
+        compile project(":commons")
     }
 }
 

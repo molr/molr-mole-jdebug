@@ -5,8 +5,8 @@
  */
 package cern.jarrace.controller.manager;
 
-import cern.jarrace.controller.domain.AgentContainer;
-import cern.jarrace.controller.domain.Service;
+import cern.jarrace.commons.domain.AgentContainer;
+import cern.jarrace.commons.domain.Service;
 
 import java.util.List;
 import java.util.Set;
