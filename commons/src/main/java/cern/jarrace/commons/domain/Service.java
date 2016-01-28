@@ -67,4 +67,10 @@ public class Service {
         result = 31 * result + (clazz != null ? clazz.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return getAgentName() + ": " + getClazz();
+    }
+
 }

@@ -7,12 +7,19 @@
 package cern.jarrace.inspector.gui.rest;
 
 import cern.jarrace.commons.domain.AgentContainer;
+import cern.jarrace.commons.domain.Service;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 import java.util.List;
 
 public interface ContainerService {
     @GET("container/list")
     Call<List<AgentContainer>> getContainers();
+
+    @GET("container/{name}/start/")
+    Call<String> startEntry(@Path("name") String name, @Query("service") String service);
+
 }

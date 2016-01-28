@@ -13,7 +13,6 @@ subprojects {
 project(":demo") {
     dependencies {
         compile project(":agent")
-        compile project(":gradle")
     }
 }
 
