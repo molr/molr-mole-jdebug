@@ -5,9 +5,11 @@
  */
 package cern.jarrace.controller;
 
+import cern.jarrace.controller.io.IOConfiguration;
 import cern.jarrace.controller.jvm.AgentContainerSpawner;
+import cern.jarrace.controller.jvm.JvmConfiguration;
 import cern.jarrace.controller.jvm.impl.SimpleAgentContainerSpawner;
-import cern.jarrace.controller.manager.ManagementBeans;
+import cern.jarrace.controller.manager.ManagementConfiguration;
 import cern.jarrace.controller.rest.RestConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +27,9 @@ import org.springframework.context.annotation.Import;
  */
 
 @SpringBootApplication
-@Import({ManagementBeans.class, RestConfiguration.class})
+@Import({ManagementConfiguration.class, RestConfiguration.class, JvmConfiguration.class, IOConfiguration.class})
 public class JarRaceServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(JarRaceServer.class);
-
     public static void main(String args[]) {
         ApplicationContext context = SpringApplication.run(JarRaceServer.class, args);
         LOGGER.debug("******** Bean Definitions ********");
@@ -38,10 +39,5 @@ public class JarRaceServer {
 
         LOGGER.debug("******** Bean Count ********");
         LOGGER.debug(Integer.toString(context.getBeanDefinitionCount()));
-    }
-
-    @Bean
-    public AgentContainerSpawner agentContainerSpawner() {
-        return new SimpleAgentContainerSpawner();
     }
 }

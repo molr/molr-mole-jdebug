@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class SimpleAgentContainerSpawner implements AgentContainerSpawner {
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAgentContainerSpawner.class);
-    private static final String AGENT_CONTAINER_MAIN_CASS = "cern.jarrace.agent.AgentContainer";
+    private static final String AGENT_CONTAINER_MAIN_CASS = "cern.jarrace.agent.ContainerRegistry";
 
     @Value("${server.port}")
     private int controllerPort;
@@ -22,14 +22,17 @@ public class SimpleAgentContainerSpawner implements AgentContainerSpawner {
     private String controllerInterface;
 
     @Override
-    public void spawnJvm(String containerName, String jarPath) throws Exception {
+    public void spawnAgentContainer(String containerName, String jarPath) throws Exception {
         List<String> command = new ArrayList<>();
         command.add(String.format("%s/bin/java", System.getProperty("java.home")));
         command.add("-cp");
+        command.add(jarPath);
         command.add(AGENT_CONTAINER_MAIN_CASS);
+        command.add(containerName);
+        command.add(jarPath);
         command.add(String.format("%s:%s", controllerInterface, controllerPort));
 
-        LOGGER.info(String.format("Starting agent container [%s]", command.toString()));
+        LOGGER.info("Starting agent container [{}]", command.toString());
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.inheritIO().start();
     }

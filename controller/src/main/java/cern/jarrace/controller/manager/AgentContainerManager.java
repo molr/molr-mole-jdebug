@@ -5,8 +5,8 @@
  */
 package cern.jarrace.controller.manager;
 
-import cern.jarrace.controller.domain.AgentContainer;
-import cern.jarrace.controller.domain.Service;
+import cern.jarrace.commons.domain.AgentContainer;
+import cern.jarrace.commons.domain.Service;
 
 import java.util.List;
 import java.util.Set;
@@ -16,6 +16,14 @@ import java.util.Set;
  * @author tiagomr
  */
 public interface AgentContainerManager {
+
+    /**
+     * Searches for a specific container by name
+     * @param containerName
+     * @return The container with the specified name if it exists, null otherwise
+     */
+    AgentContainer getAgentContainer(String containerName);
+
     /**
      * Provides a {@link List} with all the registered {@link AgentContainer}s
      * @return {@link List} of {@link AgentContainer}s

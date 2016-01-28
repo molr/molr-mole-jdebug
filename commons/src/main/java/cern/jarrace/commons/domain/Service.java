@@ -3,16 +3,11 @@
  * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
-package cern.jarrace.controller.domain;
+package cern.jarrace.commons.domain;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Domain class that represents a registered {@link Service}, this being an encapulation
- * of all the needed information to run a specific class/method in a remote agent. This class is identified only by
- * @author timartin
- */
 public class Service {
 
     /**
