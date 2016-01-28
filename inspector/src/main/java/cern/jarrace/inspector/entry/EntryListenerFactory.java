@@ -31,6 +31,6 @@ public interface EntryListenerFactory<Listener extends EntryListener> {
      * @return An {@link EntryListener} instance that will receive future updates whenever the JDI steps
      * through the method or terminates the execution of the method.
      */
-    Listener onBreakpoint(ThreadReference thread, EntryState state);
+    Listener onNewEntry(ThreadReference thread, EntryState state);
 
 }
