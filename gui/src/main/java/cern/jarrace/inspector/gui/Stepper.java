@@ -6,15 +6,10 @@
 
 package cern.jarrace.inspector.gui;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
+import cern.jarrace.inspector.entry.CallbackFactory;
 import cern.jarrace.inspector.entry.EntryListener;
+import cern.jarrace.inspector.jdi.ThreadState;
+import com.sun.jdi.ThreadReference;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -25,11 +20,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
-import cern.jarrace.inspector.Inspector;
-import cern.jarrace.inspector.jdi.ThreadState;
-import cern.jarrace.inspector.entry.CallbackFactory;
 
-import com.sun.jdi.ThreadReference;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A user interface that can step over code.
@@ -40,14 +37,14 @@ public class Stepper extends Application {
 
     private static final ExecutorService LOG_THREAD_POOL = Executors.newFixedThreadPool(2);
 
-    private static Inspector inspector;
+//    private static Inspector inspector;
     private static FlowPane rootPane;
     private static TabPane tabs;
 
     public static void close() {
         Platform.runLater(() -> Platform.exit());
         LOG_THREAD_POOL.shutdown();
-        inspector.close();
+//        inspector.close();
     }
 
     @Override
@@ -73,10 +70,10 @@ public class Stepper extends Application {
 
     private void redirectInput(TextFlow textFlow) {
         LOG_THREAD_POOL.execute(() -> {
-            redirectSingleInput(inspector.getStandardOut(), textFlow, Color.BLACK);
+//            redirectSingleInput(inspector.getStandardOut(), textFlow, Color.BLACK);
         });
         LOG_THREAD_POOL.execute(() -> {
-            redirectSingleInput(inspector.getErrorOut(), textFlow, Color.RED);
+//            redirectSingleInput(inspector.getErrorOut(), textFlow, Color.RED);
         });
     }
 
@@ -94,10 +91,10 @@ public class Stepper extends Application {
         }
     }
 
-    public static void start(Inspector newInspector) {
-        Stepper.inspector = newInspector;
-        Application.launch();
-    }
+//    public static void start(Inspector newInspector) {
+//        Stepper.inspector = newInspector;
+//        Application.launch();
+//    }
 
     public static final CallbackFactory INSTANCE_LISTENER = new CallbackFactory() {
 
@@ -106,20 +103,21 @@ public class Stepper extends Application {
             try {
                 final String sourceName = state.getCurrentLocation().sourceName();
                 final String sourcePath = state.getCurrentLocation().sourcePath();
-                List<String> code = inspector.getCode(sourcePath);
-                StepperTab tab = new StepperTab(sourceName, code);
-                tab.highlight(state.getCurrentLocation().lineNumber());
+//                List<String> code = inspector.getCode(sourcePath);
+//                StepperTab tab = new StepperTab(sourceName, code);
+//                tab.highlight(state.getCurrentLocation().lineNumber());
                 Platform.runLater(() -> {
-                    tab.onForwardButton(event -> inspector.stepOver(thread));
-                    tabs.getTabs().add(tab);
-                    tab.setOnClosed(event -> {
-                        tabs.getTabs().remove(tab);
-                        if (tabs.getTabs().isEmpty()) {
-                            close();
-                        }
-                    });
+//                    tab.onForwardButton(event -> inspector.stepOver(thread));
+//                    tabs.getTabs().add(tab);
+//                    tab.setOnClosed(event -> {
+//                        tabs.getTabs().remove(tab);
+//                        if (tabs.getTabs().isEmpty()) {
+//                            close();
+//                        }
+//                    });
                 });
-                return new StepperCallbackHandler(tab);
+//                return new StepperCallbackHandler(tab);
+                return null;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

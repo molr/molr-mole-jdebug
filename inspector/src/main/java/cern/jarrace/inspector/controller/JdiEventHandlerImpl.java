@@ -6,7 +6,6 @@
 
 package cern.jarrace.inspector.controller;
 
-import cern.jarrace.inspector.Inspector;
 import cern.jarrace.inspector.entry.CallbackFactory;
 import cern.jarrace.inspector.entry.EntryListener;
 import cern.jarrace.inspector.jdi.LocationRange;
@@ -24,7 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * An event handler for the {@link Inspector} main class.
+ * An event handler receiving events from the running JDI instance. This handler attempts to hide
+ * some of the JDI implementations, so it should not be used outside the {@link JdiController}.
  */
 public class JdiEventHandlerImpl extends JdiEventHandler {
 
