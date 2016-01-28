@@ -65,4 +65,10 @@ public class AgentContainer {
     public int hashCode() {
         return containerName != null ? containerName.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return getContainerName();
+    }
+
 }

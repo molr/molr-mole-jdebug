@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +43,14 @@ public class SimpleAgentRunnerSpawner implements AgentRunnerSpawner {
         Process process = processBuilder.start();
 
         StringBuilder stringBuilder = new StringBuilder();
-        BufferedInputStream bs = new BufferedInputStream(process.getInputStream());
-
+        InputStreamReader inputReader = new InputStreamReader(process.getInputStream());
+        BufferedReader reader = new BufferedReader(inputReader);
         while(process.isAlive()) {
-            stringBuilder.append(bs.read());
+            final String line = reader.readLine();
+            if (line == null) {
+                break;
+            }
+            stringBuilder.append(line);
         }
 
         return stringBuilder.toString();

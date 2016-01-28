@@ -41,5 +41,5 @@ apply plugin: 'cern.jarrace.gradle'
 
 jarrace {
     host = 'localhost:8080'
-    name = 'demo2'
+    name = 'demo1'
 }
