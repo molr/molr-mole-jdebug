@@ -5,20 +5,29 @@
  */
 package cern.jarrace.controller.rest.controller;
 
+import cern.jarrace.commons.domain.AgentContainer;
+import cern.jarrace.commons.domain.Service;
 import cern.jarrace.controller.io.JarWriter;
-import cern.jarrace.controller.jvm.AgentContainerSpawner;
+import cern.jarrace.controller.jvm.AgentRegistrySpawner;
 import cern.jarrace.controller.jvm.AgentRunnerSpawner;
 import cern.jarrace.controller.manager.AgentContainerManager;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.http.HttpMethod;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -28,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author tiagomr
  */
 
+@RunWith(MockitoJUnitRunner.class)
 public class AgentContainerControllerTest {
 
     private MockMvc mockMvc;
@@ -36,7 +46,7 @@ public class AgentContainerControllerTest {
     @Mock
     private AgentContainerManager agentContainerManager;
     @Mock
-    private AgentContainerSpawner agentContainerSpawner;
+    private AgentRegistrySpawner agentRegistrySpawner;
     @Mock
     private AgentRunnerSpawner agentRunnerSpawner;
     @Mock
@@ -45,23 +55,39 @@ public class AgentContainerControllerTest {
     @Before
     public void setUp() throws Exception {
         agentContainerController = new AgentContainerController();
-        agentContainerController.setAgentContainerManager(agentContainerManager);
-        agentContainerController.setAgentContainerSpawner(agentContainerSpawner);
+        agentContainerController.setAgentRegistrySpawner(agentRegistrySpawner);
         agentContainerController.setAgentRunnerSpawner(agentRunnerSpawner);
         agentContainerController.setJarWriter(jarWriter);
-        mockMvc = MockMvcBuilders.standaloneSetup(agentContainerController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(agentContainerController)
+                .addPlaceHolderValue("rest.basepath", "/jarrace")
+                .build();
     }
 
-    /*@Test
+    @Test
+    public void testDeploy() throws Exception {
+        when(jarWriter.writeFile("TestContainer", "TestBytes".getBytes())).thenReturn("MockedPath");
+        mockMvc.perform(post("/jarrace/container/deploy/TestContainer")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .content("TestBytes".getBytes()))
+                .andExpect(status().isOk());
+        verify(jarWriter).writeFile("TestContainer", "TestBytes".getBytes());
+        verify(agentRegistrySpawner).spawnAgentRegistry("TestContainer", "MockedPath");
+    }
+/*
+    @Test
     public void testDeployWithDifferentRequestTypes() throws Exception {
+        when(jarWriter.writeFile(anyString(), any(byte[].class))).thenReturn("mockedFunction");
         for (HttpMethod httpMethod : HttpMethod.values()) {
             MockHttpServletRequestBuilder request = request(httpMethod, "/jarrace/container/deploy/SampleDeploy")
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .content("SampleBytes".getBytes());
             ResultActions perform = mockMvc.perform(request);
 
-            if (HttpMethod.POST.equals(httpMethod) || HttpMethod.OPTIONS.equals(httpMethod) || HttpMethod.TRACE.equals(httpMethod)) {
+            if (HttpMethod.POST.equals(httpMethod)) {
                 perform.andExpect(status().isOk());
+                verify(jarWriter).writeFile(anyString(), "SampleBytes".getBytes());
+            } else if(HttpMethod.OPTIONS.equals(httpMethod) || HttpMethod.TRACE.equals(httpMethod)) {
+                perform.andExpect((status().isOk()));
             } else {
                 perform.andExpect(status().isMethodNotAllowed());
             }
@@ -219,4 +245,36 @@ public class AgentContainerControllerTest {
                 .andExpect(jsonPath("$", hasSize(2)));
 
     }*/
+
+    private List<AgentContainer> getMockedContainers(int numberOfAgentContainers, int numberOfServices, int numberOfEntryPoints) {
+        List<AgentContainer> mockedAgentContainers = new ArrayList<>();
+        for(int index = 0; index < numberOfAgentContainers; ++index) {
+            mockedAgentContainers.add(getMockedContainer(index, numberOfServices, numberOfEntryPoints));
+        }
+        return mockedAgentContainers;
+    }
+
+    private AgentContainer getMockedContainer(int containerNumber, int numberOfServices, int numberOfEntryPoints) {
+        AgentContainer mockedAgentContainer = mock(AgentContainer.class);
+        when(mockedAgentContainer.getContainerName()).thenReturn("MockedContainerName" + containerNumber);
+        when(mockedAgentContainer.getContainerPath()).thenReturn("MockedContainerPath" + containerNumber);
+        when(mockedAgentContainer.getServices()).thenReturn(getMockedService(numberOfServices, numberOfEntryPoints));
+        return mockedAgentContainer;
+    }
+
+    private List<Service> getMockedService(int numberOfServices, int numberOfEntryPoints) {
+        List<Service> mockedServices = new ArrayList<>();
+        for(int serviceIndex = 0; serviceIndex < numberOfServices; ++serviceIndex) {
+            List<String> entryPoints = new ArrayList<>();
+            for (int index = 0; index < numberOfEntryPoints; ++index) {
+                entryPoints.add("MockedEntryPoint" + index);
+            }
+            Service mockedService = mock(Service.class);
+            when(mockedService.getAgentName()).thenReturn("MockedAgentName");
+            when(mockedService.getClazz()).thenReturn("MockedClassName");
+            when(mockedService.getEntryPoints()).thenReturn(entryPoints);
+            mockedServices.add(mockedService);
+        }
+        return mockedServices;
+    }
 }

@@ -1,6 +1,6 @@
 package cern.jarrace.controller.jvm.impl;
 
-import cern.jarrace.controller.jvm.AgentContainerSpawner;
+import cern.jarrace.controller.jvm.AgentRegistrySpawner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,8 +11,8 @@ import java.util.List;
 /**
  * Created by timartin on 27/1/2016.
  */
-public class SimpleAgentContainerSpawner implements AgentContainerSpawner {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAgentContainerSpawner.class);
+public class SimpleAgentRegistrySpawner implements AgentRegistrySpawner {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAgentRegistrySpawner.class);
     private static final String AGENT_CONTAINER_MAIN_CASS = "cern.jarrace.agent.ContainerRegistry";
 
     @Value("${server.port}")
@@ -22,7 +22,7 @@ public class SimpleAgentContainerSpawner implements AgentContainerSpawner {
     private String controllerInterface;
 
     @Override
-    public void spawnAgentContainer(String containerName, String jarPath) throws Exception {
+    public void spawnAgentRegistry(String containerName, String jarPath) throws Exception {
         List<String> command = new ArrayList<>();
         command.add(String.format("%s/bin/java", System.getProperty("java.home")));
         command.add("-cp");
