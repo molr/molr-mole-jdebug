@@ -1,4 +1,6 @@
 include 'agent'
 include 'controller'
+include 'gui'
+include 'inspector'
 include 'jdiscript'
 
