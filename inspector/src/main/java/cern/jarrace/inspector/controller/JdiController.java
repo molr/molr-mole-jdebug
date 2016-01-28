@@ -16,11 +16,10 @@ import java.io.Closeable;
 public interface JdiController extends Closeable {
 
     /**
-     * Takes one <i>step</i> in a entry by executing one line / instruction inside the entry.
+     * Takes one <i>step</i> in a entry by executing one line / instruction in the running JVM.
      *
-     * @param entry The name of the entry to step forward inside.
      * @return A {@link EntryState} indicating the current state of the class.
      */
-    EntryState stepForward(String entry);
+    EntryState stepForward();
 
 }
