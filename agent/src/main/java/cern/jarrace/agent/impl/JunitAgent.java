@@ -35,7 +35,7 @@ public class JunitAgent implements Agent {
     public void run(Object... args) throws IOException {
         String entry = (String) args[0];
         try {
-            Class<?> c = Class.forName(entry.substring(0, entry.indexOf(' ')));
+            Class<?> c = Class.forName(entry);
             JUnitCore.runClasses(c);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

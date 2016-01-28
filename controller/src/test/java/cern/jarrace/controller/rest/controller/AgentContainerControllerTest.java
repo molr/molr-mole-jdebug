@@ -1,7 +1,11 @@
+/**
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
 package cern.jarrace.controller.rest.controller;
 
-import cern.jarrace.controller.domain.Entrypoint;
-import org.hamcrest.core.IsEqual;
+import cern.jarrace.controller.domain.Service;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,13 +18,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.NestedServletException;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.nio.file.Path;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -30,7 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 /**
- * Created by timartin on 25/01/2016.
+ * Class that tests the behaviour of the {@link AgentContainerController}
+ * @author tiagomr
  */
 
 public class AgentContainerControllerTest {
@@ -60,7 +63,7 @@ public class AgentContainerControllerTest {
         }
     }
 
-    @Test
+    /*@Test
     public void testDeploy() throws Exception {
         mockMvc.perform(post("/jarrace/container/deploy/SampleDeploy")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
@@ -75,11 +78,11 @@ public class AgentContainerControllerTest {
 
     @Test
     public void testRegisterServiceWithDifferentRequestTypes() throws Exception {
-        agentContainerController.entrypoints.put("SampleAgentName", new ArrayList<>());
+        agentContainerController.entryPoints.put("SampleContainer", new ArrayList<>());
         for (HttpMethod httpMethod : HttpMethod.values()) {
-            MockHttpServletRequestBuilder request = request(httpMethod, "/jarrace/service/register/SampleAgentName")
+            MockHttpServletRequestBuilder request = request(httpMethod, "/jarrace/SampleContainer/service/register")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content("{\"agentName\":\"SampleAgentName\", \"path\":\"SamplePath\"}");
+                    .content("{\"agentName\":\"SampleAgent\",\"clazz\":\"cern.something.SampleClass\",\"entryPoints\":[\"Entrypoint1\",\"Entrypoint2\"]}");
             ResultActions perform = mockMvc.perform(request);
 
             if (HttpMethod.POST.equals(httpMethod) || HttpMethod.OPTIONS.equals(httpMethod) || HttpMethod.TRACE.equals(httpMethod)) {
@@ -92,32 +95,62 @@ public class AgentContainerControllerTest {
 
     @Test
     public void testRegisterServiceWrongMediaType() throws Exception {
-        agentContainerController.entrypoints.put("SampleAgentName", new ArrayList<>());
-        MockHttpServletRequestBuilder request = post("/jarrace/service/register/SampleAgentName")
+        agentContainerController.entryPoints.put("SampleContainer", new ArrayList<>());
+        MockHttpServletRequestBuilder request = post("/jarrace/SampleContainer/service/register")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .content("{\"agentName\":\"SampleAgentName\", \"path\":\"SamplePath\"}");
+                .content("{\"agentName\":\"SampleAgent\",\"clazz\":\"cern.something.SampleClass\",\"entryPoints\":[\"Entrypoint1\",\"Entrypoint2\"]}");
         mockMvc.perform(request)
                 .andExpect(status().isUnsupportedMediaType());
     }
 
     @Test
-    public void testRegisterServiceWithWrongContent() throws Throwable {
+    public void testRegisterServiceWithoutEntrypoints() throws Throwable {
         try {
-            agentContainerController.entrypoints.put("SampleAgentName", new ArrayList<>());
-            MockHttpServletRequestBuilder request = post("/jarrace/service/register/SampleAgentName")
+            agentContainerController.entryPoints.put("SampleContainer", new ArrayList<>());
+            MockHttpServletRequestBuilder request = post("/jarrace/SampleContainer/service/register")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content("{\"path\":\"SamplePath\"}");
+                    .content("{\"agentName\":\"SampleAgent\",\"clazz\":\"cern.something.SampleClass\"}");
             mockMvc.perform(request)
                     .andExpect(status().isInternalServerError());
         } catch (NestedServletException exception) {
             Assert.assertEquals(exception.getRootCause().getClass(), IllegalArgumentException.class);
         }
+    }
 
+    @Test
+    public void testRegisterServiceWithoutClass() throws Throwable {
         try {
-            agentContainerController.entrypoints.put("SampleAgentName", new ArrayList<>());
-            MockHttpServletRequestBuilder request = post("/jarrace/service/register/SampleAgentName")
+            agentContainerController.entryPoints.put("SampleContainer", new ArrayList<>());
+            MockHttpServletRequestBuilder request = post("/jarrace/SampleContainer/service/register")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content("{\"agentName\":\"SampleAgentName\"}");
+                    .content("{\"agentName\":\"SampleAgent\",\"entryPoints\":[\"Entrypoint1\",\"Entrypoint2\"]}");
+            mockMvc.perform(request)
+                    .andExpect(status().isInternalServerError());
+        } catch (NestedServletException exception) {
+            Assert.assertEquals(exception.getRootCause().getClass(), IllegalArgumentException.class);
+        }
+    }
+
+    @Test
+    public void testRegisterServiceWithoutAgentName() throws Throwable {
+        try {
+            agentContainerController.entryPoints.put("SampleContainer", new ArrayList<>());
+            MockHttpServletRequestBuilder request = post("/jarrace/SampleContainer/service/register")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content("{\"clazz\":\"cern.something.SampleClass\",\"entryPoints\":[\"Entrypoint1\",\"Entrypoint2\"]}");
+            mockMvc.perform(request)
+                    .andExpect(status().isInternalServerError());
+        } catch (NestedServletException exception) {
+            Assert.assertEquals(exception.getRootCause().getClass(), IllegalArgumentException.class);
+        }
+    }
+
+    @Test
+    public void testRegisterServiceWithNonExistentContainerName() throws Throwable {
+        try {
+            MockHttpServletRequestBuilder request = post("/jarrace/SampleContainer/service/register")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content("{\"clazz\":\"cern.something.SampleClass\",\"entryPoints\":[\"Entrypoint1\",\"Entrypoint2\"]}");
             mockMvc.perform(request)
                     .andExpect(status().isInternalServerError());
         } catch (NestedServletException exception) {
@@ -148,7 +181,7 @@ public class AgentContainerControllerTest {
     @Test
     public void testListContainersWithMultipleContainers() throws Exception {
         for (int i = 1; i <= 3; ++i) {
-            agentContainerController.entrypoints.put("SampleContainer" + i, new ArrayList<>());
+            agentContainerController.entryPoints.put("SampleContainer" + i, new ArrayList<>());
             mockMvc.perform(get("/jarrace/container/list"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -158,27 +191,27 @@ public class AgentContainerControllerTest {
 
     @Test
     public void testListServicesWithNonexistentOrEmptyContainer() throws Exception {
-        agentContainerController.entrypoints.put("SampleContainer", new ArrayList<>());
-        mockMvc.perform(get("/jarrace/NonexistantContainer/entrypoint/list"))
+        agentContainerController.entryPoints.put("SampleContainer", new ArrayList<>());
+        mockMvc.perform(get("/jarrace/NonexistantContainer/service/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
-        mockMvc.perform(get("/jarrace/SampleContainer/entrypoint/list"))
+        mockMvc.perform(get("/jarrace/SampleContainer/service/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
 
     @Test
     public void testListServicesWithOneOrMoreNonEmptyContainer() throws Exception {
-        agentContainerController.entrypoints.put("SampleContainer",
-                Collections.singletonList(new Entrypoint("Agent1", "Path1")));
-        mockMvc.perform(get("/jarrace/SampleContainer/entrypoint/list"))
+        agentContainerController.entryPoints.put("SampleContainer",
+                Collections.singletonList(new Service("Agent1", "Class1", Collections.singletonList("Entrypoint1"))));
+        mockMvc.perform(get("/jarrace/SampleContainer/service/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
-        agentContainerController.entrypoints.put("SampleContainer1",
-                Arrays.asList(new Entrypoint("Service1", "Path1"), new Entrypoint("Service2", "Path2")));
-        mockMvc.perform(get("/jarrace/SampleContainer1/entrypoint/list"))
+        agentContainerController.entryPoints.put("SampleContainer1",
+                Arrays.asList(new Service("Service1", "Path1"), new Service("Agent1", "Class1", Collections.singletonList("Entrypoint1"))));
+        mockMvc.perform(get("/jarrace/SampleContainer1/service/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
 
-    }
+    }*/
 }

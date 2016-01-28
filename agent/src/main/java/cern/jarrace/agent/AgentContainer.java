@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AgentContainer {
 
@@ -37,24 +38,26 @@ public class AgentContainer {
     }
 
     private static URL getRegisterUrl(String name, String controllerEndpoint) throws MalformedURLException {
-        return new URL("http://" + controllerEndpoint + "/jarrace/service/register/" + name);
+        return new URL("http://" + controllerEndpoint + "/jarrace/" + name + "/service/register/");
     }
 
     private static void registerServices(URL endpoint) {
         agents.entrySet().stream().forEach(entry -> {
-            entry.getValue().forEach((clazz, list) ->
-                    list.forEach(method -> registerService(endpoint, entry.getKey(), clazz, method)));
+            entry.getValue().forEach((clazz, list) -> {
+                registerService(endpoint, entry.getKey(), clazz, list);
+            });
         });
     }
 
-    private static void registerService(URL endpoint, Agent agent, Class<?> clazz, Method method) {
+    private static void registerService(URL endpoint, Agent agent, Class<?> clazz, List<Method> methods) {
         try {
             HttpURLConnection connection = (HttpURLConnection) endpoint.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
-            final String entry = clazz.getName() + " " + method.getName();
-            String response = "{\"agentName\":\"" + agent.getClass().getName() + "\",\"path\":\"" + entry + "\"}";
+            String methodsToSend = methods.stream().map(Method::getName).collect(Collectors.joining("\",\""));
+            String response = "{\"agentName\":\"" + agent.getClass().getName() + "\",\"clazz\":\"" + clazz.getName()
+                    + "\",\"entryPoints\":[\"" + methodsToSend + "\"]}";
             System.out.println(response);
             connection.getOutputStream().write(response.getBytes());
             System.out.println(connection.getResponseCode());
@@ -62,5 +65,4 @@ public class AgentContainer {
             e.printStackTrace();
         }
     }
-
 }
