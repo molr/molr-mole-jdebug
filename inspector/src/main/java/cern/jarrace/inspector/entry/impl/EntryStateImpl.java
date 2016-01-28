@@ -4,14 +4,22 @@
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
-package cern.jarrace.inspector.jdi.impl;
+package cern.jarrace.inspector.entry.impl;
 
-import cern.jarrace.inspector.jdi.EntryState;
+import cern.jarrace.inspector.entry.EntryState;
+import com.sun.jdi.AbsentInformationException;
+import com.sun.jdi.Location;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
 
 /**
  * An immutable implementation of an {@link EntryState}.
  */
 public class EntryStateImpl implements EntryState {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EntryStateImpl.class);
 
     private final String className;
     private final String methodName;
@@ -44,4 +52,17 @@ public class EntryStateImpl implements EntryState {
     public int getLine() {
         return position;
     }
+
+    public static Optional<EntryState> ofLocation(Location location) {
+        try {
+            final String className = location.sourceName();
+            final String methodName = location.method().name();
+            final EntryState entryState = new EntryStateImpl(className, methodName, location.lineNumber());
+            return Optional.of(entryState);
+        } catch (AbsentInformationException e) {
+            LOGGER.warn("Failed to get entry state from thread state: missing source name of thread class", e);
+            return Optional.empty();
+        }
+    }
+
 }

@@ -11,7 +11,7 @@ import cern.jarrace.inspector.controller.factory.JdiFactory.JdiFactoryInstance;
 import cern.jarrace.inspector.entry.BlockingCallbackFactory;
 import cern.jarrace.inspector.entry.BlockingEntryListener;
 import cern.jarrace.inspector.entry.EntryMethod;
-import cern.jarrace.inspector.jdi.EntryState;
+import cern.jarrace.inspector.entry.EntryState;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.VMDisconnectedException;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;

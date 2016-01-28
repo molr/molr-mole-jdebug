@@ -13,14 +13,16 @@ import com.sun.jdi.Location;
  */
 public class ThreadState {
 
+
     private final LocationRange inspectableRange;
     private final Location currentLocation;
 
     /**
      * Creates a state containing the range of the method currently being executed and the current location
      * of the execution.
+     *
      * @param inspectableRange The range being inspected.
-     * @param currentLocation The current location of the execution.
+     * @param currentLocation  The current location of the execution.
      */
     public ThreadState(LocationRange inspectableRange, Location currentLocation) {
         this.inspectableRange = inspectableRange;
@@ -50,6 +52,7 @@ public class ThreadState {
 
     /**
      * Sets the execution location of the thread state and return a new state with the new location.
+     *
      * @param location The updated location of the execution.
      * @return A new {@link ThreadState} with the updated execution location.
      */

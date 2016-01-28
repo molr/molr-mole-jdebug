@@ -27,14 +27,10 @@ public class BlockingCallbackFactory implements CallbackFactory<BlockingEntryLis
     }
 
     @Override
-    public BlockingEntryListener onBreakpoint(ThreadReference thread, ThreadState state) {
+    public BlockingEntryListener onBreakpoint(ThreadReference thread, EntryState state) {
         final BlockingEntryListener listener = new BlockingEntryListener(TIMEOUT_DURATION);
         try {
-            String sourceName = state.getCurrentLocation().sourcePath().replaceAll("/", ".");
-            String className = sourceName.substring(0, sourceName.length() - 5);
-            String methodName = state.getCurrentLocation().method().name();
-            String entryName = className + " " + methodName;
-            entryRegistry.register(entryName, thread, listener);
+            entryRegistry.register(state., thread, listener);
         } catch (Exception e) {
             e.printStackTrace();
         }
