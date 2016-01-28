@@ -26,7 +26,7 @@ public class BlockingJdiControllerIntegrationTest {
                 .setClassPath(classPath)
                 .build();
         Thread.sleep(2000);
-        controller.stepForward("cern.jarrace.inspector.TestInspectable run");
+        controller.stepForward();
     }
 
 

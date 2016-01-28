@@ -6,10 +6,6 @@
 
 package cern.jarrace.inspector.gui;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -18,6 +14,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Text;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 public class StepperTab extends Tab {
 

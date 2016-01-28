@@ -6,7 +6,6 @@
 
 package cern.jarrace.inspector.entry;
 
-import cern.jarrace.inspector.jdi.EntryState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -6,9 +6,7 @@
 
 package cern.jarrace.inspector.entry;
 
-import cern.jarrace.inspector.jdi.ThreadState;
 import cern.jarrace.inspector.controller.JdiEntryRegistry;
-import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.ThreadReference;
 
 import java.time.Duration;
@@ -30,7 +28,7 @@ public class BlockingCallbackFactory implements CallbackFactory<BlockingEntryLis
     public BlockingEntryListener onBreakpoint(ThreadReference thread, EntryState state) {
         final BlockingEntryListener listener = new BlockingEntryListener(TIMEOUT_DURATION);
         try {
-            entryRegistry.register(state., thread, listener);
+            entryRegistry.register(thread, listener);
         } catch (Exception e) {
             e.printStackTrace();
         }

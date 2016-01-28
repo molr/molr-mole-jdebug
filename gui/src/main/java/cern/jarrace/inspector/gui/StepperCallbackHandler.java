@@ -6,8 +6,8 @@
 
 package cern.jarrace.inspector.gui;
 
-import cern.jarrace.inspector.jdi.ThreadState;
 import cern.jarrace.inspector.entry.EntryListener;
+import cern.jarrace.inspector.entry.EntryState;
 
 /**
  * An implementation of the {@link EntryListener} which handles event callbacks for the {@link Stepper}
@@ -22,13 +22,13 @@ public class StepperCallbackHandler implements EntryListener {
     }
 
     @Override
-    public void onLocationChange(ThreadState state) {
+    public void onLocationChange(EntryState state) {
         // TODO: Remove dependency on jdi
 //        tab.highlight(state.getCurrentLocation().lineNumber());
     }
 
     @Override
-    public void onInspectionEnd(ThreadState state) {
+    public void onInspectionEnd(EntryState state) {
         tab.close();
     }
 

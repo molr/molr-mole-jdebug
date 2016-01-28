@@ -9,34 +9,33 @@ package cern.jarrace.inspector.controller;
 import cern.jarrace.inspector.entry.EntryListener;
 import com.sun.jdi.ThreadReference;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * A registry for entries in a JDI instance.
+ *
  * @param <Listener> The type of {@link EntryListener}s the registry stores.
  */
 public class JdiEntryRegistry<Listener extends EntryListener> {
 
-    Map<String, ThreadReference> stateMap = new HashMap<>();
-    Map<String, Listener> listenerMap = new HashMap<>();
+    private Optional<ThreadReference> thread = Optional.empty();
+    private Optional<Listener> listener = Optional.empty();
 
-    public Optional<ThreadReference> getThreadReference(String entry) {
-        return Optional.ofNullable(stateMap.get(entry));
+    public Optional<ThreadReference> getThreadReference() {
+        return thread;
     }
 
-    public Optional<Listener> getEntryListener(String entry) {
-        return Optional.ofNullable(listenerMap.get(entry));
+    public Optional<Listener> getEntryListener() {
+        return listener;
     }
 
-    public void register(String entry, ThreadReference reference, Listener listener) {
-        if (stateMap.containsKey(entry)) {
+    public void register(ThreadReference reference, Listener listener) {
+        if (thread.isPresent()) {
             throw new IllegalStateException("Entry already registered");
         }
 
-        stateMap.put(entry, reference);
-        listenerMap.put(entry, listener);
+        this.thread = Optional.ofNullable(reference);
+        this.listener = Optional.ofNullable(listener);
     }
 
 }

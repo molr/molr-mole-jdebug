@@ -8,7 +8,7 @@ package cern.jarrace.inspector.gui;
 
 import cern.jarrace.inspector.entry.CallbackFactory;
 import cern.jarrace.inspector.entry.EntryListener;
-import cern.jarrace.inspector.jdi.ThreadState;
+import cern.jarrace.inspector.entry.EntryState;
 import com.sun.jdi.ThreadReference;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -37,7 +37,7 @@ public class Stepper extends Application {
 
     private static final ExecutorService LOG_THREAD_POOL = Executors.newFixedThreadPool(2);
 
-//    private static Inspector inspector;
+    //    private static Inspector inspector;
     private static FlowPane rootPane;
     private static TabPane tabs;
 
@@ -79,7 +79,7 @@ public class Stepper extends Application {
 
     private void redirectSingleInput(InputStream input, TextFlow textFlow, Color textColor) {
         try (InputStreamReader inputReader = new InputStreamReader(input);
-                BufferedReader reader = new BufferedReader(inputReader)) {
+             BufferedReader reader = new BufferedReader(inputReader)) {
             reader.lines().forEach(line -> Platform.runLater(() -> {
                 Text text = new Text();
                 text.setText(line + "\n");
@@ -99,10 +99,8 @@ public class Stepper extends Application {
     public static final CallbackFactory INSTANCE_LISTENER = new CallbackFactory() {
 
         @Override
-        public EntryListener onBreakpoint(ThreadReference thread, ThreadState state) {
+        public EntryListener onBreakpoint(ThreadReference thread, EntryState state) {
             try {
-                final String sourceName = state.getCurrentLocation().sourceName();
-                final String sourcePath = state.getCurrentLocation().sourcePath();
 //                List<String> code = inspector.getCode(sourcePath);
 //                StepperTab tab = new StepperTab(sourceName, code);
 //                tab.highlight(state.getCurrentLocation().lineNumber());
