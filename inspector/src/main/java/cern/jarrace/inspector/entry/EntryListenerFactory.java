@@ -9,9 +9,9 @@ package cern.jarrace.inspector.entry;
 import com.sun.jdi.ThreadReference;
 
 /**
- * A listener for new entry instances. The method {@link #onBreakpoint(ThreadReference, EntryState)} is called
- * every time a new instance has been created and reached the first breakpoint defined in the class. This factory
- * produces {@link EntryListener}s which will receive callback events from the running JDI whenever
+ * A factory for creating new {@link EntryListener}s. The method {@link #onBreakpoint(ThreadReference, EntryState)}
+ * is called every time a new instance has been created and reached the first breakpoint defined in the class. This
+ * factory produces {@link EntryListener}s which will receive callback events from the running JDI whenever
  * a new line is stepped over ({@link EntryListener#onLocationChange(EntryState)}) or whenever this
  * instance is killed ({@link EntryListener#onInspectionEnd(EntryState)}).
  *
@@ -19,7 +19,7 @@ import com.sun.jdi.ThreadReference;
  * @author jepeders
  */
 @FunctionalInterface
-public interface CallbackFactory<Listener extends EntryListener> {
+public interface EntryListenerFactory<Listener extends EntryListener> {
 
     /**
      * This method is called whenever a registered entry has been reached in the running JVM. The {@link EntryListener}
