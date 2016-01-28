@@ -8,7 +8,7 @@ package cern.jarrace.controller.rest.controller;
 import cern.jarrace.commons.domain.AgentContainer;
 import cern.jarrace.commons.domain.Service;
 import cern.jarrace.controller.io.JarWriter;
-import cern.jarrace.controller.jvm.AgentContainerSpawner;
+import cern.jarrace.controller.jvm.AgentRegistrySpawner;
 import cern.jarrace.controller.jvm.AgentRunnerSpawner;
 import cern.jarrace.controller.manager.AgentContainerManager;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class AgentContainerController {
     @Autowired
     private AgentContainerManager agentContainerManager;
     @Autowired
-    private AgentContainerSpawner agentContainerSpawner;
+    private AgentRegistrySpawner agentRegistrySpawner;
     @Autowired
     private AgentRunnerSpawner agentRunnerSpawner;
     @Autowired
@@ -47,7 +47,7 @@ public class AgentContainerController {
     public void deploy(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName, @RequestBody byte[] jar) throws Exception {
         LOGGER.debug("Started deployment process for container: [{}]", containerName);
         String path = jarWriter.writeFile(containerName, jar);
-        agentContainerSpawner.spawnAgentContainer(containerName, path);
+        agentRegistrySpawner.spawnAgentRegistry(containerName, path);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -62,7 +62,7 @@ public class AgentContainerController {
     }
 
     @RequestMapping(value = "/{" + CONTAINER_NAME_VARIABLE_NAME + "}/start", method = RequestMethod.GET)
-    public void runService(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
+    public String runService(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
                            @RequestParam(value = "service") String serviceName,
                            @RequestParam(value = "entryPoints", defaultValue = "") String entryPoints) throws Exception {
         AgentContainer agentContainer = agentContainerManager.getAgentContainer(containerName);
@@ -72,17 +72,19 @@ public class AgentContainerController {
             return className.equals(serviceName) ? true : false;
         }).findFirst();
         if(serviceOptional.isPresent()) {
-            agentRunnerSpawner.spawnAgentContainer(serviceOptional.get(), agentContainer.getContainerPath(),
+            return agentRunnerSpawner.spawnAgentRunner(serviceOptional.get(), agentContainer.getContainerPath(),
                     entryPoints.split(","));
         }
+
+        return "Service not found";
     }
 
     public void setAgentContainerManager(AgentContainerManager agentContainerManager) {
         this.agentContainerManager = agentContainerManager;
     }
 
-    public void setAgentContainerSpawner(AgentContainerSpawner agentContainerSpawner) {
-        this.agentContainerSpawner = agentContainerSpawner;
+    public void setAgentRegistrySpawner(AgentRegistrySpawner agentRegistrySpawner) {
+        this.agentRegistrySpawner = agentRegistrySpawner;
     }
 
     public void setAgentRunnerSpawner(AgentRunnerSpawner agentRunnerSpawner) {

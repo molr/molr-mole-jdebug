@@ -1,6 +1,6 @@
 package cern.jarrace.controller.jvm;
 
-import cern.jarrace.controller.jvm.impl.SimpleAgentContainerSpawner;
+import cern.jarrace.controller.jvm.impl.SimpleAgentRegistrySpawner;
 import cern.jarrace.controller.jvm.impl.SimpleAgentRunnerSpawner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JvmConfiguration {
     @Bean
-    public AgentContainerSpawner agentContainerSpawner() {
-        return new SimpleAgentContainerSpawner();
+    public AgentRegistrySpawner agentContainerSpawner() {
+        return new SimpleAgentRegistrySpawner();
     }
 
     @Bean

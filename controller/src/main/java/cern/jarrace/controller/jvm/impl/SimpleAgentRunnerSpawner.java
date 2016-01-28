@@ -5,6 +5,8 @@ import cern.jarrace.controller.jvm.AgentRunnerSpawner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedInputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +15,12 @@ import java.util.List;
  */
 public class SimpleAgentRunnerSpawner implements AgentRunnerSpawner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAgentContainerSpawner.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAgentRegistrySpawner.class);
     private static final String AGENT_RUNNER_MAIN_CASS = "cern.jarrace.agent.AgentRunner";
 
 
     @Override
-    public void spawnAgentContainer(Service service, String jarPath, String... args) throws Exception {
+    public String spawnAgentRunner(Service service, String jarPath, String... args) throws Exception {
         List<String> command = new ArrayList<>();
         command.add(String.format("%s/bin/java", System.getProperty("java.home")));
         command.add("-cp");
@@ -36,6 +38,15 @@ public class SimpleAgentRunnerSpawner implements AgentRunnerSpawner {
 
         LOGGER.info("Starting agent runner [{}]", command.toString());
         ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.inheritIO().start();
+        Process process = processBuilder.start();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        BufferedInputStream bs = new BufferedInputStream(process.getInputStream());
+
+        while(process.isAlive()) {
+            stringBuilder.append(bs.read());
+        }
+
+        return stringBuilder.toString();
     }
 }
