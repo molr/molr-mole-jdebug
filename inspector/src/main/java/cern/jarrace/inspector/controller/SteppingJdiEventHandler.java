@@ -26,17 +26,22 @@ import java.util.Map;
  * An event handler receiving events from the running JDI instance. This handler attempts to hide
  * some of the JDI implementations, so it should not be used outside the {@link JdiController}.
  */
-public class JdiEventHandlerImpl extends JdiEventHandler {
+public class SteppingJdiEventHandler extends JdiEventHandler {
 
     private final JDIScript jdi;
     private final CallbackFactory<?> callbackHandler;
     private final Map<ThreadReference, InspectableState> threads = new HashMap<>();
     private final Map<String, ThreadReference> classNamesToThreads = new HashMap<>();
 
-    public JdiEventHandlerImpl(JDIScript jdi, CallbackFactory<?> callbackHandler) {
+    /**
+     * Creates a new event handler that is
+     * @param jdi
+     * @param callbackFactory
+     */
+    public SteppingJdiEventHandler(JDIScript jdi, CallbackFactory<?> callbackFactory) {
         super(jdi.vm());
         this.jdi = jdi;
-        this.callbackHandler = callbackHandler;
+        this.callbackHandler = callbackFactory;
     }
 
     @Override

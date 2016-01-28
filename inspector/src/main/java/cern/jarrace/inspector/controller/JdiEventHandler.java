@@ -11,7 +11,7 @@ import com.sun.jdi.VirtualMachine;
 import org.jdiscript.handlers.BaseEventHandler;
 
 /**
- * An eventhandler for the {@link JdiController} that keeps track of references spawned in the running JVM and
+ * An event handler for the {@link JdiController} that keeps track of references spawned in the running JVM and
  * that extends the {@link BaseEventHandler} for receiving callbacks from JDI.
  */
 public abstract class JdiEventHandler extends BaseEventHandler {
