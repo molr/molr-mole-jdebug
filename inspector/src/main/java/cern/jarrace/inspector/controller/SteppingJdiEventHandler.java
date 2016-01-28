@@ -8,9 +8,12 @@ package cern.jarrace.inspector.controller;
 
 import cern.jarrace.inspector.entry.CallbackFactory;
 import cern.jarrace.inspector.entry.EntryListener;
+import cern.jarrace.inspector.jdi.EntryState;
 import cern.jarrace.inspector.jdi.LocationRange;
 import cern.jarrace.inspector.jdi.ThreadState;
+import cern.jarrace.inspector.jdi.impl.EntryStateImpl;
 import com.sun.jdi.AbsentInformationException;
+import com.sun.jdi.Location;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.event.BreakpointEvent;
 import com.sun.jdi.event.StepEvent;
@@ -18,15 +21,20 @@ import com.sun.jdi.event.VMStartEvent;
 import com.sun.jdi.request.StepRequest;
 import org.jdiscript.JDIScript;
 import org.jdiscript.requests.ChainingStepRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * An event handler receiving events from the running JDI instance. This handler attempts to hide
  * some of the JDI implementations, so it should not be used outside the {@link JdiController}.
  */
 public class SteppingJdiEventHandler extends JdiEventHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SteppingJdiEventHandler.class);
 
     private final JDIScript jdi;
     private final CallbackFactory<?> callbackHandler;
@@ -35,6 +43,7 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
 
     /**
      * Creates a new event handler that is
+     *
      * @param jdi
      * @param callbackFactory
      */
@@ -77,10 +86,12 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
         if (state != null) {
             final ThreadState threadState = new ThreadState(state.methodRange, e.location());
             if (state.methodRange.isWithin(e.location())) {
-                threads.get(e.thread()).listener.onLocationChange(threadState);
+                entryStateFromThreadState(threadState).ifPresent(entryState ->
+                        threads.get(e.thread()).listener.onLocationChange(entryState));
                 e.thread().suspend();
             } else {
-                threads.remove(e.thread()).listener.onInspectionEnd(threadState);
+                entryStateFromThreadState(threadState).ifPresent(entryState ->
+                        threads.remove(e.thread()).listener.onInspectionEnd(entryState));
             }
         }
     }
@@ -88,6 +99,19 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
     @Override
     public void vmStart(VMStartEvent e) {
         // Do nothing
+    }
+
+    private static Optional<EntryState> entryStateFromThreadState(ThreadState threadState) {
+        try {
+            final Location currentLocation = threadState.getCurrentLocation();
+            final String className = currentLocation.sourceName();
+            final String methodName = currentLocation.method().name();
+            final EntryState entryState = new EntryStateImpl(className, methodName, currentLocation.lineNumber());
+            return Optional.of(entryState);
+        } catch (AbsentInformationException e) {
+            LOGGER.warn("Failed to get entry state from thread state: missing source name of thread class", e);
+            return Optional.empty();
+        }
     }
 
     private static class InspectableState {

@@ -6,6 +6,7 @@
 
 package cern.jarrace.inspector.entry;
 
+import cern.jarrace.inspector.jdi.EntryState;
 import cern.jarrace.inspector.jdi.ThreadState;
 
 /**
@@ -13,8 +14,8 @@ import cern.jarrace.inspector.jdi.ThreadState;
  */
 public interface EntryListener {
 
-    void onLocationChange(ThreadState state);
+    void onLocationChange(EntryState state);
 
-    void onInspectionEnd(ThreadState state);
+    void onInspectionEnd(EntryState state);
 
 }
