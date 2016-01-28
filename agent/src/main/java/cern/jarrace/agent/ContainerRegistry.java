@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class AgentContainer {
+public class ContainerRegistry {
 
     private static final Map<Agent, Map<Class<?>, List<Method>>> agents = new HashMap<>();
 
@@ -25,6 +25,9 @@ public class AgentContainer {
         try {
             final URL registerUrl = getRegisterUrl(name, stringUri);
             ContainerDiscoverer.discover(agents);
+
+
+
             System.out.println(agents.toString());
             registerServices(registerUrl, name, path);
         } catch (MalformedURLException e) {
