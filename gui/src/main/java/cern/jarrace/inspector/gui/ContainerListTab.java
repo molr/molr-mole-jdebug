@@ -95,7 +95,7 @@ public class ContainerListTab extends ListView<ContainerListTab.EntryPoint> {
 
         @Override
         public String toString() {
-            return clazz + ": " + entry;
+            return name + ": " + clazz + " " + entry;
         }
 
     }
