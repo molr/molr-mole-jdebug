@@ -22,13 +22,13 @@ public interface AgentContainerManager {
      * @param containerName
      * @return The container with the specified name if it exists, null otherwise
      */
-    AgentContainer getAgentContainer(String containerName);
+    AgentContainer findAgentContainer(String containerName);
 
     /**
      * Provides a {@link List} with all the registered {@link AgentContainer}s
      * @return {@link List} of {@link AgentContainer}s
      */
-    Set<AgentContainer> getAgentContainers();
+    Set<AgentContainer> findAllAgentContainers();
 
 
     /**

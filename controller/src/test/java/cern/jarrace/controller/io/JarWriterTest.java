@@ -1,7 +1,14 @@
+/**
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
 package cern.jarrace.controller.io;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +18,6 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 import static org.junit.Assert.assertTrue;
 
@@ -19,7 +25,6 @@ import static org.junit.Assert.assertTrue;
  * Class that test the {@link JarWriter} features
  * @author tiagomr
  */
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = IOConfiguration.class, loader = AnnotationConfigContextLoader.class)
 public class JarWriterTest {
@@ -27,15 +32,16 @@ public class JarWriterTest {
     private static final String TEST_NAME = "TESTNAME";
     private static final String INVALID_NAME = "INVALID_NAME";
     private static final byte[] TEST_BYTES = "TestBytes".getBytes();
-    private File tempDirectory;
+
+    @Rule
+    public TemporaryFolder tempDirectory = new TemporaryFolder();
 
     @Autowired
     private JarWriter jarWriter;
 
     @Before
     public void setUp() throws IOException {
-        tempDirectory = Files.createTempDirectory("tempDirectory").toFile();
-        jarWriter.setDeploymentPath(tempDirectory.getAbsolutePath());
+        jarWriter.setDeploymentPath(tempDirectory.getRoot().getAbsolutePath());
     }
 
     @Test(expected = InvalidPropertyException.class)
@@ -91,7 +97,7 @@ public class JarWriterTest {
     @Test
     public void testWriteFile() throws IOException, IllegalAccessException {
         jarWriter.writeFile(TEST_NAME, TEST_BYTES);
-        File deployedFile = tempDirectory.toPath().resolve(TEST_NAME + ".jar").toFile();
+        File deployedFile = tempDirectory.getRoot().toPath().resolve(TEST_NAME + ".jar").toFile();
         assertTrue(deployedFile.exists());
         assertTrue(deployedFile.isFile());
     }

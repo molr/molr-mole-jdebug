@@ -1,4 +1,8 @@
 include 'agent'
-include 'controller'
 include 'commons'
-
+include 'controller'
+include 'demo'
+include 'gradle'
+include 'gui'
+include 'inspector'
+include 'jdiscript'

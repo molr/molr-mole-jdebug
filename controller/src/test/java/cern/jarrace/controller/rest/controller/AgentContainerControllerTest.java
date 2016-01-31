@@ -246,35 +246,5 @@ public class AgentContainerControllerTest {
 
     }*/
 
-    private List<AgentContainer> getMockedContainers(int numberOfAgentContainers, int numberOfServices, int numberOfEntryPoints) {
-        List<AgentContainer> mockedAgentContainers = new ArrayList<>();
-        for(int index = 0; index < numberOfAgentContainers; ++index) {
-            mockedAgentContainers.add(getMockedContainer(index, numberOfServices, numberOfEntryPoints));
-        }
-        return mockedAgentContainers;
-    }
 
-    private AgentContainer getMockedContainer(int containerNumber, int numberOfServices, int numberOfEntryPoints) {
-        AgentContainer mockedAgentContainer = mock(AgentContainer.class);
-        when(mockedAgentContainer.getContainerName()).thenReturn("MockedContainerName" + containerNumber);
-        when(mockedAgentContainer.getContainerPath()).thenReturn("MockedContainerPath" + containerNumber);
-        when(mockedAgentContainer.getServices()).thenReturn(getMockedService(numberOfServices, numberOfEntryPoints));
-        return mockedAgentContainer;
-    }
-
-    private List<Service> getMockedService(int numberOfServices, int numberOfEntryPoints) {
-        List<Service> mockedServices = new ArrayList<>();
-        for(int serviceIndex = 0; serviceIndex < numberOfServices; ++serviceIndex) {
-            List<String> entryPoints = new ArrayList<>();
-            for (int index = 0; index < numberOfEntryPoints; ++index) {
-                entryPoints.add("MockedEntryPoint" + index);
-            }
-            Service mockedService = mock(Service.class);
-            when(mockedService.getAgentName()).thenReturn("MockedAgentName");
-            when(mockedService.getClazz()).thenReturn("MockedClassName");
-            when(mockedService.getEntryPoints()).thenReturn(entryPoints);
-            mockedServices.add(mockedService);
-        }
-        return mockedServices;
-    }
 }

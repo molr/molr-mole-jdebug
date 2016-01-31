@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.expression.ExpressionException;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -24,7 +23,6 @@ public class JarWriter {
 
     @Value("${io.deploymentdir}")
     private String deploymentPath;
-
     private Pattern pattern = Pattern.compile("^[a-zA-Z]+$");
 
     @PostConstruct
@@ -68,6 +66,7 @@ public class JarWriter {
         return deploymentFile.getAbsolutePath();
     }
 
+    // Used for testing
     void setDeploymentPath(String deploymentPath) {
         this.deploymentPath = deploymentPath;
     }

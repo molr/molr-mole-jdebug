@@ -58,14 +58,14 @@ public class AgentContainerController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<AgentContainer> listContainers() {
-        return agentContainerManager.getAgentContainers();
+        return agentContainerManager.findAllAgentContainers();
     }
 
     @RequestMapping(value = "/{" + CONTAINER_NAME_VARIABLE_NAME + "}/start", method = RequestMethod.GET)
     public String runService(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
                            @RequestParam(value = "service") String serviceName,
                            @RequestParam(value = "entryPoints", defaultValue = "") String entryPoints) throws Exception {
-        AgentContainer agentContainer = agentContainerManager.getAgentContainer(containerName);
+        AgentContainer agentContainer = agentContainerManager.findAgentContainer(containerName);
         Optional<Service> serviceOptional = agentContainer.getServices().stream().filter(service -> {
             String className = service.getClazz();
             className = className.substring(className.lastIndexOf(".") + 1);
