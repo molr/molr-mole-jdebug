@@ -9,10 +9,7 @@ import cern.jarrace.commons.domain.AgentContainer;
 import cern.jarrace.controller.MockUtils;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -37,14 +34,14 @@ public class InMemoryAgentContainerManagerTest {
     @Test
     public void testFindAgentContainerWithNonExistentContainerName() {
         containerManager.getAgentContainers().add(MockUtils.getMockedContainer(1, 1, 1));
-        assertEquals(null, containerManager.findAgentContainer(NON_EXISTENT_CONTAINER_NAME));
+        assertEquals(Optional.empty(), containerManager.findAgentContainer(NON_EXISTENT_CONTAINER_NAME));
     }
 
     @Test
     public void testFindAgentContainerWithExistentContainerName() {
         AgentContainer mockedContainer = MockUtils.getMockedContainer(1, 1, 1);
         containerManager.getAgentContainers().add(mockedContainer);
-        assertEquals(mockedContainer, containerManager.findAgentContainer(mockedContainer.getContainerName()));
+        assertEquals(Optional.of(mockedContainer), containerManager.findAgentContainer(mockedContainer.getContainerName()));
     }
 
     @Test
