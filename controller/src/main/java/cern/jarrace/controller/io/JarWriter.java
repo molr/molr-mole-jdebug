@@ -26,17 +26,22 @@ public class JarWriter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JarWriter.class);
     private static final String FILE_EXTENSION = "jar";
+    private static final String IO_DEPLOYMENT_DIR_PROPERTY_NAME = "{io.deploymentdir";
 
-    @Value("${io.deploymentdir}")
+    @Value("$" + IO_DEPLOYMENT_DIR_PROPERTY_NAME + "}")
     private String deploymentPath;
     private Pattern pattern = Pattern.compile("^[a-zA-Z]+$");
 
     @PostConstruct
     void init() throws InvalidPropertyException {
         if (deploymentPath == null || deploymentPath.isEmpty()) {
-            throw new InvalidPropertyException(JarWriter.class, "deployment_dir", "Property cannot be null nor empty");
+            throw new InvalidPropertyException(JarWriter.class, IO_DEPLOYMENT_DIR_PROPERTY_NAME, "Property cannot be null nor empty");
         }
         File deploymentDir = new File(deploymentPath);
+        checkDirectory(deploymentDir);
+    }
+
+    private void checkDirectory(File deploymentDir) {
         if (!deploymentDir.exists()) {
             if (!deploymentDir.mkdirs()) {
                 throw new IllegalStateException(String.format("Deployment folder cannot be created: [%s]",

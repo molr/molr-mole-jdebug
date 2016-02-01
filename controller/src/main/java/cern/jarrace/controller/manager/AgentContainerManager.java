@@ -9,6 +9,7 @@ import cern.jarrace.commons.domain.AgentContainer;
 import cern.jarrace.commons.domain.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -24,7 +25,7 @@ public interface AgentContainerManager {
      * @param containerName
      * @return The container with the specified name if it exists, null otherwise
      */
-    AgentContainer findAgentContainer(String containerName);
+    Optional<AgentContainer> findAgentContainer(String containerName);
 
     /**
      * Provides a {@link List} with all the registered {@link AgentContainer}s

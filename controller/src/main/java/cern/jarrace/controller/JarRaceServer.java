@@ -31,12 +31,5 @@ public class JarRaceServer {
 
     public static void main(String args[]) {
         ApplicationContext context = SpringApplication.run(JarRaceServer.class, args);
-        LOGGER.debug("******** Bean Definitions ********");
-        for (String name : context.getBeanDefinitionNames()) {
-            LOGGER.debug(name);
-        }
-
-        LOGGER.debug("******** Bean Count ********");
-        LOGGER.debug(Integer.toString(context.getBeanDefinitionCount()));
     }
 }

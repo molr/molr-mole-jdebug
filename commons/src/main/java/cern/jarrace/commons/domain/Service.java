@@ -18,7 +18,7 @@ public class Service {
     /**
      * Class used by the exposed {@link Service}
      */
-    private String clazz;
+    private String className;
 
     /**
      * {@link List} of entry points exposed by this service in the specific class
@@ -28,14 +28,14 @@ public class Service {
     public Service() {
     }
 
-    public Service(String agentName, String clazz) {
+    public Service(String agentName, String className) {
         this.agentName = agentName;
-        this.clazz = clazz;
+        this.className = className;
     }
 
-    public Service(String agentName, String clazz, List<String> entryPoints) {
+    public Service(String agentName, String className, List<String> entryPoints) {
         this.agentName = agentName;
-        this.clazz = clazz;
+        this.className = className;
         this.entryPoints.addAll(entryPoints);
     }
 
@@ -43,8 +43,8 @@ public class Service {
         return agentName;
     }
 
-    public String getClazz() {
-        return clazz;
+    public String getClassName() {
+        return className;
     }
 
     public List<String> getEntryPoints() {
@@ -57,14 +57,14 @@ public class Service {
         if (o == null || getClass() != o.getClass()) return false;
         Service service = (Service) o;
         if (agentName != null ? !agentName.equals(service.agentName) : service.agentName != null) return false;
-        return !(clazz != null ? !clazz.equals(service.clazz) : service.clazz != null);
+        return !(className != null ? !className.equals(service.className) : service.className != null);
 
     }
 
     @Override
     public int hashCode() {
         int result = agentName != null ? agentName.hashCode() : 0;
-        result = 31 * result + (clazz != null ? clazz.hashCode() : 0);
+        result = 31 * result + (className != null ? className.hashCode() : 0);
         return result;
     }
 }

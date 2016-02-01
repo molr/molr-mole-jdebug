@@ -23,17 +23,20 @@ import java.util.List;
  */
 public class SimpleAgentRunnerSpawner extends AbstractJvmSpawner implements AgentRunnerSpawner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAgentRegistrySpawner.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAgentRunnerSpawner.class);
     private static final String AGENT_RUNNER_MAIN_CASS = "cern.jarrace.agent.AgentRunner";
 
     @Override
     public String spawnAgentRunner(Service service, String jarPath, List<String> args) throws Exception {
+        if(args == null) {
+            throw new IllegalArgumentException("Arguments cannot be null");
+        }
         List<String> arguments = new ArrayList<>();
         arguments.add("-cp");
         arguments.add(jarPath);
         arguments.add(AGENT_RUNNER_MAIN_CASS);
         arguments.add(service.getAgentName());
-        arguments.add(service.getClazz());
+        arguments.add(service.getClassName());
         if (args != null) {
             for (String argument : args) {
                 if (!argument.isEmpty()) {

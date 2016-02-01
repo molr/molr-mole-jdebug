@@ -69,12 +69,13 @@ public class AgentContainerController {
     public String runService(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
                              @RequestParam(value = "service") String serviceName,
                              @RequestParam(value = "entryPoints", defaultValue = "") String entryPoints) throws Exception {
-        AgentContainer agentContainer = agentContainerManager.findAgentContainer(containerName);
-        if (agentContainer == null) {
+        Optional<AgentContainer> optionalAgentContainer = agentContainerManager.findAgentContainer(containerName);
+        if (!optionalAgentContainer.isPresent()) {
             throw new IllegalArgumentException("AgentContainer name must exist");
         }
+        AgentContainer agentContainer = optionalAgentContainer.get();
         Optional<Service> serviceOptional = agentContainer.getServices().stream().filter(service -> {
-            String className = service.getClazz();
+            String className = service.getClassName();
             className = className.substring(className.lastIndexOf(".") + 1);
             return className.equals(serviceName) ? true : false;
         }).findFirst();

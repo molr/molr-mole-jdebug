@@ -23,7 +23,7 @@ public class InMemoryAgentContainerManager implements AgentContainerManager {
     private final Set<AgentContainer> agentContainers = Collections.synchronizedSet(new HashSet<>());
 
     @Override
-    public AgentContainer findAgentContainer(String containerName) {
+    public Optional<AgentContainer> findAgentContainer(String containerName) {
         if (containerName == null || containerName.isEmpty()) {
             throw new IllegalArgumentException("Name of the container cannot be null nor empty");
         }
@@ -31,8 +31,7 @@ public class InMemoryAgentContainerManager implements AgentContainerManager {
             Optional<AgentContainer> toReturn = agentContainers.stream().filter(agentContainer -> {
                 return containerName.equals(agentContainer.getContainerName()) ? true : false;
             }).findFirst();
-
-            return toReturn.isPresent() ? toReturn.get() : null;
+            return toReturn;
         }
     }
 
