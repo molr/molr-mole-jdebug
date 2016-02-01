@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * Responsible for the representation of a deployment to the controller. It couples all necessary information to
  * identify a single deployment and all the {@link Service}s provided by it and later execute them.
+ *
  * @author tiagomr
  */
 public class AgentContainer {
