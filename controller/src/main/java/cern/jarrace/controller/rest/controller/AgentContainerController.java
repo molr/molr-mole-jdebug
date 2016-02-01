@@ -18,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -58,7 +60,8 @@ public class AgentContainerController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<AgentContainer> listContainers() {
-        return agentContainerManager.findAllAgentContainers();
+        Set<AgentContainer> allAgentContainers = agentContainerManager.findAllAgentContainers();
+        return allAgentContainers;
     }
 
     @RequestMapping(value = "/{" + CONTAINER_NAME_VARIABLE_NAME + "}/start", method = RequestMethod.GET)
@@ -66,17 +69,26 @@ public class AgentContainerController {
                            @RequestParam(value = "service") String serviceName,
                            @RequestParam(value = "entryPoints", defaultValue = "") String entryPoints) throws Exception {
         AgentContainer agentContainer = agentContainerManager.findAgentContainer(containerName);
+        if(agentContainer == null) {
+            throw new IllegalArgumentException("AgentContainer name must exist");
+        }
         Optional<Service> serviceOptional = agentContainer.getServices().stream().filter(service -> {
             String className = service.getClazz();
             className = className.substring(className.lastIndexOf(".") + 1);
             return className.equals(serviceName) ? true : false;
         }).findFirst();
         if(serviceOptional.isPresent()) {
-            return agentRunnerSpawner.spawnAgentRunner(serviceOptional.get(), agentContainer.getContainerPath(),
-                    entryPoints.split(","));
+            Service service = serviceOptional.get();
+            List<String> parsedEntryPoints = Arrays.asList(entryPoints.split(","));
+            parsedEntryPoints.forEach(entryPoint -> {
+                if(!service.getEntryPoints().contains(entryPoint)) {
+                    throw new IllegalArgumentException("All entry points must exist");
+                }
+            });
+            return agentRunnerSpawner.spawnAgentRunner(service, agentContainer.getContainerPath(),
+                    parsedEntryPoints);
         }
-
-        return "Service not found";
+        throw new IllegalArgumentException("Service name must exist");
     }
 
     public void setAgentContainerManager(AgentContainerManager agentContainerManager) {

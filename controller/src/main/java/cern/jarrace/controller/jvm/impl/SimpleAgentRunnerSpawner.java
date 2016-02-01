@@ -20,7 +20,7 @@ public class SimpleAgentRunnerSpawner implements AgentRunnerSpawner {
 
 
     @Override
-    public String spawnAgentRunner(Service service, String jarPath, String... args) throws Exception {
+    public String spawnAgentRunner(Service service, String jarPath, List<String> args) throws Exception {
         List<String> command = new ArrayList<>();
         command.add(String.format("%s/bin/java", System.getProperty("java.home")));
         command.add("-cp");
