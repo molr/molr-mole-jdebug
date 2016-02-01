@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Class that test the {@link JarWriter} features
+ *
  * @author tiagomr
  */
 @RunWith(SpringJUnit4ClassRunner.class)

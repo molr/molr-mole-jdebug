@@ -25,6 +25,7 @@ import java.util.Set;
 
 /**
  * {@link RestController} that exposes endpoints to manage {@link AgentContainer}s
+ *
  * @author tiagomr
  */
 @RestController
@@ -53,7 +54,7 @@ public class AgentContainerController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void registerService(@RequestBody AgentContainer agentContainer){
+    public void registerService(@RequestBody AgentContainer agentContainer) {
         agentContainerManager.registerAgentContainer(agentContainer);
         LOGGER.info("Registered new AgentContainer: [{}]", agentContainer);
     }
@@ -66,10 +67,10 @@ public class AgentContainerController {
 
     @RequestMapping(value = "/{" + CONTAINER_NAME_VARIABLE_NAME + "}/start", method = RequestMethod.GET)
     public String runService(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
-                           @RequestParam(value = "service") String serviceName,
-                           @RequestParam(value = "entryPoints", defaultValue = "") String entryPoints) throws Exception {
+                             @RequestParam(value = "service") String serviceName,
+                             @RequestParam(value = "entryPoints", defaultValue = "") String entryPoints) throws Exception {
         AgentContainer agentContainer = agentContainerManager.findAgentContainer(containerName);
-        if(agentContainer == null) {
+        if (agentContainer == null) {
             throw new IllegalArgumentException("AgentContainer name must exist");
         }
         Optional<Service> serviceOptional = agentContainer.getServices().stream().filter(service -> {
@@ -77,11 +78,11 @@ public class AgentContainerController {
             className = className.substring(className.lastIndexOf(".") + 1);
             return className.equals(serviceName) ? true : false;
         }).findFirst();
-        if(serviceOptional.isPresent()) {
+        if (serviceOptional.isPresent()) {
             Service service = serviceOptional.get();
             List<String> parsedEntryPoints = Arrays.asList(entryPoints.split(","));
             parsedEntryPoints.forEach(entryPoint -> {
-                if(!service.getEntryPoints().contains(entryPoint)) {
+                if (!service.getEntryPoints().contains(entryPoint)) {
                     throw new IllegalArgumentException("All entry points must exist");
                 }
             });

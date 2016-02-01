@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Class that test the {@link InMemoryAgentContainerManager} features
+ *
  * @author tiagomr
  */
 public class InMemoryAgentContainerManagerTest {
@@ -54,7 +55,7 @@ public class InMemoryAgentContainerManagerTest {
     @Test
     public void testfindAllAgentContainersWithOneOrMoreContainers() {
         Queue<AgentContainer> containerQueue = new LinkedList<>(MockUtils.getMockedContainers(5, 1, 1));
-        for(int index = 1; index < 6; ++index) {
+        for (int index = 1; index < 6; ++index) {
             AgentContainer polledContainer = containerQueue.poll();
             containerManager.getAgentContainers().add(polledContainer);
             Set<AgentContainer> allAgentContainers = containerManager.findAllAgentContainers();

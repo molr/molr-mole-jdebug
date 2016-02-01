@@ -13,12 +13,14 @@ import java.util.Set;
 
 /**
  * Class that manages {@link AgentContainer} providing ways of registering and fetching them
+ *
  * @author tiagomr
  */
 public interface AgentContainerManager {
 
     /**
      * Searches for a specific container by name
+     *
      * @param containerName
      * @return The container with the specified name if it exists, null otherwise
      */
@@ -26,6 +28,7 @@ public interface AgentContainerManager {
 
     /**
      * Provides a {@link List} with all the registered {@link AgentContainer}s
+     *
      * @return {@link List} of {@link AgentContainer}s
      */
     Set<AgentContainer> findAllAgentContainers();
@@ -33,6 +36,7 @@ public interface AgentContainerManager {
 
     /**
      * Registers an {@link AgentContainer} that will be exposed its {@link Service}s
+     *
      * @param agentContainer The {@link AgentContainer} to be registered
      */
     void registerAgentContainer(AgentContainer agentContainer);

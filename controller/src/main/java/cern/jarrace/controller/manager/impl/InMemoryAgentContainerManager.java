@@ -15,6 +15,7 @@ import java.util.Set;
 
 /**
  * Implementation of {@link AgentContainerManager} that stores the information in an "in memory" set
+ *
  * @author tiagomr
  */
 public class InMemoryAgentContainerManager implements AgentContainerManager {
@@ -23,7 +24,7 @@ public class InMemoryAgentContainerManager implements AgentContainerManager {
 
     @Override
     public AgentContainer findAgentContainer(String containerName) {
-        if(containerName == null || containerName.isEmpty()) {
+        if (containerName == null || containerName.isEmpty()) {
             throw new IllegalArgumentException("Name of the container cannot be null nor empty");
         }
         synchronized (agentContainers) {
@@ -42,13 +43,13 @@ public class InMemoryAgentContainerManager implements AgentContainerManager {
 
     @Override
     public void registerAgentContainer(AgentContainer agentContainer) {
-        if(agentContainer == null) {
+        if (agentContainer == null) {
             throw new IllegalArgumentException("AgentContainer cannot be null");
         }
-        if(agentContainer.getContainerName() == null || agentContainer.getContainerName().isEmpty()) {
+        if (agentContainer.getContainerName() == null || agentContainer.getContainerName().isEmpty()) {
             throw new IllegalArgumentException("AgentContainer name cannot be null nor empty");
         }
-        if(agentContainers.contains(agentContainer)) {
+        if (agentContainers.contains(agentContainer)) {
             agentContainers.remove(agentContainer);
         }
         agentContainers.add(agentContainer);

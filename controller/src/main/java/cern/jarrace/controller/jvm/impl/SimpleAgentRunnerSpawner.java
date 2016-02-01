@@ -1,3 +1,8 @@
+/**
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
 package cern.jarrace.controller.jvm.impl;
 
 import cern.jarrace.commons.domain.Service;
@@ -6,12 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by timartin on 28/01/2016.
+ * Implementation of {@link AgentRunnerSpawner} that uses an the {@link ProcessBuilder} class to start a new JVM
+ * running cern.jarrace.agent.AgentRunner#main.
+ *
+ * @author tiagomr
  */
 public class SimpleAgentRunnerSpawner implements AgentRunnerSpawner {
 
@@ -28,9 +35,9 @@ public class SimpleAgentRunnerSpawner implements AgentRunnerSpawner {
         command.add(AGENT_RUNNER_MAIN_CASS);
         command.add(service.getAgentName());
         command.add(service.getClazz());
-        if(args != null) {
+        if (args != null) {
             for (String argument : args) {
-                if(!argument.isEmpty()) {
+                if (!argument.isEmpty()) {
                     command.add(argument);
                 }
             }
@@ -43,7 +50,7 @@ public class SimpleAgentRunnerSpawner implements AgentRunnerSpawner {
         StringBuilder stringBuilder = new StringBuilder();
         BufferedInputStream bs = new BufferedInputStream(process.getInputStream());
 
-        while(process.isAlive()) {
+        while (process.isAlive()) {
             stringBuilder.append(bs.read());
         }
 

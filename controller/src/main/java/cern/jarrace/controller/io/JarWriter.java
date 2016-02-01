@@ -1,3 +1,8 @@
+/**
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
 package cern.jarrace.controller.io;
 
 import org.slf4j.Logger;
@@ -14,6 +19,7 @@ import java.util.regex.Pattern;
 
 /**
  * Class responsible of writing the deployment file to the file system
+ *
  * @author tiagomr
  */
 public class JarWriter {
@@ -27,30 +33,30 @@ public class JarWriter {
 
     @PostConstruct
     void init() throws InvalidPropertyException {
-        if(deploymentPath == null || deploymentPath.isEmpty()) {
+        if (deploymentPath == null || deploymentPath.isEmpty()) {
             throw new InvalidPropertyException(JarWriter.class, "deployment_dir", "Property cannot be null nor empty");
         }
         File deploymentDir = new File(deploymentPath);
-        if(!deploymentDir.exists()) {
-            if(!deploymentDir.mkdirs()) {
+        if (!deploymentDir.exists()) {
+            if (!deploymentDir.mkdirs()) {
                 throw new IllegalStateException(String.format("Deployment folder cannot be created: [%s]",
                         deploymentPath));
             }
-        } else if(!deploymentDir.isDirectory()) {
+        } else if (!deploymentDir.isDirectory()) {
             throw new InvalidPropertyException(JarWriter.class, "deployment_dir", "Property points to a file and not a directory.");
         }
     }
 
     public String writeFile(String name, byte[] jar) throws IOException, IllegalAccessException {
-        if(name == null || name.isEmpty()) {
+        if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Name of the deployment cannot be null nor empty");
         }
 
-        if(!pattern.matcher(name).matches()) {
+        if (!pattern.matcher(name).matches()) {
             throw new IllegalArgumentException("THe name can be composed only by alphabetic characteres");
         }
 
-        if(jar == null || jar.length == 0) {
+        if (jar == null || jar.length == 0) {
             throw new IllegalArgumentException("Deployment file cannot be null nor empty");
         }
 

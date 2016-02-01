@@ -16,12 +16,13 @@ import static org.mockito.Mockito.when;
 
 /**
  * Class that provides utility methods for mocking domain objects
+ *
  * @author tiagomr
  */
 public class MockUtils {
     public static List<AgentContainer> getMockedContainers(int numberOfAgentContainers, int numberOfServices, int numberOfEntryPoints) {
         List<AgentContainer> mockedAgentContainers = new ArrayList<>();
-        for(int index = 0; index < numberOfAgentContainers; ++index) {
+        for (int index = 0; index < numberOfAgentContainers; ++index) {
             mockedAgentContainers.add(getMockedContainer(index, numberOfServices, numberOfEntryPoints));
         }
         return mockedAgentContainers;
@@ -38,7 +39,7 @@ public class MockUtils {
 
     public static List<Service> getMockedService(int numberOfServices, int numberOfEntryPoints) {
         List<Service> mockedServices = new ArrayList<>();
-        for(int serviceIndex = 0; serviceIndex < numberOfServices; ++serviceIndex) {
+        for (int serviceIndex = 0; serviceIndex < numberOfServices; ++serviceIndex) {
             List<String> entryPoints = new ArrayList<>();
             for (int index = 0; index < numberOfEntryPoints; ++index) {
                 entryPoints.add("MockedEntryPoint" + index);

@@ -1,3 +1,8 @@
+/**
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
 package cern.jarrace.controller.jvm.impl;
 
 import cern.jarrace.controller.jvm.AgentRegistrySpawner;
@@ -9,7 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by timartin on 27/1/2016.
+ * Implementation of {@link AgentRegistrySpawner} that uses an the {@link ProcessBuilder} class to start a new JVM
+ * running cern.jarrace.agent.ContainerRegistry#main.
+ *
+ * @author tiagomr
  */
 public class SimpleAgentRegistrySpawner implements AgentRegistrySpawner {
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAgentRegistrySpawner.class);
