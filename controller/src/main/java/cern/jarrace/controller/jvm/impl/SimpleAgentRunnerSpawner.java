@@ -6,6 +6,7 @@
 package cern.jarrace.controller.jvm.impl;
 
 import cern.jarrace.commons.domain.Service;
+import cern.jarrace.controller.jvm.AbstractJvmSpawner;
 import cern.jarrace.controller.jvm.AgentRunnerSpawner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,32 +21,28 @@ import java.util.List;
  *
  * @author tiagomr
  */
-public class SimpleAgentRunnerSpawner implements AgentRunnerSpawner {
+public class SimpleAgentRunnerSpawner extends AbstractJvmSpawner implements AgentRunnerSpawner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAgentRegistrySpawner.class);
     private static final String AGENT_RUNNER_MAIN_CASS = "cern.jarrace.agent.AgentRunner";
 
-
     @Override
     public String spawnAgentRunner(Service service, String jarPath, List<String> args) throws Exception {
-        List<String> command = new ArrayList<>();
-        command.add(String.format("%s/bin/java", System.getProperty("java.home")));
-        command.add("-cp");
-        command.add(jarPath);
-        command.add(AGENT_RUNNER_MAIN_CASS);
-        command.add(service.getAgentName());
-        command.add(service.getClazz());
+        List<String> arguments = new ArrayList<>();
+        arguments.add("-cp");
+        arguments.add(jarPath);
+        arguments.add(AGENT_RUNNER_MAIN_CASS);
+        arguments.add(service.getAgentName());
+        arguments.add(service.getClazz());
         if (args != null) {
             for (String argument : args) {
                 if (!argument.isEmpty()) {
-                    command.add(argument);
+                    arguments.add(argument);
                 }
             }
         }
 
-        LOGGER.info("Starting agent runner [{}]", command.toString());
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        Process process = processBuilder.start();
+        Process process = spawnJvm(arguments);
 
         StringBuilder stringBuilder = new StringBuilder();
         BufferedInputStream bs = new BufferedInputStream(process.getInputStream());
