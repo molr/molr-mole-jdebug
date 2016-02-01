@@ -1,1 +1,21 @@
 apply plugin: "java"
+
+subprojects {
+    apply plugin: "java"
+    dependencies {
+        compile 'org.slf4j:slf4j-api:1.7.13'
+        runtime 'org.slf4j:slf4j-log4j12:1.7.13'
+    }
+}
+
+project(":agent") {
+    dependencies {
+        compile project(":commons")
+    }
+}
+
+project(":controller") {
+    dependencies {
+        compile project(":commons")
+    }
+}

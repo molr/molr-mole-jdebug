@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 public class AgentRunner {
 
     public static void main(String[] args) {
-        if (args.length != 2) {
+        if (args.length < 1) {
             throw new IllegalArgumentException("whatever");
         }
 
@@ -27,5 +27,4 @@ public class AgentRunner {
         Class<Agent> clazz = (Class<Agent>) Class.forName(agentName);
         return (Agent) clazz.getConstructor().newInstance();
     }
-
 }
