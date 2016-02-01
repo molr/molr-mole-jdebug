@@ -27,10 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.NestedServletException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.mockito.Matchers.anyList;
@@ -181,7 +178,7 @@ public class AgentContainerControllerTest {
         expectedException.expect(NestedServletException.class);
         expectedException.expectCause(isA(IllegalArgumentException.class));
         AgentContainer container = getTestAgentContainer();
-        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(container);
+        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(Optional.of(container));
         mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_START_PATH)
                 .param(SERVICE_PARAM_NAME, TEST_SERVICE_NAME));
     }
@@ -191,7 +188,7 @@ public class AgentContainerControllerTest {
         expectedException.expect(NestedServletException.class);
         expectedException.expectCause(isA(IllegalArgumentException.class));
         AgentContainer container = getTestAgentContainer();
-        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(container);
+        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(Optional.of(container));
         mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_START_PATH)
                 .param(SERVICE_PARAM_NAME, TEST_SERVICE_NAME)
                 .param(ENTRY_POINTS_PARAM_NAME, TEST_ENTRY_POINT_1 + "_NON_EXISTENT"));
@@ -200,7 +197,7 @@ public class AgentContainerControllerTest {
     @Test
     public void testStart() throws Exception {
         AgentContainer container = getTestAgentContainer();
-        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(container);
+        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(Optional.of(container));
         mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_START_PATH)
                 .param(SERVICE_PARAM_NAME, TEST_SERVICE_NAME)
                 .param(ENTRY_POINTS_PARAM_NAME, TEST_ENTRY_POINT_1, TEST_ENTRY_POINT_2))
