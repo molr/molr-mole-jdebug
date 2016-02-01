@@ -168,7 +168,7 @@ public class AgentContainerControllerTest {
     public void testStartWithNonExistentContainerName() throws Exception {
         expectedException.expect(NestedServletException.class);
         expectedException.expectCause(isA(IllegalArgumentException.class));
-        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(null);
+        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(Optional.empty());
         mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_START_PATH)
                 .param(SERVICE_PARAM_NAME, TEST_SERVICE_NAME));
     }
