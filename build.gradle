@@ -8,6 +8,12 @@ subprojects {
     }
 }
 
+project(":demo") {
+    dependencies {
+        compile project(":agent")
+    }
+}
+
 project(":agent") {
     dependencies {
         compile project(":commons")
@@ -18,4 +24,21 @@ project(":controller") {
     dependencies {
         compile project(":commons")
     }
+}
+
+project(":gui") {
+    dependencies {
+        compile project(":commons")
+        compile project(":inspector")
+    }
+}
+
+project(":inspector") {
+    dependencies {
+        compile project(":jdiscript")
+    }
+}
+
+project(":jdiscript") {
+
 }
