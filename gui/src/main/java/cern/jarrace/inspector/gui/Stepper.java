@@ -88,13 +88,12 @@ public class Stepper extends Application {
         Button debugButton = new Button("Debug Service");
         debugButton.setOnMouseClicked(eventHandler -> {
             Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initModality(Modality.WINDOW_MODAL);
             stage.initStyle(StageStyle.DECORATED);
             stage.setTitle("Debug");
 
-            DebugPane debugPane = new DebugPane("asdnkajshdkashdujshkj");
+            DebugPane debugPane = new DebugPane(TEXT);
             debugPane.setPrefSize(700, 400);
-            debugPane.setBackground(new Background(new BackgroundFill(Color.AQUA, CornerRadii.EMPTY, Insets.EMPTY)));
             stage.setScene(new Scene(debugPane, 700, 400));
             stage.show();
         });
@@ -113,4 +112,100 @@ public class Stepper extends Application {
         rootPane.getChildren().add(tabs);
         primaryStage.setTitle("Inspector");
     }
+
+    private static final String TEXT = "package cern.jarrace.inspector.gui;\n" +
+            "\n" +
+            "import cern.jarrace.commons.domain.AgentContainer;\n" +
+            "import cern.jarrace.inspector.gui.rest.ContainerService;\n" +
+            "import com.sun.glass.ui.Application;\n" +
+            "import javafx.collections.FXCollections;\n" +
+            "import javafx.collections.ObservableList;\n" +
+            "import javafx.scene.control.ListView;\n" +
+            "import rx.Observable;\n" +
+            "import rx.schedulers.JavaFxScheduler;\n" +
+            "import rx.schedulers.Schedulers;\n" +
+            "\n" +
+            "import java.io.IOException;\n" +
+            "import java.util.ArrayList;\n" +
+            "import java.util.Collections;\n" +
+            "import java.util.List;\n" +
+            "import java.util.Optional;\n" +
+            "import java.util.concurrent.TimeUnit;\n" +
+            "\n" +
+            "public class ContainerListTab extends ListView<ContainerListTab.EntryPoint> {\n" +
+            "\n" +
+            "    private ObservableList<EntryPoint> list = FXCollections.emptyObservableList();\n" +
+            "    private Optional<EntryPoint> selectedEntryPoint = Optional.empty();\n" +
+            "\n" +
+            "    public ContainerListTab(ContainerService containerService) throws IOException {\n" +
+            "        super();\n" +
+            "        setItems(list);\n" +
+            "\n" +
+            "        Observable\n" +
+            "                .interval(0, 5, TimeUnit.SECONDS, Schedulers.computation())\n" +
+            "                .<List<AgentContainer>>map(id -> {\n" +
+            "                    try {\n" +
+            "                        return containerService.getContainers().execute().body();\n" +
+            "                    } catch (IOException e) {\n" +
+            "                        e.printStackTrace();\n" +
+            "                        return Collections.emptyList();\n" +
+            "                    }\n" +
+            "                })\n" +
+            "                .subscribeOn(JavaFxScheduler.getInstance())\n" +
+            "                .subscribe(this::setContainers);\n" +
+            "\n" +
+            "        setOnMouseClicked(event -> {\n" +
+            "            selectedEntryPoint = Optional.of(getSelectionModel().getSelectedItem());\n" +
+            "        });\n" +
+            "    }\n" +
+            "\n" +
+            "    public void setContainers(List<AgentContainer> containers) {\n" +
+            "        Application.invokeLater(() -> {\n" +
+            "            ArrayList<EntryPoint> serviceList = new ArrayList<>();\n" +
+            "            containers.stream().forEach(agent -> agent.getServices().forEach(service -> {\n" +
+            "                service.getEntryPoints().forEach(entry -> {\n" +
+            "                    final EntryPoint entryPoint = new EntryPoint(agent.getContainerName(),\n" +
+            "                            service.getClassName().substring(service.getClassName().lastIndexOf(\".\") + 1), entry);\n" +
+            "                    serviceList.add(entryPoint);\n" +
+            "                });\n" +
+            "            }));\n" +
+            "            setItems(FXCollections.observableList(serviceList));\n" +
+            "        });\n" +
+            "    }\n" +
+            "\n" +
+            "    public Optional<EntryPoint> getSelectedEntryPoint() {\n" +
+            "        return selectedEntryPoint;\n" +
+            "    }\n" +
+            "\n" +
+            "    public static class EntryPoint {\n" +
+            "\n" +
+            "        private final String name;\n" +
+            "        private final String clazz;\n" +
+            "        private final String entry;\n" +
+            "\n" +
+            "        private EntryPoint(String name, String clazz, String entry) {\n" +
+            "            this.name = name;\n" +
+            "            this.clazz = clazz;\n" +
+            "            this.entry = entry;\n" +
+            "        }\n" +
+            "\n" +
+            "        public String getClazz() {\n" +
+            "            return clazz;\n" +
+            "        }\n" +
+            "\n" +
+            "        public String getName() {\n" +
+            "            return name;\n" +
+            "        }\n" +
+            "\n" +
+            "        public String getEntry() {\n" +
+            "            return entry;\n" +
+            "        }\n" +
+            "\n" +
+            "        @Override\n" +
+            "        public String toString() {\n" +
+            "            return name + \": \" + clazz + \" \" + entry;\n" +
+            "        }\n" +
+            "\n" +
+            "    }\n" +
+            "}";
 }
