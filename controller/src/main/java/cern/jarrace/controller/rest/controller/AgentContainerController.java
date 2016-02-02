@@ -7,6 +7,7 @@ package cern.jarrace.controller.rest.controller;
 
 import cern.jarrace.commons.domain.AgentContainer;
 import cern.jarrace.commons.domain.Service;
+import cern.jarrace.controller.io.JarReader;
 import cern.jarrace.controller.io.JarWriter;
 import cern.jarrace.controller.jvm.AgentRegistrySpawner;
 import cern.jarrace.controller.jvm.AgentRunnerSpawner;
@@ -15,13 +16,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
+
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 /**
  * {@link RestController} that exposes endpoints to manage {@link AgentContainer}s
@@ -35,6 +37,7 @@ public class AgentContainerController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentContainerController.class);
     private static final File DEPLOYMENT_DIR = new File(System.getProperty("java.io.tmpdir"));
     private static final String CONTAINER_NAME_VARIABLE_NAME = "containerName";
+    static final String JAVA_CLASS_SUFFIX = ".java";
 
     @Autowired
     private AgentContainerManager agentContainerManager;
@@ -93,6 +96,33 @@ public class AgentContainerController {
         throw new IllegalArgumentException("Service name must exist");
     }
 
+    @RequestMapping(value = "/{" + CONTAINER_NAME_VARIABLE_NAME + "}/read", method = RequestMethod.GET)
+    public ResponseEntity<String> readSource(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
+                                             @RequestParam("class") String className) {
+        return agentContainerManager.findAgentContainer(containerName)
+                .map(container -> {
+                    try {
+                        return JarReader.ofContainer(container, reader -> {
+                            final String entry = className + JAVA_CLASS_SUFFIX;
+                            try {
+                                return ResponseEntity.ok(reader.readEntry(entry));
+                            } catch (NoSuchElementException e) {
+                                return ResponseEntity.badRequest()
+                                        .body("No class source found for entry " + entry);
+                            } catch (IOException e) {
+                                return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+                                        .body("Failed to read entry " + entry + " inside container " + containerName);
+                            }
+                        });
+                    } catch (IOException e) {
+                        LOGGER.warn("Failed to read from container file {}: " + containerName, e);
+                        return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+                                .body("Failed to open container of name " + containerName);
+                    }
+                })
+                .orElse(ResponseEntity.badRequest().body("No container deployed under the name " + containerName));
+    }
+
     public void setAgentContainerManager(AgentContainerManager agentContainerManager) {
         this.agentContainerManager = agentContainerManager;
     }
@@ -108,4 +138,6 @@ public class AgentContainerController {
     public void setJarWriter(JarWriter jarWriter) {
         this.jarWriter = jarWriter;
     }
+
+
 }

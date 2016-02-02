@@ -27,13 +27,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.NestedServletException;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -53,14 +58,19 @@ public class AgentContainerControllerTest {
     private static final String JARRACE_CONTAINER_REGISTER_PATH = "/jarrace/container/register";
     private static final String TEST_NAME = "TEST_NAME";
     private static final String JARRACE_CONTAINER_TEST_NAME_START_PATH = "/jarrace/container/" + TEST_NAME + "/start";
+    private static final String JARRACE_CONTAINER_TEST_NAME_READ_PATH = "/jarrace/container/" + TEST_NAME + "/read";
+
     private static final String TEST_SERVICE_NAME = "TEST_SERVICE_NAME";
     private static final String TEST_ENTRY_POINT_1 = "TEST_ENTRY_POINT_1";
     private static final String TEST_ENTRY_POINT_2 = "TEST_ENTRY_POINT_2";
     private static final String TEST_AGENT_NAME = "TEST_AGENT_NAME";
     private static final String TEST_NAME1 = "TEST_NAME";
     private static final String TEST_PATH = "TEST_PATH";
+
     private static final String SERVICE_PARAM_NAME = "service";
     private static final String ENTRY_POINTS_PARAM_NAME = "entryPoints";
+    private static final String CLASS_ENTRY_NAME = "class";
+
     private MockMvc mockMvc;
     private AgentContainerController agentContainerController;
 
@@ -205,6 +215,34 @@ public class AgentContainerControllerTest {
         verify(agentRunnerSpawner).spawnAgentRunner(Matchers.any(Service.class), anyString(), anyList());
     }
 
+    @Test
+    public void canFetchEntryInsideJar() throws Exception {
+        final String content = "testContent\nSpanning\nLines";
+        final File jarFile = setupJarContainer(content, TEST_PATH);
+        mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_READ_PATH)
+                .param(CLASS_ENTRY_NAME, TEST_PATH))
+                .andExpect(content().string(content));
+        //noinspection ResultOfMethodCallIgnored
+        jarFile.delete();
+    }
+
+    @Test
+    public void canFailToFetchEntryFromJarWhenContainerDoesNotExist() throws Exception {
+        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(Optional.empty());
+        mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_READ_PATH)
+                .param(CLASS_ENTRY_NAME, TEST_NAME))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void canFailToFetchEntryFromJarWhenEntryDoesNotExist() throws Exception {
+        final String content = "TestContent";
+        final File jarFile = setupJarContainer(content, TEST_PATH);
+        mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_READ_PATH)
+                .param(CLASS_ENTRY_NAME, "IDoNotExist"))
+                .andExpect(status().isBadRequest());
+    }
+
     private AgentContainer getTestAgentContainer() {
         List<String> entryPoints = new ArrayList<>();
         entryPoints.add(TEST_ENTRY_POINT_1);
@@ -217,5 +255,24 @@ public class AgentContainerControllerTest {
     private String getJson(Object object) throws JsonProcessingException {
         ObjectWriter writer = new ObjectMapper().writer();
         return writer.writeValueAsString(object);
+    }
+
+    private File setupJarContainer(String content, String entry) throws IOException {
+        final File jarFile = writeToZip(entry + AgentContainerController.JAVA_CLASS_SUFFIX, content);
+        final AgentContainer mockedContainer = mock(AgentContainer.class);
+        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(Optional.of(mockedContainer));
+        when(mockedContainer.getContainerPath()).thenReturn(jarFile.toString());
+        return jarFile;
+    }
+
+    private File writeToZip(String entry, String data) throws IOException {
+        File tmpFile = File.createTempFile("test", null);
+        try (FileOutputStream fileOutput = new FileOutputStream(tmpFile);
+             ZipOutputStream zipOutput = new ZipOutputStream(fileOutput)) {
+            ZipEntry zipEntry = new JarEntry(entry);
+            zipOutput.putNextEntry(zipEntry);
+            zipOutput.write(data.getBytes());
+        }
+        return tmpFile;
     }
 }
