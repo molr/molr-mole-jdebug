@@ -19,7 +19,9 @@ public interface ContainerService {
     @GET("container/list")
     Call<List<AgentContainer>> getContainers();
 
-    @GET("container/{name}/start/")
-    Call<String> startEntry(@Path("name") String name, @Query("service") String service);
+    @GET("container/{containerName}/start/")
+    Call<String> startEntry(@Path("containerName") String name, @Query("service") String service);
 
+    @GET("container/{containerName}/read")
+    Call<String> readSource(@Path("containerName") String containerName, @Query("class") String className);
 }
