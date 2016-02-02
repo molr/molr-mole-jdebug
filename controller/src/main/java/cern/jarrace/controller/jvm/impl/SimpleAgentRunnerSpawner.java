@@ -1,6 +1,12 @@
+/**
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
 package cern.jarrace.controller.jvm.impl;
 
 import cern.jarrace.commons.domain.Service;
+import cern.jarrace.controller.jvm.AbstractJvmSpawner;
 import cern.jarrace.controller.jvm.AgentRunnerSpawner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,46 +19,51 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by timartin on 28/01/2016.
+ * Implementation of {@link AgentRunnerSpawner} that uses an the {@link ProcessBuilder} class to start a new JVM
+ * running cern.jarrace.agent.AgentRunner#main.
+ *
+ * @author tiagomr
  */
-public class SimpleAgentRunnerSpawner implements AgentRunnerSpawner {
+public class SimpleAgentRunnerSpawner extends AbstractJvmSpawner implements AgentRunnerSpawner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAgentRegistrySpawner.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAgentRunnerSpawner.class);
     private static final String AGENT_RUNNER_MAIN_CASS = "cern.jarrace.agent.AgentRunner";
 
-
     @Override
-    public String spawnAgentRunner(Service service, String jarPath, String... args) throws Exception {
-        List<String> command = new ArrayList<>();
-        command.add(String.format("%s/bin/java", System.getProperty("java.home")));
-        command.add("-cp");
-        command.add(jarPath);
-        command.add(AGENT_RUNNER_MAIN_CASS);
-        command.add(service.getAgentName());
-        command.add(service.getClazz());
-        if(args != null) {
+    public String spawnAgentRunner(Service service, String jarPath, List<String> args) throws Exception {
+        if (args == null) {
+            throw new IllegalArgumentException("Arguments cannot be null");
+        }
+        List<String> arguments = new ArrayList<>();
+        arguments.add("-cp");
+        arguments.add(jarPath);
+        arguments.add(AGENT_RUNNER_MAIN_CASS);
+        arguments.add(service.getAgentName());
+        arguments.add(service.getClassName());
+        if (args != null) {
             for (String argument : args) {
-                if(!argument.isEmpty()) {
-                    command.add(argument);
+                if (!argument.isEmpty()) {
+                    arguments.add(argument);
                 }
             }
         }
 
-        LOGGER.info("Starting agent runner [{}]", command.toString());
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        Process process = processBuilder.start();
-
+        Process process = spawnJvm(arguments);
         StringBuilder stringBuilder = new StringBuilder();
         InputStreamReader inputReader = new InputStreamReader(process.getInputStream());
         BufferedReader reader = new BufferedReader(inputReader);
-        while(process.isAlive()) {
+        while (process.isAlive()) {
             final String line = reader.readLine();
             if (line == null) {
                 break;
             }
             stringBuilder.append(line);
-        }
+            BufferedInputStream bs = new BufferedInputStream(process.getInputStream());
 
+            while (process.isAlive()) {
+                stringBuilder.append(bs.read());
+            }
+        }
         return stringBuilder.toString();
     }
 }
