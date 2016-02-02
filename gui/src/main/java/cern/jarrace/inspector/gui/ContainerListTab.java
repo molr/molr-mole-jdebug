@@ -7,10 +7,7 @@
 package cern.jarrace.inspector.gui;
 
 import cern.jarrace.commons.domain.AgentContainer;
-import cern.jarrace.commons.domain.Service;
-import cern.jarrace.commons.domain.Service;
 import cern.jarrace.inspector.gui.rest.ContainerService;
-import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
 import com.sun.glass.ui.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,14 +20,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 public class ContainerListTab extends ListView<ContainerListTab.EntryPoint> {
 
     private ObservableList<EntryPoint> list = FXCollections.emptyObservableList();
+    private Optional<EntryPoint> selectedEntryPoint = Optional.empty();
 
-    public ContainerListTab(ContainerService containerService, Consumer<EntryPoint> onEntryPointActive) throws IOException {
+    public ContainerListTab(ContainerService containerService) throws IOException {
         super();
         setItems(list);
 
@@ -48,9 +46,7 @@ public class ContainerListTab extends ListView<ContainerListTab.EntryPoint> {
                 .subscribe(this::setContainers);
 
         setOnMouseClicked(event -> {
-            EntryPoint selection = getSelectionModel().getSelectedItem();
-            if (selection != null)
-                onEntryPointActive.accept(selection);
+            selectedEntryPoint = Optional.of(getSelectionModel().getSelectedItem());
         });
     }
 
@@ -60,13 +56,16 @@ public class ContainerListTab extends ListView<ContainerListTab.EntryPoint> {
             containers.stream().forEach(agent -> agent.getServices().forEach(service -> {
                 service.getEntryPoints().forEach(entry -> {
                     final EntryPoint entryPoint = new EntryPoint(agent.getContainerName(),
-                            service.getClazz().substring(service.getClazz().lastIndexOf(".") + 1), entry);
+                            service.getClassName().substring(service.getClassName().lastIndexOf(".") + 1), entry);
                     serviceList.add(entryPoint);
                 });
             }));
-            list = FXCollections.observableList(serviceList);
-            setItems(list);
+            setItems(FXCollections.observableList(serviceList));
         });
+    }
+
+    public Optional<EntryPoint> getSelectedEntryPoint() {
+        return selectedEntryPoint;
     }
 
     public static class EntryPoint {
@@ -99,5 +98,4 @@ public class ContainerListTab extends ListView<ContainerListTab.EntryPoint> {
         }
 
     }
-
 }

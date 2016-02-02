@@ -15,9 +15,8 @@ public class DebugPane extends ScrollPane {
 
     private final TextFlow textFlow = new TextFlow();
 
-    public DebugPane(String containerName, String sourceFile) throws IOException {
+    public DebugPane(String sourceCodeText) {
+        super();
         setContent(textFlow);
-        Response<String> serviceResponse = Services.getEntryService().readSource(containerName, sourceFile).execute();
-        textFlow.getChildren().add(new Text(serviceResponse.body()));
     }
 }
