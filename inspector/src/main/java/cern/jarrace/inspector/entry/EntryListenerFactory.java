@@ -15,11 +15,11 @@ import com.sun.jdi.ThreadReference;
  * a new line is stepped over ({@link EntryListener#onLocationChange(EntryState)}) or whenever this
  * instance is killed ({@link EntryListener#onInspectionEnd(EntryState)}).
  *
- * @param <Listener> The type of EntryListener to return.
+ * @param <L> The type of EntryListener to return.
  * @author jepeders
  */
 @FunctionalInterface
-public interface EntryListenerFactory<Listener extends EntryListener> {
+public interface EntryListenerFactory<L extends EntryListener> {
 
     /**
      * This method is called whenever a registered entry has been reached in the running JVM. The {@link EntryListener}
@@ -31,6 +31,6 @@ public interface EntryListenerFactory<Listener extends EntryListener> {
      * @return An {@link EntryListener} instance that will receive future updates whenever the JDI steps
      * through the method or terminates the execution of the method.
      */
-    Listener onNewEntry(ThreadReference thread, EntryState state);
+    L createListenerOn(ThreadReference thread, EntryState state);
 
 }

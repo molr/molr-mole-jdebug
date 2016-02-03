@@ -6,20 +6,21 @@
 
 package cern.jarrace.inspector.controller;
 
-import cern.jarrace.inspector.entry.EntryState;
-
 import java.io.Closeable;
 
 /**
- * A controller for a JDI instance that can control
+ * A controller for a JDI instance that can control any running JVM instances by stepping through or terminating them.
  */
 public interface JdiController extends Closeable {
 
     /**
-     * Takes one <i>step</i> in a entry by executing one line / instruction in the running JVM.
-     *
-     * @return A {@link EntryState} indicating the current state of the class.
+     * Takes one <i>step</i> in an entry by executing one line / instruction in the running JVM.
      */
-    EntryState stepForward();
+    void stepForward();
+
+    /**
+     * Terminates the running JVM session.
+     */
+    void terminate();
 
 }

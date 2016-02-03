@@ -25,7 +25,7 @@ public interface EntryState {
     String getMethodName();
 
     /**
-     * Finds the position in terms of lines in the source code (starting with line 1 in the beginning) of the file
+     * Returns the position in terms of lines in the source code (starting with line 1 in the beginning) of the file
      * where the execution currently rests.
      * @return A number between 1 and the length of the source file that is being executed.
      */
