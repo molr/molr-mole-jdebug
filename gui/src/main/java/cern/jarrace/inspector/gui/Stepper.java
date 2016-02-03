@@ -15,11 +15,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static cern.jarrace.inspector.gui.ContainerList.EntryPoint;
-
 /**
  * A user interface that can list and run {@link AgentContainer}s. The containers are known from a remote HTTP REST
  * endpoint.
@@ -30,8 +25,6 @@ public class Stepper extends Application {
 
     private static final ContainerServices containers = ContainerServices.ofBaseUrl("http://localhost:8080/jarrace/");
 
-    private static FlowPane rootPane;
-
     /**
      * Closes the JavaFX platform.
      */
@@ -41,6 +34,7 @@ public class Stepper extends Application {
 
     /**
      * Runs the JavaFX application.
+     *
      * @param args Arguments sent to the application.
      */
     public static void main(String[] args) {
@@ -53,7 +47,7 @@ public class Stepper extends Application {
 
         containerList.setPrefSize(700, 400);
 
-        rootPane = new FlowPane();
+        FlowPane rootPane = new FlowPane();
         rootPane.setPrefSize(900, 400);
         rootPane.getChildren().add(containerList);
         Scene scene = new Scene(rootPane, 600, 500);
