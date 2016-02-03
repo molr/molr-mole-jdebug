@@ -6,32 +6,19 @@
 
 package cern.jarrace.inspector.gui;
 
-import cern.jarrace.inspector.gui.rest.ContainerService;
 import cern.jarrace.inspector.gui.rest.Services;
+import cern.jarrace.inspector.gui.pane.DebugPane;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollBar;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.*;
-import retrofit2.Converter.Factory;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

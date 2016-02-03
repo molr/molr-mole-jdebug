@@ -1,22 +1,15 @@
-package cern.jarrace.inspector.gui;
+package cern.jarrace.inspector.gui.pane;
 
-import cern.jarrace.inspector.gui.rest.Services;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import retrofit2.Response;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 /**
+ * Class that extends {@link ScrollPane} and contains a single {@link TextFlow} component for showing rich text
+ *
  * @author tiagomr
  */
 public class DebugPane extends ScrollPane {
