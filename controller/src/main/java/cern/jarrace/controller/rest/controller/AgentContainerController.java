@@ -68,7 +68,7 @@ public class AgentContainerController {
         return allAgentContainers;
     }
 
-    @RequestMapping(value = "/{" + CONTAINER_NAME_VARIABLE_NAME + "}/start", method = RequestMethod.GET)
+    @RequestMapping(value = "/{" + CONTAINER_NAME_VARIABLE_NAME + "}/start", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public String runService(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
                              @RequestParam(value = "service") String serviceName,
                              @RequestParam(value = "entryPoints", defaultValue = "") String entryPoints) throws Exception {
@@ -79,12 +79,17 @@ public class AgentContainerController {
         AgentContainer agentContainer = optionalAgentContainer.get();
         Optional<Service> serviceOptional = agentContainer.getServices().stream().filter(service -> {
             String className = service.getClassName();
-            className = className.substring(className.lastIndexOf(".") + 1);
             return className.equals(serviceName) ? true : false;
         }).findFirst();
         if (serviceOptional.isPresent()) {
             Service service = serviceOptional.get();
-            List<String> parsedEntryPoints = Arrays.asList(entryPoints.split(","));
+
+            List<String> parsedEntryPoints = new ArrayList<>();
+
+            if(entryPoints != null && !entryPoints.isEmpty()) {
+                parsedEntryPoints.addAll(Arrays.asList(entryPoints.split(",")));
+            }
+
             parsedEntryPoints.forEach(entryPoint -> {
                 if (!service.getEntryPoints().contains(entryPoint)) {
                     throw new IllegalArgumentException("All entry points must exist");

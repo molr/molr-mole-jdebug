@@ -11,10 +11,8 @@ import cern.jarrace.controller.jvm.AgentRunnerSpawner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,18 +48,12 @@ public class SimpleAgentRunnerSpawner extends AbstractJvmSpawner implements Agen
 
         Process process = spawnJvm(arguments);
         StringBuilder stringBuilder = new StringBuilder();
-        InputStreamReader inputReader = new InputStreamReader(process.getInputStream());
-        BufferedReader reader = new BufferedReader(inputReader);
+        InputStreamReader ir = new InputStreamReader(process.getInputStream());
+        BufferedReader bf = new BufferedReader(ir);
         while (process.isAlive()) {
-            final String line = reader.readLine();
-            if (line == null) {
-                break;
-            }
-            stringBuilder.append(line);
-            BufferedInputStream bs = new BufferedInputStream(process.getInputStream());
-
-            while (process.isAlive()) {
-                stringBuilder.append(bs.read());
+            String lineRead = bf.readLine();
+            if (lineRead != null) {
+                stringBuilder.append(lineRead);
             }
         }
         return stringBuilder.toString();

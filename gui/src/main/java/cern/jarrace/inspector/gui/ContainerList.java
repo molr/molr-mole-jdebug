@@ -7,66 +7,57 @@
 package cern.jarrace.inspector.gui;
 
 import cern.jarrace.commons.domain.AgentContainer;
-import cern.jarrace.inspector.gui.rest.ContainerService;
 import com.sun.glass.ui.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import rx.Observable;
 import rx.schedulers.JavaFxScheduler;
-import rx.schedulers.Schedulers;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
-public class ContainerListTab extends ListView<ContainerListTab.EntryPoint> {
+/**
+ * A list of {@link AgentContainer}s.
+ */
+public class ContainerList extends ListView<ContainerList.EntryPoint> {
 
     private ObservableList<EntryPoint> list = FXCollections.emptyObservableList();
-    private Optional<EntryPoint> selectedEntryPoint = Optional.empty();
 
-    public ContainerListTab(ContainerService containerService) throws IOException {
+    public ContainerList(Observable<List<AgentContainer>> containerObservable) throws IOException {
         super();
         setItems(list);
 
-        Observable
-                .interval(0, 5, TimeUnit.SECONDS, Schedulers.computation())
-                .<List<AgentContainer>>map(id -> {
-                    try {
-                        return containerService.getContainers().execute().body();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return Collections.emptyList();
-                    }
-                })
+        containerObservable
                 .subscribeOn(JavaFxScheduler.getInstance())
                 .subscribe(this::setContainers);
-
-        setOnMouseClicked(event -> {
-            selectedEntryPoint = Optional.of(getSelectionModel().getSelectedItem());
-        });
     }
 
     public void setContainers(List<AgentContainer> containers) {
         Application.invokeLater(() -> {
-            ArrayList<EntryPoint> serviceList = new ArrayList<>();
-            containers.stream().forEach(agent -> agent.getServices().forEach(service -> {
-                service.getEntryPoints().forEach(entry -> {
-                    final EntryPoint entryPoint = new EntryPoint(agent.getContainerName(),
-                            service.getClassName(), entry);
-                    serviceList.add(entryPoint);
-                });
-            }));
-            setItems(FXCollections.observableList(serviceList));
+            final List<EntryPoint> entryPoints =  containersToEntryPoints(containers);
+            setItems(FXCollections.observableList(entryPoints));
         });
     }
 
-    public Optional<EntryPoint> getSelectedEntryPoint() {
-        return selectedEntryPoint;
+    static List<EntryPoint> containersToEntryPoints(List<AgentContainer> containers) {
+        ArrayList<EntryPoint> serviceList = new ArrayList<>();
+        containers.stream().forEach(agent -> agent.getServices().forEach(service -> {
+            service.getEntryPoints().forEach(entry -> {
+                final EntryPoint entryPoint = new EntryPoint(agent.getContainerName(),
+                        service.getClassName(), entry);
+                serviceList.add(entryPoint);
+            });
+        }));
+        return serviceList;
     }
+
+    public Optional<ContainerList.EntryPoint> getSelectedEntryPoint() {
+        return Optional.ofNullable(getSelectionModel().getSelectedItem());
+    }
+
 
     public static class EntryPoint {
 
