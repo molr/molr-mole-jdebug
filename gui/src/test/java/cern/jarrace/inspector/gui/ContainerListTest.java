@@ -36,6 +36,7 @@ public class ContainerListTest extends ApplicationTest {
 
     private Supplier<List<AgentContainer>> mockedSupplier;
     private Observable<List<AgentContainer>> containerObservable;
+    private ContainerList containerList;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -45,7 +46,8 @@ public class ContainerListTest extends ApplicationTest {
                 .ofSupplier(mockedSupplier)
                 .setInterval(TEN_MILLISECONDS)
                 .build();
-        Scene scene = new Scene(new ContainerList(containerObservable));
+        containerList = new ContainerList(containerObservable);
+        Scene scene = new Scene(containerList);
         stage.setScene(scene);
         stage.show();
     }
@@ -53,14 +55,15 @@ public class ContainerListTest extends ApplicationTest {
     @Test
     public void displaysContainers() throws InterruptedException {
         List<ContainerList.EntryPoint> entryPoints = ContainerList.containersToEntryPoints(CONTAINERS);
-        verifyThat("#containerList", ListViewMatchers.hasItems(entryPoints.size()));
+        Thread.sleep(100); // Required to spawn JavaFX
+        verifyThat(containerList, ListViewMatchers.hasItems(entryPoints.size()));
     }
 
     @Test
     public void updatesContainers() throws InterruptedException {
         when(mockedSupplier.get()).thenReturn(Collections.emptyList());
         Thread.sleep(10);
-        verifyThat("#containerList", ListViewMatchers.hasItems(0));
+        verifyThat(containerList, ListViewMatchers.hasItems(0));
     }
 
 }

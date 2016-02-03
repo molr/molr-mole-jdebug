@@ -29,7 +29,6 @@ public class ContainerList extends ListView<ContainerList.EntryPoint> {
     public ContainerList(Observable<List<AgentContainer>> containerObservable) throws IOException {
         super();
         setItems(list);
-        setId("containerList");
 
         containerObservable
                 .subscribeOn(JavaFxScheduler.getInstance())
