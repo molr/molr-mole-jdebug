@@ -80,7 +80,7 @@ public class AgentContainerController {
         Optional<Service> serviceOptional = agentContainer.getServices().stream().filter(service -> {
             String className = service.getClassName();
             className = className.substring(className.lastIndexOf(".") + 1);
-            return className.equals(serviceName) ? true : false;
+            return className.equals(serviceName);
         }).findFirst();
         if (serviceOptional.isPresent()) {
             Service service = serviceOptional.get();
@@ -102,18 +102,8 @@ public class AgentContainerController {
         return agentContainerManager.findAgentContainer(containerName)
                 .map(container -> {
                     try {
-                        return JarReader.ofContainer(container, reader -> {
-                            final String entry = className + JAVA_CLASS_SUFFIX;
-                            try {
-                                return ResponseEntity.ok(reader.readEntry(entry));
-                            } catch (NoSuchElementException e) {
-                                return ResponseEntity.badRequest()
-                                        .body("No class source found for entry " + entry);
-                            } catch (IOException e) {
-                                return ResponseEntity.status(INTERNAL_SERVER_ERROR)
-                                        .body("Failed to read entry " + entry + " inside container " + containerName);
-                            }
-                        });
+                        return JarReader.ofContainer(container,
+                                reader -> readSourceFromJar(reader, containerName, className));
                     } catch (IOException e) {
                         LOGGER.warn("Failed to read from container file {}: " + containerName, e);
                         return ResponseEntity.status(INTERNAL_SERVER_ERROR)
@@ -139,5 +129,26 @@ public class AgentContainerController {
         this.jarWriter = jarWriter;
     }
 
+    /**
+     * Attempts to read the given class name from a jar file using the given {@link JarReader}.
+     *
+     * @param reader        The jar reader which can open a jar for reading.
+     * @param containerName The name of the container used for error messages.
+     * @param className     The full name and path of the class, but without any suffixes.
+     *                      Example: <code>org.test.ClassName</code>
+     * @return A HTTP {@link ResponseEntity} with a string on success or an error on failure.
+     */
+    private static ResponseEntity<String> readSourceFromJar(JarReader reader, String containerName, String className) {
+        final String entry = className.replace(".", "/") + JAVA_CLASS_SUFFIX;
+        try {
+            return ResponseEntity.ok(reader.readEntry(entry));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.badRequest()
+                    .body("No class source found for entry " + entry);
+        } catch (IOException e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+                    .body("Failed to read entry " + entry + " inside container " + containerName);
+        }
+    }
 
 }

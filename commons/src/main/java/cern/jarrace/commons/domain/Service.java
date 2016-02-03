@@ -70,7 +70,7 @@ public class Service {
 
     @Override
     public String toString() {
-        return getAgentName() + ": " + getClazz();
+        return getAgentName() + ": " + getClassName();
     }
 
 }

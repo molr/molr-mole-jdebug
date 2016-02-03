@@ -12,12 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
-<<<<<<< HEAD
-=======
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
->>>>>>> gui
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +28,7 @@ public class SimpleAgentRunnerSpawner extends AbstractJvmSpawner implements Agen
 
     @Override
     public String spawnAgentRunner(Service service, String jarPath, List<String> args) throws Exception {
-        if(args == null) {
+        if (args == null) {
             throw new IllegalArgumentException("Arguments cannot be null");
         }
         List<String> arguments = new ArrayList<>();
@@ -54,21 +48,10 @@ public class SimpleAgentRunnerSpawner extends AbstractJvmSpawner implements Agen
         Process process = spawnJvm(arguments);
 
         StringBuilder stringBuilder = new StringBuilder();
-<<<<<<< HEAD
         BufferedInputStream bs = new BufferedInputStream(process.getInputStream());
 
         while (process.isAlive()) {
             stringBuilder.append(bs.read());
-=======
-        InputStreamReader inputReader = new InputStreamReader(process.getInputStream());
-        BufferedReader reader = new BufferedReader(inputReader);
-        while(process.isAlive()) {
-            final String line = reader.readLine();
-            if (line == null) {
-                break;
-            }
-            stringBuilder.append(line);
->>>>>>> gui
         }
 
         return stringBuilder.toString();
