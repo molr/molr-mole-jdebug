@@ -12,9 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,19 +47,10 @@ public class SimpleAgentRunnerSpawner extends AbstractJvmSpawner implements Agen
 
         Process process = spawnJvm(arguments);
         StringBuilder stringBuilder = new StringBuilder();
-        InputStreamReader inputReader = new InputStreamReader(process.getInputStream());
-        BufferedReader reader = new BufferedReader(inputReader);
-        while (process.isAlive()) {
-            final String line = reader.readLine();
-            if (line == null) {
-                break;
-            }
-            stringBuilder.append(line);
-            BufferedInputStream bs = new BufferedInputStream(process.getInputStream());
+        BufferedInputStream bs = new BufferedInputStream(process.getInputStream());
 
-            while (process.isAlive()) {
-                stringBuilder.append(bs.read());
-            }
+        while (process.isAlive()) {
+            stringBuilder.append(bs.read());
         }
         return stringBuilder.toString();
     }
