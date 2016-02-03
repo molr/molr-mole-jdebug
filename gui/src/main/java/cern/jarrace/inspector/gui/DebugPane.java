@@ -50,11 +50,13 @@ public class DebugPane extends BorderPane {
         if (lineNumber > textFlow.getChildren().size()) {
             throw new IllegalArgumentException("Line number must not be bigger than the existent number of lines");
         }
-        Text textLine = (Text) textFlow.getChildren().get(currentLine);
+
+        Text textLine;
+        textLine = (Text) textFlow.getChildren().get(currentLine);
         textLine.setFill(Color.BLACK);
         textLine = (Text) textFlow.getChildren().get(lineNumber - 1);
         textLine.setFill(Color.RED);
-        currentLine = lineNumber;
+        currentLine = lineNumber - 1;
         if (scrollCheckBox.isSelected()) {
             scrollPane(textLine);
         }
@@ -74,7 +76,7 @@ public class DebugPane extends BorderPane {
         if (!sourceCodeText.isEmpty()) {
             Arrays.asList(sourceCodeText.split("\n")).forEach(line -> {
                 Text text = new Text(line + "\n");
-                text.setOnMouseClicked(event -> setCurrentLine(textFlow.getChildren().indexOf(text)));
+                text.setOnMouseClicked(event -> setCurrentLine(textFlow.getChildren().indexOf(text) + 1));
                 textFlow.getChildren().add(text);
             });
             ((Text) textFlow.getChildren().get(0)).setFill(Color.RED);
@@ -84,7 +86,7 @@ public class DebugPane extends BorderPane {
     private void initUI() {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_LEFT);
-        stepOverButton.setOnMouseClicked(event -> setCurrentLine(currentLine + 1));
+        stepOverButton.setOnMouseClicked(event -> setCurrentLine(currentLine + 2));
         hBox.getChildren().add(stepOverButton);
         terminateButton.setOnMouseClicked(event -> ((Stage) getScene().getWindow()).close());
         hBox.getChildren().add(terminateButton);

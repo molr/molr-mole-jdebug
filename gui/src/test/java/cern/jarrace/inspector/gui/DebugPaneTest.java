@@ -91,5 +91,8 @@ public class DebugPaneTest extends ApplicationTest {
         rootPane.getChildren().add(debugPane);
         debugPane.setCurrentLine(1);
         assertEquals(Color.RED, ((Text) debugPane.getTextFlow().getChildren().get(0)).getFill());
+        debugPane.setCurrentLine(2);
+        assertEquals(Color.BLACK, ((Text) debugPane.getTextFlow().getChildren().get(0)).getFill());
+        assertEquals(Color.RED, ((Text) debugPane.getTextFlow().getChildren().get(1)).getFill());
     }
 }
