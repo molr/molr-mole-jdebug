@@ -5,6 +5,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -22,6 +23,9 @@ public class DebugPane extends BorderPane {
 
     private final ScrollPane scrollPane = new ScrollPane();
     private final TextFlow textFlow = new TextFlow();
+    private final Button stepOverButton = new Button("Step Over");
+    private final Button terminateButton = new Button("Terminate");
+    private final CheckBox scrollCheckBox = new CheckBox("Automatic Scroll");
     private int currentLine = 0;
 
     public DebugPane(String sourceCodeText) {
@@ -36,7 +40,9 @@ public class DebugPane extends BorderPane {
         textLine = (Text) textFlow.getChildren().get(lineNumber);
         textLine.setFill(Color.RED);
         currentLine = lineNumber;
+        if(scrollCheckBox.isSelected()){
         scrollPane(textLine);
+        }
     }
 
     private void scrollPane(Text textLine) {
@@ -59,12 +65,11 @@ public class DebugPane extends BorderPane {
 
     private void initUI() {
         HBox hBox = new HBox();
-        Button stepOverButton = new Button("StepOver");
         stepOverButton.setOnMouseClicked(event -> setCurrentLine(currentLine + 1));
         hBox.getChildren().add(stepOverButton);
-        Button terminateButton = new Button("Terminate");
         terminateButton.setOnMouseClicked(event -> ((Stage) getScene().getWindow()).close());
         hBox.getChildren().add(terminateButton);
+        hBox.getChildren().add(scrollCheckBox);
         hBox.setSpacing(10);
         hBox.setPadding(new Insets(15, 12, 15, 12));
         scrollPane.setContent(textFlow);
