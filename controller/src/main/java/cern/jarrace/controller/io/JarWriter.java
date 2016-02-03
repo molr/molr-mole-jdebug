@@ -30,7 +30,7 @@ public class JarWriter {
 
     @Value("$" + IO_DEPLOYMENT_DIR_PROPERTY_NAME + "}")
     private String deploymentPath;
-    private Pattern pattern = Pattern.compile("^[a-zA-Z]+$");
+    private Pattern pattern = Pattern.compile("^[a-zA-Z0-9]+$");
 
     @PostConstruct
     void init() throws InvalidPropertyException {
@@ -58,7 +58,7 @@ public class JarWriter {
         }
 
         if (!pattern.matcher(name).matches()) {
-            throw new IllegalArgumentException("THe name can be composed only by alphabetic characteres");
+            throw new IllegalArgumentException("The name can be composed only by alphanenumeric characteres");
         }
 
         if (jar == null || jar.length == 0) {

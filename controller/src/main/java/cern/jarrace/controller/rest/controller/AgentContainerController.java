@@ -97,18 +97,19 @@ public class AgentContainerController {
     }
 
     @RequestMapping(value = "/{" + CONTAINER_NAME_VARIABLE_NAME + "}/read", method = RequestMethod.GET)
-    public ResponseEntity<String> readSource(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
-                                             @RequestParam("class") String className) {
+    public ResponseEntity<?> readSource(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
+                                        @RequestParam("class") String className) {
+        final String parsedClassName = className.replace(".", "/");
         return agentContainerManager.findAgentContainer(containerName)
                 .map(container -> {
                     try {
                         return JarReader.ofContainer(container, reader -> {
-                            final String entry = className + JAVA_CLASS_SUFFIX;
+                            final String entry = parsedClassName + JAVA_CLASS_SUFFIX;
                             try {
                                 return ResponseEntity.ok(reader.readEntry(entry));
                             } catch (NoSuchElementException e) {
-                                return ResponseEntity.badRequest()
-                                        .body("No class source found for entry " + entry);
+                                return ResponseEntity.noContent()
+                                        .header("message", "No class source found for entry " + entry).build();
                             } catch (IOException e) {
                                 return ResponseEntity.status(INTERNAL_SERVER_ERROR)
                                         .body("Failed to read entry " + entry + " inside container " + containerName);

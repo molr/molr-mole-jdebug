@@ -56,7 +56,7 @@ public class ContainerListTab extends ListView<ContainerListTab.EntryPoint> {
             containers.stream().forEach(agent -> agent.getServices().forEach(service -> {
                 service.getEntryPoints().forEach(entry -> {
                     final EntryPoint entryPoint = new EntryPoint(agent.getContainerName(),
-                            service.getClassName().substring(service.getClassName().lastIndexOf(".") + 1), entry);
+                            service.getClassName(), entry);
                     serviceList.add(entryPoint);
                 });
             }));

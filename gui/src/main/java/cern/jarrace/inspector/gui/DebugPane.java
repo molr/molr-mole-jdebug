@@ -1,37 +1,33 @@
 package cern.jarrace.inspector.gui;
 
-import cern.jarrace.inspector.gui.rest.Services;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import retrofit2.Response;
+import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 /**
  * @author tiagomr
  */
-public class DebugPane extends ScrollPane {
+public class DebugPane extends BorderPane {
 
+    private final ScrollPane scrollPane = new ScrollPane();
     private final TextFlow textFlow = new TextFlow();
     private int currentLine = 0;
 
     public DebugPane(String sourceCodeText) {
         super();
-        Arrays.asList(sourceCodeText.split("\n")).forEach(line -> {
-            Text text = new Text(line + "\n");
-            text.setOnMouseClicked(event -> setCurrentLine(textFlow.getChildren().indexOf(text)));
-            textFlow.getChildren().add(text);
-        });
-        setContent(textFlow);
+        initUI();
+        initData(sourceCodeText);
     }
 
     public void setCurrentLine(int lineNumber) {
@@ -40,5 +36,39 @@ public class DebugPane extends ScrollPane {
         textLine = (Text) textFlow.getChildren().get(lineNumber);
         textLine.setFill(Color.RED);
         currentLine = lineNumber;
+        scrollPane(textLine);
+    }
+
+    private void scrollPane(Text textLine) {
+        double yToCenter = textLine.getBoundsInParent().getMaxY() - (textLine.getBoundsInLocal().getHeight() / 2);
+        double maximumScroll = textFlow.getBoundsInLocal().getHeight() - scrollPane.getViewportBounds().getHeight();
+        double valueToScroll = yToCenter - (scrollPane.getViewportBounds().getHeight() / 2);
+
+        valueToScroll = valueToScroll < 0 ? 0 : valueToScroll;
+        valueToScroll = valueToScroll > maximumScroll ? maximumScroll : valueToScroll;
+        scrollPane.setVvalue(valueToScroll / maximumScroll);
+    }
+
+    private void initData(String sourceCodeText) {
+        Arrays.asList(sourceCodeText.split("\n")).forEach(line -> {
+            Text text = new Text(line + "\n");
+            text.setOnMouseClicked(event -> setCurrentLine(textFlow.getChildren().indexOf(text)));
+            textFlow.getChildren().add(text);
+        });
+    }
+
+    private void initUI() {
+        HBox hBox = new HBox();
+        Button stepOverButton = new Button("StepOver");
+        stepOverButton.setOnMouseClicked(event -> setCurrentLine(currentLine + 1));
+        hBox.getChildren().add(stepOverButton);
+        Button terminateButton = new Button("Terminate");
+        terminateButton.setOnMouseClicked(event -> ((Stage) getScene().getWindow()).close());
+        hBox.getChildren().add(terminateButton);
+        hBox.setSpacing(10);
+        hBox.setPadding(new Insets(15, 12, 15, 12));
+        scrollPane.setContent(textFlow);
+        setCenter(scrollPane);
+        setBottom(hBox);
     }
 }
