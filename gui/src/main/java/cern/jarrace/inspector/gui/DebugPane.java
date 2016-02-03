@@ -1,9 +1,7 @@
 package cern.jarrace.inspector.gui;
 
-import javafx.geometry.BoundingBox;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
@@ -17,6 +15,8 @@ import javafx.stage.Stage;
 import java.util.Arrays;
 
 /**
+ * Implementation {@link BorderPane} that shows the source code in a {@link TextFlow} node and allows for the stepping
+ * and termination of the execution.
  * @author tiagomr
  */
 public class DebugPane extends BorderPane {
@@ -30,18 +30,31 @@ public class DebugPane extends BorderPane {
 
     public DebugPane(String sourceCodeText) {
         super();
+        if(sourceCodeText == null) {
+            throw new IllegalArgumentException("Source code text must not be null");
+        }
         initUI();
         initData(sourceCodeText);
     }
 
+    /**
+     * Highlights the line given as a parameter
+     * @param lineNumber Line to be highlighted
+     */
     public void setCurrentLine(int lineNumber) {
+        if(lineNumber < 1) {
+            throw new IllegalArgumentException("Line number must have a positive value");
+        }
+        if(lineNumber > textFlow.getChildren().size()) {
+            throw new IllegalArgumentException("Line number must not be bigger than the existent number of lines");
+        }
         Text textLine = (Text) textFlow.getChildren().get(currentLine);
         textLine.setFill(Color.BLACK);
-        textLine = (Text) textFlow.getChildren().get(lineNumber);
+        textLine = (Text) textFlow.getChildren().get(lineNumber - 1);
         textLine.setFill(Color.RED);
         currentLine = lineNumber;
-        if(scrollCheckBox.isSelected()){
-        scrollPane(textLine);
+        if (scrollCheckBox.isSelected()) {
+            scrollPane(textLine);
         }
     }
 
@@ -56,15 +69,19 @@ public class DebugPane extends BorderPane {
     }
 
     private void initData(String sourceCodeText) {
-        Arrays.asList(sourceCodeText.split("\n")).forEach(line -> {
-            Text text = new Text(line + "\n");
-            text.setOnMouseClicked(event -> setCurrentLine(textFlow.getChildren().indexOf(text)));
-            textFlow.getChildren().add(text);
-        });
+        if(!sourceCodeText.isEmpty()) {
+            Arrays.asList(sourceCodeText.split("\n")).forEach(line -> {
+                Text text = new Text(line + "\n");
+                text.setOnMouseClicked(event -> setCurrentLine(textFlow.getChildren().indexOf(text)));
+                textFlow.getChildren().add(text);
+            });
+            ((Text) textFlow.getChildren().get(0)).setFill(Color.RED);
+        }
     }
 
     private void initUI() {
         HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER_LEFT);
         stepOverButton.setOnMouseClicked(event -> setCurrentLine(currentLine + 1));
         hBox.getChildren().add(stepOverButton);
         terminateButton.setOnMouseClicked(event -> ((Stage) getScene().getWindow()).close());
@@ -75,5 +92,10 @@ public class DebugPane extends BorderPane {
         scrollPane.setContent(textFlow);
         setCenter(scrollPane);
         setBottom(hBox);
+    }
+
+    /* For testing */
+    TextFlow getTextFlow() {
+        return textFlow;
     }
 }
