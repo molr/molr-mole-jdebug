@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.time.Duration;
 
 /**
  * Reads commands from a {@link java.io.BufferedReader} and proxies them to a given
@@ -26,6 +27,18 @@ public class JdiControllerReader extends RemoteReader {
      */
     public JdiControllerReader(BufferedReader reader, JdiController controller) {
         super(reader);
+        this.controller = controller;
+    }
+
+    /**
+     * Creates a reader which reads commands from the given reader and forwards them to the controller.
+     *
+     * @param reader       The reader to read incoming commands from.
+     * @param controller   The controller to relay commands to.
+     * @param readInterval The interval with which commands should be read. Cannot be negative.
+     */
+    public JdiControllerReader(BufferedReader reader, JdiController controller, Duration readInterval) {
+        super(reader, readInterval);
         this.controller = controller;
     }
 
@@ -50,12 +63,14 @@ public class JdiControllerReader extends RemoteReader {
 
     protected void readCommand(BufferedReader reader) {
         try {
-            int code = reader.read();
-            JdiControllerCommand[] values = JdiControllerCommand.values();
-            if (code > 0 && code < values.length) {
-                forwardCommand(values[code]);
-            } else {
-                LOGGER.error("Received illegal command {}, expected a number between 0 and {}", code, values.length - 1);
+            int code = Character.getNumericValue(reader.read());
+            if (code != -1) {
+                JdiControllerCommand[] values = JdiControllerCommand.values();
+                if (code >= 0 && code < values.length) {
+                    forwardCommand(values[code]);
+                } else {
+                    LOGGER.error("Received illegal command {}, expected a number between 0 and {}", code, values.length - 1);
+                }
             }
         } catch (IOException e) {
             LOGGER.warn("Failed to read command from reader: ", e);

@@ -20,6 +20,13 @@ public class JdiControllerWriter implements JdiController {
         this.printWriter = printWriter;
     }
 
+    /**
+     * Flushes the content in the writer.
+     */
+    public void flush() {
+        printWriter.flush();
+    }
+
     @Override
     public void stepForward() {
         printWriter.print(JdiControllerCommand.STEP_FORWARD.ordinal());
