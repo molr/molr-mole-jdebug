@@ -6,7 +6,6 @@
 
 package cern.jarrace.inspector.controller;
 
-import cern.jarrace.inspector.jdi.EntryState;
 import cern.jarrace.inspector.entry.BlockingCallbackFactory;
 import cern.jarrace.inspector.entry.BlockingEntryListener;
 import cern.jarrace.inspector.entry.EntryMethod;
@@ -14,9 +13,7 @@ import cern.jarrace.inspector.jdi.ClassInstantiationListener;
 import com.sun.jdi.*;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.VMStartException;
-import com.sun.jdi.request.StepRequest;
 import org.jdiscript.JDIScript;
-import org.jdiscript.requests.ChainingStepRequest;
 import org.jdiscript.util.VMLauncher;
 
 import java.io.Closeable;
@@ -24,7 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -64,19 +60,18 @@ public class BlockingJdiController implements JdiController, Closeable {
     }
 
     @Override
-    public EntryState stepForward(String entry) {
-        ThreadReference threadReference = entryRegistry.getThreadReference(entry)
-                .orElseThrow(() -> new IllegalArgumentException("No active entry called " + entry));
-        BlockingEntryListener listener = entryRegistry.getEntryListener(entry).get();
+    public void stepForward() {
+        ThreadReference threadReference = entryRegistry.getThreadReference()
+                .orElseThrow(() -> new IllegalStateException("No active entry"));
+        BlockingEntryListener listener = entryRegistry.getEntryListener().get();
 
         clearStepCallbacks();
         threadReference.resume();
+    }
 
-        try {
-            return listener.waitForNextEntry();
-        } catch (InterruptedException e) {
-            return null;
-        }
+    @Override
+    public void terminate() {
+        close();
     }
 
     public static class Builder {

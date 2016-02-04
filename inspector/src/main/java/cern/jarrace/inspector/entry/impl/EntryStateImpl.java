@@ -4,9 +4,9 @@
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
-package cern.jarrace.inspector.jdi.impl;
+package cern.jarrace.inspector.entry.impl;
 
-import cern.jarrace.inspector.jdi.EntryState;
+import cern.jarrace.inspector.entry.EntryState;
 
 /**
  * An immutable implementation of an {@link EntryState}.
@@ -44,4 +44,7 @@ public class EntryStateImpl implements EntryState {
     public int getLine() {
         return position;
     }
+
+
+
 }

@@ -8,9 +8,12 @@ package cern.jarrace.inspector.controller;
 
 import cern.jarrace.inspector.entry.CallbackFactory;
 import cern.jarrace.inspector.entry.EntryListener;
+import cern.jarrace.inspector.entry.EntryState;
+import cern.jarrace.inspector.entry.impl.EntryStateImpl;
 import cern.jarrace.inspector.jdi.LocationRange;
 import cern.jarrace.inspector.jdi.ThreadState;
 import com.sun.jdi.AbsentInformationException;
+import com.sun.jdi.Location;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.event.BreakpointEvent;
 import com.sun.jdi.event.StepEvent;
@@ -18,15 +21,20 @@ import com.sun.jdi.event.VMStartEvent;
 import com.sun.jdi.request.StepRequest;
 import org.jdiscript.JDIScript;
 import org.jdiscript.requests.ChainingStepRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * An event handler receiving events from the running JDI instance. This handler attempts to hide
  * some of the JDI implementations, so it should not be used outside the {@link JdiController}.
  */
 public class JdiEventHandlerImpl extends JdiEventHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JdiEventHandlerImpl.class);
 
     private final JDIScript jdi;
     private final CallbackFactory<?> callbackHandler;
@@ -70,19 +78,35 @@ public class JdiEventHandlerImpl extends JdiEventHandler {
     public synchronized void step(StepEvent e) {
         InspectableState state = threads.get(e.thread());
         if (state != null) {
-            final ThreadState threadState = new ThreadState(state.methodRange, e.location());
-            if (state.methodRange.isWithin(e.location())) {
-                threads.get(e.thread()).listener.onLocationChange(threadState);
-                e.thread().suspend();
-            } else {
-                threads.remove(e.thread()).listener.onInspectionEnd(threadState);
-            }
+            fromStepEvent(e).ifPresent(entryState -> {
+                if (state.methodRange.isWithin(e.location())) {
+                    threads.get(e.thread()).listener.onLocationChange(entryState);
+                    e.thread().suspend();
+                } else {
+                    threads.remove(e.thread()).listener.onInspectionEnd(entryState);
+                }
+            });
         }
     }
 
     @Override
     public void vmStart(VMStartEvent e) {
-        // Do nothing
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Starting vm {}", e);
+        }
+    }
+
+    private static Optional<EntryState> fromStepEvent(StepEvent event) {
+        try {
+            final Location location = event.location();
+            final int lineNumber = location.lineNumber();
+            final String className = location.sourcePath();
+            final String methodName = location.method().name();
+            return Optional.of(new EntryStateImpl(className, methodName, lineNumber));
+        } catch (AbsentInformationException e) {
+            LOGGER.warn("Failed to read source path from event {}", e);
+            return Optional.empty();
+        }
     }
 
     private static class InspectableState {

@@ -6,11 +6,6 @@
 
 package cern.jarrace.inspector.entry;
 
-import cern.jarrace.inspector.jdi.EntryState;
-import cern.jarrace.inspector.jdi.ThreadState;
-import cern.jarrace.inspector.jdi.impl.EntryStateImpl;
-import com.sun.jdi.AbsentInformationException;
-import com.sun.jdi.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +32,12 @@ public class BlockingEntryListener implements EntryListener {
     }
 
     @Override
-    public void onLocationChange(ThreadState state) {
+    public void onLocationChange(EntryState state) {
         insertEntry(state);
     }
 
     @Override
-    public void onInspectionEnd(ThreadState state) {
+    public void onInspectionEnd(EntryState state) {
         insertEntry(state);
     }
 
@@ -50,19 +45,13 @@ public class BlockingEntryListener implements EntryListener {
      * Attempts to serve an {@link EntryState} to any thread trying to pull events from the stateQueue. If
      * no one is listening an error will be logged, but nothing else will happen.
      *
-     * @param threadState The state of a thread given from a running JDI instance.
+     * @param entryState The state of a thread given from a running JDI instance.
      */
-    private void insertEntry(ThreadState threadState) {
+    private void insertEntry(EntryState entryState) {
         try {
-            final Location currentLocation = threadState.getCurrentLocation();
-            final String className = currentLocation.sourceName();
-            final String methodName = currentLocation.method().name();
-            final EntryState entryState = new EntryStateImpl(className, methodName, currentLocation.lineNumber());
             stateQueue.offer(entryState, timeout.toMillis(), TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            LOGGER.error("Failed to insert location change state for state {}: Unexpected location change", threadState);
-        } catch (AbsentInformationException e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to insert location change state for state {}: Unexpected location change", entryState);
         }
     }
 

@@ -22,8 +22,16 @@ public class JdiEntryRegistry<Listener extends EntryListener> {
     Map<String, ThreadReference> stateMap = new HashMap<>();
     Map<String, Listener> listenerMap = new HashMap<>();
 
+    public Optional<ThreadReference> getThreadReference() {
+        return stateMap.values().stream().findAny();
+    }
+
     public Optional<ThreadReference> getThreadReference(String entry) {
         return Optional.ofNullable(stateMap.get(entry));
+    }
+
+    public Optional<Listener> getEntryListener() {
+        return listenerMap.values().stream().findAny();
     }
 
     public Optional<Listener> getEntryListener(String entry) {

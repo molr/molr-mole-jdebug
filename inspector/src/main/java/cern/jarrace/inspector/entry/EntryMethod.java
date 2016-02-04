@@ -6,8 +6,6 @@
 
 package cern.jarrace.inspector.entry;
 
-import cern.jarrace.inspector.jdi.EntryState;
-
 import java.lang.reflect.Method;
 
 /**
