@@ -2,12 +2,13 @@ package cern.jarrace.inspector.remote;
 
 import cern.jarrace.inspector.controller.JdiController;
 
+import java.io.Flushable;
 import java.io.PrintWriter;
 
 /**
  * A controller which is connected to a remote implementation of a {@link JdiController} via a given output stream.
  */
-public class JdiControllerWriter implements JdiController {
+public class JdiControllerWriter implements JdiController, Flushable {
 
     private final PrintWriter printWriter;
 
@@ -20,9 +21,7 @@ public class JdiControllerWriter implements JdiController {
         this.printWriter = printWriter;
     }
 
-    /**
-     * Flushes the content in the writer.
-     */
+    @Override
     public void flush() {
         printWriter.flush();
     }

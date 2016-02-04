@@ -7,12 +7,10 @@ import org.junit.Test;
 import java.io.*;
 import java.time.Duration;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-public class JdiControllerReaderTest {
+public class JdiControllerReaderWriterTest {
 
     private static final Duration ONE_MILLISECOND = Duration.ofMillis(1);
     private JdiController mockedController;
