@@ -6,23 +6,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Reads commands from a {@link java.io.BufferedReader} and proxies them to a given
  * {@link cern.jarrace.inspector.controller.JdiController}. The reader runs a separate thread pool to continuously read
  * input from the stream.
  */
-public class JdiControllerReader implements AutoCloseable {
+public class JdiControllerReader extends RemoteReader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdiControllerReader.class);
-    private static final int INITIAL_DELAY = 0;
-    private static final int COMMAND_INTERVAL = 100;
 
-    private final ScheduledExecutorService service;
-    private final BufferedReader reader;
     private final JdiController controller;
 
     /**
@@ -32,17 +25,8 @@ public class JdiControllerReader implements AutoCloseable {
      * @param controller The controller to relay commands to.
      */
     public JdiControllerReader(BufferedReader reader, JdiController controller) {
-        this.reader = reader;
+        super(reader);
         this.controller = controller;
-        service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(this::readCommand, INITIAL_DELAY, COMMAND_INTERVAL, TimeUnit.MILLISECONDS);
-    }
-
-
-    @Override
-    public void close() {
-        closeResource(reader, "Failed to close reader");
-        service.shutdown();
     }
 
     private static void closeResource(AutoCloseable closeable, String error) {
@@ -64,7 +48,7 @@ public class JdiControllerReader implements AutoCloseable {
         }
     }
 
-    private void readCommand() {
+    protected void readCommand(BufferedReader reader) {
         try {
             int code = reader.read();
             JdiControllerCommand[] values = JdiControllerCommand.values();
