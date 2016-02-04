@@ -1,4 +1,4 @@
-package cern.jarrace.inspector.cli;
+package cern.jarrace.inspector.remote;
 
 /**
  * Commands which can be issued to the {@link cern.jarrace.inspector.controller.JdiController} remotely.

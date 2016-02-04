@@ -1,4 +1,4 @@
-package cern.jarrace.inspector.cli;
+package cern.jarrace.inspector.remote;
 
 import cern.jarrace.inspector.controller.JdiController;
 

@@ -1,4 +1,4 @@
-package cern.jarrace.inspector.cli;
+package cern.jarrace.inspector.remote;
 
 import cern.jarrace.inspector.entry.EntryListener;
 import cern.jarrace.inspector.entry.EntryState;

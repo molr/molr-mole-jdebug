@@ -1,4 +1,4 @@
-package cern.jarrace.inspector.cli;
+package cern.jarrace.inspector.remote;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
