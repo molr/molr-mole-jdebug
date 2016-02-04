@@ -43,7 +43,6 @@ public class Stepper extends Application {
 
     public static void close() {
         Platform.runLater(() -> Platform.exit());
-        LOG_THREAD_POOL.shutdown();
 //        inspector.close();
     }
 

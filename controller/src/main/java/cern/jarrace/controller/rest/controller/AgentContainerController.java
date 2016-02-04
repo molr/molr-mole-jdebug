@@ -1,104 +1,143 @@
+/**
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
 package cern.jarrace.controller.rest.controller;
 
-import cern.jarrace.controller.domain.Entrypoint;
+import cern.jarrace.commons.domain.AgentContainer;
+import cern.jarrace.commons.domain.Service;
+import cern.jarrace.controller.io.JarReader;
+import cern.jarrace.controller.io.JarWriter;
+import cern.jarrace.controller.jvm.AgentRegistrySpawner;
+import cern.jarrace.controller.jvm.AgentRunnerSpawner;
+import cern.jarrace.controller.manager.AgentContainerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
 /**
- * @author timartin
- * Controller that exposes services to manage {@link Entrypoint}s
+ * {@link RestController} that exposes endpoints to manage {@link AgentContainer}s
+ *
+ * @author tiagomr
  */
 @RestController
-@RequestMapping("/jarrace")
+@RequestMapping("${rest.basepath}/container")
 public class AgentContainerController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentContainerController.class);
     private static final File DEPLOYMENT_DIR = new File(System.getProperty("java.io.tmpdir"));
+    private static final String CONTAINER_NAME_VARIABLE_NAME = "containerName";
+    static final String JAVA_CLASS_SUFFIX = ".java";
 
-    final Map<String, List<Entrypoint>> entrypoints = new HashMap<>();
-    final Map<String, String> paths = new HashMap<>();
+    @Autowired
+    private AgentContainerManager agentContainerManager;
+    @Autowired
+    private AgentRegistrySpawner agentRegistrySpawner;
+    @Autowired
+    private AgentRunnerSpawner agentRunnerSpawner;
+    @Autowired
+    private JarWriter jarWriter;
 
-    @RequestMapping(value = "/container/deploy/{name}", method = RequestMethod.POST)
-    public void deploy(@PathVariable("name") String name, @RequestBody byte[] jar) throws IOException {
-        System.out.println("Deployed " + name);
-        String path = writeFile(name, jar);
-        paths.put(name, path);
-        entrypoints.put(name, new ArrayList<>());
-        List<String> args = new ArrayList<>();
-        args.add("cern.jarrace.agent.AgentContainer");
-        args.add(name);
-        args.add("localhost:8080");
-        startContainer(path, args);
+
+    @RequestMapping(value = "/deploy/{" + CONTAINER_NAME_VARIABLE_NAME + "}", method = RequestMethod.POST)
+    public void deploy(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName, @RequestBody byte[] jar) throws Exception {
+        LOGGER.debug("Started deployment process for container: [{}]", containerName);
+        String path = jarWriter.writeFile(containerName, jar);
+        agentRegistrySpawner.spawnAgentRegistry(containerName, path);
     }
 
-    @RequestMapping(value = "/service/register/{name}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void registerService(@PathVariable(value = "name") String name, @RequestBody Entrypoint entrypoint){
+    @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void registerService(@RequestBody AgentContainer agentContainer) {
+        agentContainerManager.registerAgentContainer(agentContainer);
+        LOGGER.info("Registered new AgentContainer: [{}]", agentContainer);
+    }
 
-        if(entrypoint.getAgentName() == null || entrypoint.getAgentName().isEmpty()) {
-            throw new IllegalArgumentException("Agent name must be different than null and not empty");
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Set<AgentContainer> listContainers() {
+        Set<AgentContainer> allAgentContainers = agentContainerManager.findAllAgentContainers();
+        return allAgentContainers;
+    }
+
+    @RequestMapping(value = "/{" + CONTAINER_NAME_VARIABLE_NAME + "}/start", method = RequestMethod.GET)
+    public String runService(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
+                             @RequestParam(value = "service") String serviceName,
+                             @RequestParam(value = "entryPoints", defaultValue = "") String entryPoints) throws Exception {
+        Optional<AgentContainer> optionalAgentContainer = agentContainerManager.findAgentContainer(containerName);
+        if (!optionalAgentContainer.isPresent()) {
+            throw new IllegalArgumentException("AgentContainer name must exist");
         }
-        if(entrypoint.getPath() == null || entrypoint.getPath().isEmpty()) {
-            throw new IllegalArgumentException("Path must be different than null and not empty");
+        AgentContainer agentContainer = optionalAgentContainer.get();
+        Optional<Service> serviceOptional = agentContainer.getServices().stream().filter(service -> {
+            String className = service.getClassName();
+            className = className.substring(className.lastIndexOf(".") + 1);
+            return className.equals(serviceName) ? true : false;
+        }).findFirst();
+        if (serviceOptional.isPresent()) {
+            Service service = serviceOptional.get();
+            List<String> parsedEntryPoints = Arrays.asList(entryPoints.split(","));
+            parsedEntryPoints.forEach(entryPoint -> {
+                if (!service.getEntryPoints().contains(entryPoint)) {
+                    throw new IllegalArgumentException("All entry points must exist");
+                }
+            });
+            return agentRunnerSpawner.spawnAgentRunner(service, agentContainer.getContainerPath(),
+                    parsedEntryPoints);
         }
-        entrypoints.get(name).add(entrypoint);
-        LOGGER.info(entrypoints.toString());
+        throw new IllegalArgumentException("Service name must exist");
     }
 
-    @RequestMapping(value = "/container/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<String> listContainers() {
-        return entrypoints.keySet();
+    @RequestMapping(value = "/{" + CONTAINER_NAME_VARIABLE_NAME + "}/read", method = RequestMethod.GET)
+    public ResponseEntity<String> readSource(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
+                                             @RequestParam("class") String className) {
+        return agentContainerManager.findAgentContainer(containerName)
+                .map(container -> {
+                    try {
+                        return JarReader.ofContainer(container, reader -> {
+                            final String entry = className + JAVA_CLASS_SUFFIX;
+                            try {
+                                return ResponseEntity.ok(reader.readEntry(entry));
+                            } catch (NoSuchElementException e) {
+                                return ResponseEntity.badRequest()
+                                        .body("No class source found for entry " + entry);
+                            } catch (IOException e) {
+                                return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+                                        .body("Failed to read entry " + entry + " inside container " + containerName);
+                            }
+                        });
+                    } catch (IOException e) {
+                        LOGGER.warn("Failed to read from container file {}: " + containerName, e);
+                        return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+                                .body("Failed to open container of name " + containerName);
+                    }
+                })
+                .orElse(ResponseEntity.badRequest().body("No container deployed under the name " + containerName));
     }
 
-    @RequestMapping(value = "/{name}/entrypoint/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Entrypoint> listServices(@PathVariable(value = "name") String containerName) {
-        List<Entrypoint> toReturn = this.entrypoints.get(containerName);
-        if (toReturn == null) {
-            toReturn = new ArrayList<>();
-        }
-        return toReturn;
+    public void setAgentContainerManager(AgentContainerManager agentContainerManager) {
+        this.agentContainerManager = agentContainerManager;
     }
 
-    @RequestMapping(value = "/{name}/{entrypoint}/start", method = RequestMethod.GET)
-    public String runService(@PathVariable("name") String name, @PathVariable int entrypoint) throws IOException {
-        List<Entrypoint> entries = entrypoints.get(name);
-        Entrypoint entryPoint = entries.get(entrypoint);
-        List<String> args = new ArrayList<>();
-        args.add("cern.jarrace.agent.AgentRunner");
-        args.add(entryPoint.getAgentName());
-        args.add(entryPoint.getPath());
-        startContainer(paths.get(name), args);
-        return null;
+    public void setAgentRegistrySpawner(AgentRegistrySpawner agentRegistrySpawner) {
+        this.agentRegistrySpawner = agentRegistrySpawner;
     }
 
-    private void startContainer(String path, List<String> args) throws IOException {
-        List<String> command = new ArrayList<>();
-        command.add(String.format("%s/bin/java", System.getProperty("java.home")));
-        command.add("-cp");
-        command.add(path);
-        command.addAll(args);
-
-        LOGGER.info(String.format("Starting agent container [%s]", command.toString()));
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.inheritIO().start();
+    public void setAgentRunnerSpawner(AgentRunnerSpawner agentRunnerSpawner) {
+        this.agentRunnerSpawner = agentRunnerSpawner;
     }
 
-    private String writeFile(String name, byte[] jar) throws IOException {
-        File deploymentFile = DEPLOYMENT_DIR.toPath().resolve(name + ".jar").toFile();
-        if (deploymentFile.exists()) {
-            deploymentFile.delete();
-        }
-        deploymentFile.createNewFile();
-        FileOutputStream outputStream = new FileOutputStream(deploymentFile);
-        outputStream.write(jar);
-        outputStream.close();
-        LOGGER.info("Deployed file + " + deploymentFile.getAbsolutePath());
-        return deploymentFile.getAbsolutePath();
+    public void setJarWriter(JarWriter jarWriter) {
+        this.jarWriter = jarWriter;
     }
+
+
 }
