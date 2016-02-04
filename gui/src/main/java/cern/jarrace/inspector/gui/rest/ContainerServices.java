@@ -41,14 +41,17 @@ public class ContainerServices {
     };
 
     private final ContainerService containerService;
+    private final ContainerService textService;
 
     /**
      * Instantiates this class with the given container service.
      *
      * @param containerService The service to use in this class.
+     * @param textService A text container service;
      */
-    ContainerServices(ContainerService containerService) {
+    ContainerServices(ContainerService containerService, ContainerService textService) {
         this.containerService = containerService;
+        this.textService = textService;
     }
 
     /**
@@ -85,6 +88,10 @@ public class ContainerServices {
         return containerService;
     }
 
+    public ContainerService getTextService() {
+        return textService;
+    }
+
     /**
      * Creates a service which executes all it's HTTP REST requests prefixed with the given URL.
      *
@@ -95,9 +102,14 @@ public class ContainerServices {
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(JacksonConverterFactory.create())
+                .build();
+
+        final Retrofit stringRetrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
                 .addConverterFactory(STRING_FACTORY)
                 .build();
-        return new ContainerServices(retrofit.create(ContainerService.class));
+
+        return new ContainerServices(retrofit.create(ContainerService.class), stringRetrofit.create(ContainerService.class));
     }
 
 }

@@ -49,7 +49,7 @@ public class ContainerServicesTest {
     @Test
     public void createsPeriodicObservableFromAContainerService() {
         Action1<List<AgentContainer>> mockedAction = mock(Action1.class);
-        Observable<List<AgentContainer>> observable = new ContainerServices(mockedService)
+        Observable<List<AgentContainer>> observable = new ContainerServices(mockedService, mockedService)
                 .createObservable(ContainerService::getContainers);
         observable.subscribe(mockedAction);
         verify(mockedAction).call(CONTAINER_LIST);
@@ -57,7 +57,7 @@ public class ContainerServicesTest {
 
     @Test
     public void returnsUnderlyingContainerService() {
-        assertEquals(mockedService, new ContainerServices(mockedService).getContainerService());
+        assertEquals(mockedService, new ContainerServices(mockedService, mockedService));
     }
 
 

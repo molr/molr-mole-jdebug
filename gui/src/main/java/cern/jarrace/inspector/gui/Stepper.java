@@ -20,6 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import retrofit2.Response;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -68,10 +69,9 @@ public class Stepper extends Application {
         debugButton.setOnMouseClicked(eventHandler -> {
             Optional<ContainerList.EntryPoint> selectedEntryPoint = containerList.getSelectedEntryPoint();
 
-
             if (selectedEntryPoint.isPresent()) {
                 try {
-                    String response = containers.getContainerService().readClass(selectedEntryPoint.get().getName(),
+                    String response = containers.getTextService().readClass(selectedEntryPoint.get().getName(),
                             selectedEntryPoint.get().getClazz()).execute().body();
                     Stage stage = new Stage();
                     stage.initModality(Modality.WINDOW_MODAL);
@@ -87,6 +87,9 @@ public class Stepper extends Application {
             }
         });
 
+        Button exitButton = new Button("Exit");
+        exitButton.setOnMouseClicked(event -> Stepper.close());
+
         FlowPane rootPane = new FlowPane();
         rootPane.getChildren().add(containerList);
         HBox hBox = new HBox();
@@ -95,6 +98,7 @@ public class Stepper extends Application {
         hBox.setPadding(new Insets(15, 12, 15, 12));
         hBox.getChildren().add(startButton);
         hBox.getChildren().add(debugButton);
+        hBox.getChildren().add(exitButton);
         rootPane.getChildren().add(hBox);
         Scene scene = new Scene(rootPane);
         primaryStage.setScene(scene);
@@ -106,7 +110,7 @@ public class Stepper extends Application {
     private void startService(ContainerList.EntryPoint entryPoint) {
         System.out.println("Running " + entryPoint);
         try {
-            final String response = containers.getContainerService()
+            final String response = containers.getTextService()
                     .startEntry(entryPoint.getName(), entryPoint.getClazz())
                     .execute().body();
             System.out.println("Received response: " + response);
