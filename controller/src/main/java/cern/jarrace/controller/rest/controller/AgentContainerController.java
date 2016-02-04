@@ -60,7 +60,7 @@ public class AgentContainerController {
         final AgentContainer agentContainer = server.getContainer(containerName).orElseThrow(() -> new IllegalArgumentException("Provided container name not found"));
         final Service service = agentContainer.getServices().stream()
                 .filter(serviceToFilter -> serviceName.equals(serviceToFilter.getClassName()))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("Provided container name not found"));
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("Provided service name not found"));
 
         final List<String> parsedEntryPoints = (List<String>) Arrays.asList(entryPoints.split(",")).stream()
                 .filter(((Predicate<String>) String::isEmpty).negate())

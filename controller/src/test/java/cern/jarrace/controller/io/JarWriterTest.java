@@ -57,7 +57,7 @@ public class JarWriterTest {
         jarWriter.init();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testInitWithUnreachableDeploymentPath() {
         jarWriter.setDeploymentPath("/Some/Unexixtent/Path");
         jarWriter.init();
