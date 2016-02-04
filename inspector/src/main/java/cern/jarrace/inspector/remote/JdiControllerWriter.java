@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 /**
  * A controller which is connected to a remote implementation of a {@link JdiController} via a given output stream.
  */
-public class JdiControllerWriter implements JdiController, Flushable {
+public class JdiControllerWriter implements JdiController {
 
     private final PrintWriter printWriter;
 
@@ -22,18 +22,15 @@ public class JdiControllerWriter implements JdiController, Flushable {
     }
 
     @Override
-    public void flush() {
-        printWriter.flush();
-    }
-
-    @Override
     public void stepForward() {
         printWriter.print(JdiControllerCommand.STEP_FORWARD.ordinal());
+        printWriter.flush();
     }
 
     @Override
     public void terminate() {
         printWriter.print(JdiControllerCommand.TERMINATE.ordinal());
+        printWriter.flush();
     }
 
 }

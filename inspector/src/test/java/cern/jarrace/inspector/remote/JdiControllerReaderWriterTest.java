@@ -32,7 +32,6 @@ public class JdiControllerReaderWriterTest {
     @Test
     public void forwardsStepCommands() throws InterruptedException {
         writer.stepForward();
-        writer.flush();
         Thread.sleep(4);
         verify(mockedController).stepForward();
     }
@@ -40,7 +39,6 @@ public class JdiControllerReaderWriterTest {
     @Test
     public void forwardsTerminateCommands() throws InterruptedException {
         writer.terminate();
-        writer.flush();
         Thread.sleep(4);
         verify(mockedController).terminate();
     }
