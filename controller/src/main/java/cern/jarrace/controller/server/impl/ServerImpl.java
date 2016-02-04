@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.jar.JarFile;
 
 /**
  * @author tiagomr
@@ -36,8 +38,6 @@ public class ServerImpl implements Server {
     private AgentRunnerSpawner agentRunnerSpawner;
     @Autowired
     private JarWriter jarWriter;
-    @Autowired
-    private JarReader jarReader;
 
     @Override
     public void deploy(String containerName, byte[] file) throws Exception {
@@ -53,17 +53,23 @@ public class ServerImpl implements Server {
     }
 
     @Override
-    public Set<AgentContainer> listContainers() {
+    public Set<AgentContainer> getAllContainers() {
         return agentContainerManager.findAllAgentContainers();
     }
 
     @Override
-    public String runService(AgentContainer agentContainer, Service service, List<String> entryPoints) throws Exception {
-        return agentRunnerSpawner.spawnAgentRunner(service, agentContainer.getContainerPath(), entryPoints);
+    public Optional<AgentContainer> getContainer(String containerName) {
+        return agentContainerManager.findAgentContainer(containerName);
+    }
+
+    @Override
+    public String runService(String agentPath, Service service, List<String> entryPoints) throws Exception {
+        return agentRunnerSpawner.spawnAgentRunner(service, agentPath, entryPoints);
     }
 
     @Override
     public String readSource(AgentContainer agentContainer, String className) throws IOException {
+        final JarReader jarReader = new JarReader(new JarFile(agentContainer.getContainerPath()));
         return jarReader.readEntry(className + JAVA_CLASS_SUFFIX);
     }
 }

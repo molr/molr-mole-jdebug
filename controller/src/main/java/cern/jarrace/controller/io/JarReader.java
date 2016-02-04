@@ -31,7 +31,7 @@ public class JarReader implements AutoCloseable {
      *
      * @param jarFile The jar to read from.
      */
-    JarReader(JarFile jarFile) {
+    public JarReader(JarFile jarFile) {
         this.jarFile = jarFile;
     }
 

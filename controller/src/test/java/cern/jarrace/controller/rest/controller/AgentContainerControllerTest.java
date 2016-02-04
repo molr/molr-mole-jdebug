@@ -11,6 +11,7 @@ import cern.jarrace.controller.io.JarWriter;
 import cern.jarrace.controller.jvm.AgentRegistrySpawner;
 import cern.jarrace.controller.jvm.AgentRunnerSpawner;
 import cern.jarrace.controller.manager.AgentContainerManager;
+import cern.jarrace.controller.server.Server;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -19,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -70,10 +72,13 @@ public class AgentContainerControllerTest {
     private static final String SERVICE_PARAM_NAME = "service";
     private static final String ENTRY_POINTS_PARAM_NAME = "entryPoints";
     private static final String CLASS_ENTRY_NAME = "class";
+    private static final String JAVA_CLASS_SUFFIX = ".java";
 
     private MockMvc mockMvc;
+    @InjectMocks
     private AgentContainerController agentContainerController;
-
+    @Mock
+    private Server server;
     @Mock
     private AgentContainerManager agentContainerManager;
     @Mock
@@ -87,11 +92,6 @@ public class AgentContainerControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        agentContainerController = new AgentContainerController();
-        agentContainerController.setAgentContainerManager(agentContainerManager);
-        agentContainerController.setAgentRegistrySpawner(agentRegistrySpawner);
-        agentContainerController.setAgentRunnerSpawner(agentRunnerSpawner);
-        agentContainerController.setJarWriter(jarWriter);
         mockMvc = MockMvcBuilders.standaloneSetup(agentContainerController)
                 .addPlaceHolderValue("rest.basepath", "/jarrace")
                 .build();
@@ -258,7 +258,7 @@ public class AgentContainerControllerTest {
     }
 
     private File setupJarContainer(String content, String entry) throws IOException {
-        final File jarFile = writeToZip(entry + AgentContainerController.JAVA_CLASS_SUFFIX, content);
+        final File jarFile = writeToZip(entry + JAVA_CLASS_SUFFIX, content);
         final AgentContainer mockedContainer = mock(AgentContainer.class);
         when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(Optional.of(mockedContainer));
         when(mockedContainer.getContainerPath()).thenReturn(jarFile.toString());

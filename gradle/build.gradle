@@ -1,4 +1,4 @@
-apply plugin: 'groovy'
+/*apply plugin: 'groovy'
 apply plugin: 'maven'
 
 group = 'cern.jarrace'
@@ -32,3 +32,4 @@ uploadArchives {
     }
 }
 
+*/
