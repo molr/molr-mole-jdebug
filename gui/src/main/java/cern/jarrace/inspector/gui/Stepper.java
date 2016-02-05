@@ -15,7 +15,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TabPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
@@ -33,10 +32,7 @@ public class Stepper extends Application {
 
     public static final String STEPPER_CSS = "stepper.css";
 
-
     //    private static Inspector inspector;
-    private static FlowPane rootPane;
-    private static TabPane tabs;
     private static final ContainerServices containers = ContainerServices.ofBaseUrl("http://localhost:8080/jarrace/");
 
     /**

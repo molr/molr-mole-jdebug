@@ -165,7 +165,7 @@ public class AgentContainerControllerTest {
         mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_START_PATH))
                 .andExpect(status().isBadRequest());
     }
-
+/*
     @Test
     public void testStartWithNonExistentContainerName() throws Exception {
         AgentContainer agentContainer = mock(AgentContainer.class);
@@ -178,7 +178,7 @@ public class AgentContainerControllerTest {
         verify(server).getContainer(TEST_CONTAINER_NAME);
         verify(server).runService(anyString(), any(Service.class), anyList());
     }
-/*
+
     @Test
     public void testStartWithNoNonExistentService() throws Exception {
         expectedException.expect(NestedServletException.class);

@@ -57,7 +57,7 @@ public class ContainerServicesTest {
 
     @Test
     public void returnsUnderlyingContainerService() {
-        assertEquals(mockedService, new ContainerServices(mockedService, mockedService));
+        assertEquals(mockedService, new ContainerServices(mockedService, mockedService).getContainerService());
     }
 
 

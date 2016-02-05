@@ -8,9 +8,11 @@ package cern.jarrace.inspector.controller;
 
 import cern.jarrace.inspector.entry.EntryListener;
 import cern.jarrace.inspector.entry.EntryListenerFactory;
+import cern.jarrace.inspector.entry.EntryState;
 import cern.jarrace.inspector.entry.impl.EntryStateImpl;
 import cern.jarrace.inspector.jdi.LocationRange;
 import com.sun.jdi.AbsentInformationException;
+import com.sun.jdi.Location;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.event.BreakpointEvent;
 import com.sun.jdi.event.StepEvent;
@@ -23,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * An event handler receiving events from the running JDI instance. This handler attempts to hide
@@ -82,20 +85,35 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
     public synchronized void step(StepEvent e) {
         InspectableState state = threads.get(e.thread());
         if (state != null) {
-            if (state.methodRange.isWithin(e.location())) {
-                EntryStateImpl.ofLocation(e.location()).ifPresent(entryState ->
-                        threads.get(e.thread()).listener.onLocationChange(entryState));
-                e.thread().suspend();
-            } else {
-                EntryStateImpl.ofLocation(e.location()).ifPresent(entryState ->
-                        threads.remove(e.thread()).listener.onInspectionEnd(entryState));
-            }
+            fromStepEvent(e).ifPresent(entryState -> {
+                if (state.methodRange.isWithin(e.location())) {
+                    threads.get(e.thread()).listener.onLocationChange(entryState);
+                    e.thread().suspend();
+                } else {
+                    threads.remove(e.thread()).listener.onInspectionEnd(entryState);
+                }
+            });
         }
     }
 
     @Override
     public void vmStart(VMStartEvent e) {
-        // Do nothing
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Starting vm {}", e);
+        }
+    }
+
+    private static Optional<EntryState> fromStepEvent(StepEvent event) {
+        try {
+            final Location location = event.location();
+            final int lineNumber = location.lineNumber();
+            final String className = location.sourcePath();
+            final String methodName = location.method().name();
+            return Optional.of(new EntryStateImpl(className, methodName, lineNumber));
+        } catch (AbsentInformationException e) {
+            LOGGER.warn("Failed to read source path from event {}", e);
+            return Optional.empty();
+        }
     }
 
     private static class InspectableState {

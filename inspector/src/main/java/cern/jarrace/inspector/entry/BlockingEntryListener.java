@@ -45,7 +45,11 @@ public class BlockingEntryListener implements EntryListener {
      * Attempts to serve an {@link EntryState} to any thread trying to pull events from the stateQueue. If
      * no one is listening an error will be logged, but nothing else will happen.
      *
+<<<<<<< HEAD
      * @param entryState The state of an entry given from a running JDI instance.
+=======
+     * @param entryState The state of a thread given from a running JDI instance.
+>>>>>>> 69b733bab6a50918f201a072210e59c20d76cd8f
      */
     private void insertEntry(EntryState entryState) {
         try {

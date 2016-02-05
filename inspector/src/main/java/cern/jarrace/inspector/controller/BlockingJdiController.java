@@ -59,7 +59,7 @@ public class BlockingJdiController implements JdiController, Closeable {
     @Override
     public void stepForward() {
         ThreadReference threadReference = entryRegistry.getThreadReference()
-                .orElseThrow(() -> new IllegalArgumentException("No active entry to resume"));
+                .orElseThrow(() -> new IllegalStateException("No active entry"));
         BlockingEntryListener listener = entryRegistry.getEntryListener().get();
 
         threadReference.resume();

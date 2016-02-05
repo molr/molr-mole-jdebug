@@ -6,7 +6,6 @@
 
 package cern.jarrace.inspector.entry;
 
-
 import java.lang.reflect.Method;
 
 /**

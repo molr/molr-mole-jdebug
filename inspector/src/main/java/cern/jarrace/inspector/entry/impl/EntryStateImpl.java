@@ -65,4 +65,26 @@ public class EntryStateImpl implements EntryState {
         }
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EntryStateImpl that = (EntryStateImpl) o;
+
+        if (position != that.position) return false;
+        if (className != null ? !className.equals(that.className) : that.className != null) return false;
+        return methodName != null ? methodName.equals(that.methodName) : that.methodName == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = className != null ? className.hashCode() : 0;
+        result = 31 * result + (methodName != null ? methodName.hashCode() : 0);
+        result = 31 * result + position;
+        return result;
+    }
+
 }
