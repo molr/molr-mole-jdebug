@@ -14,7 +14,7 @@ import java.time.Duration;
 /**
  * A {@link CallbackFactory} which
  */
-public class BlockingCallbackFactory implements CallbackFactory<BlockingEntryListener> {
+public class BlockingCallbackFactory implements EntryListenerFactory<BlockingEntryListener> {
 
     private static final Duration TIMEOUT_DURATION = Duration.ofSeconds(2);
 
@@ -25,7 +25,7 @@ public class BlockingCallbackFactory implements CallbackFactory<BlockingEntryLis
     }
 
     @Override
-    public BlockingEntryListener onBreakpoint(ThreadReference thread, EntryState state) {
+    public BlockingEntryListener createListenerOn(ThreadReference thread, EntryState state) {
         final BlockingEntryListener listener = new BlockingEntryListener(TIMEOUT_DURATION);
         try {
             entryRegistry.register(thread, listener);

@@ -11,7 +11,6 @@ import cern.jarrace.inspector.controller.factory.JdiFactory.JdiFactoryInstance;
 import cern.jarrace.inspector.entry.BlockingCallbackFactory;
 import cern.jarrace.inspector.entry.BlockingEntryListener;
 import cern.jarrace.inspector.entry.EntryMethod;
-import cern.jarrace.inspector.entry.EntryState;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.VMDisconnectedException;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
@@ -58,18 +57,17 @@ public class BlockingJdiController implements JdiController, Closeable {
     }
 
     @Override
-    public EntryState stepForward() {
+    public void stepForward() {
         ThreadReference threadReference = entryRegistry.getThreadReference()
                 .orElseThrow(() -> new IllegalArgumentException("No active entry to resume"));
         BlockingEntryListener listener = entryRegistry.getEntryListener().get();
 
         threadReference.resume();
+    }
 
-        try {
-            return listener.waitForNextEntry();
-        } catch (InterruptedException e) {
-            return null;
-        }
+    @Override
+    public void terminate() {
+        close();
     }
 
     public static class Builder {

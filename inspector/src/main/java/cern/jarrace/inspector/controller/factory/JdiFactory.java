@@ -8,8 +8,8 @@ package cern.jarrace.inspector.controller.factory;
 
 import cern.jarrace.inspector.controller.JdiEventHandler;
 import cern.jarrace.inspector.controller.SteppingJdiEventHandler;
-import cern.jarrace.inspector.entry.CallbackFactory;
 import cern.jarrace.inspector.entry.EntryListener;
+import cern.jarrace.inspector.entry.EntryListenerFactory;
 import cern.jarrace.inspector.entry.EntryMethod;
 import cern.jarrace.inspector.jdi.ClassInstantiationListener;
 import com.sun.jdi.*;
@@ -35,7 +35,8 @@ public class JdiFactory {
         this.launcher = launcher;
     }
 
-    public <Listener extends EntryListener> JdiFactoryInstance spawnJdi(EntryMethod entry, CallbackFactory<Listener> callbackFactory) throws IOException {
+    public <Listener extends EntryListener> JdiFactoryInstance spawnJdi(
+            EntryMethod entry, EntryListenerFactory<Listener> callbackFactory) throws IOException {
         try {
             VirtualMachine virtualMachine = launcher.safeStart();
             JDIScript jdi = new JDIScript(virtualMachine);

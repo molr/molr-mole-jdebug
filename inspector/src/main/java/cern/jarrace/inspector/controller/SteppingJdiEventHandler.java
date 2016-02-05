@@ -6,8 +6,8 @@
 
 package cern.jarrace.inspector.controller;
 
-import cern.jarrace.inspector.entry.CallbackFactory;
 import cern.jarrace.inspector.entry.EntryListener;
+import cern.jarrace.inspector.entry.EntryListenerFactory;
 import cern.jarrace.inspector.entry.impl.EntryStateImpl;
 import cern.jarrace.inspector.jdi.LocationRange;
 import com.sun.jdi.AbsentInformationException;
@@ -33,9 +33,9 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(SteppingJdiEventHandler.class);
 
     private final JDIScript jdi;
-    private final CallbackFactory<?> callbackHandler;
     private final Map<ThreadReference, InspectableState> threads = new HashMap<>();
     private final Map<String, ThreadReference> classNamesToThreads = new HashMap<>();
+    private final EntryListenerFactory<?> callbackHandler;
 
     /**
      * Creates a new event handler that is
@@ -43,7 +43,7 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
      * @param jdi
      * @param callbackFactory
      */
-    public SteppingJdiEventHandler(JDIScript jdi, CallbackFactory<?> callbackFactory) {
+    public SteppingJdiEventHandler(JDIScript jdi, EntryListenerFactory<?> callbackFactory) {
         super(jdi.vm());
         this.jdi = jdi;
         this.callbackHandler = callbackFactory;
@@ -64,7 +64,7 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
             classNamesToThreads.put(sourcePath, event.thread());
 
             EntryStateImpl.ofLocation(event.location()).ifPresent(entryState -> {
-                final EntryListener callbackListener = callbackHandler.onBreakpoint(
+                final EntryListener callbackListener = callbackHandler.createListenerOn(
                         event.thread(), entryState);
                 final InspectableState state = new InspectableState(callbackListener, range);
                 threads.put(event.thread(), state);
