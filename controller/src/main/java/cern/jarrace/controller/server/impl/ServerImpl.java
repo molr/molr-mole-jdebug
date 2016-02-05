@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.jar.JarFile;
 
 /**
  * @author tiagomr
@@ -69,7 +68,17 @@ public class ServerImpl implements Server {
 
     @Override
     public String readSource(AgentContainer agentContainer, String className) throws IOException {
-        final JarReader jarReader = new JarReader(new JarFile(agentContainer.getContainerPath()));
-        return jarReader.readEntry(className + JAVA_CLASS_SUFFIX);
+        return JarReader.ofContainer(agentContainer, reader -> readSource(reader, className))
+                .orElseThrow(() -> new IOException("Failed to read source file from jar"));
     }
+
+    private Optional<String> readSource(JarReader reader, String className) {
+        try {
+            return Optional.of(reader.readEntry(className + JAVA_CLASS_SUFFIX));
+        } catch (IOException e) {
+            LOGGER.warn("Failed to read entry from Jar");
+            return Optional.empty();
+        }
+    }
+
 }

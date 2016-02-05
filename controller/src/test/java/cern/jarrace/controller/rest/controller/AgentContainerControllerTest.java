@@ -212,7 +212,7 @@ public class AgentContainerControllerTest {
     }
 
     @Test
-    public void canFetchEntryInsideJar() throws Exception {
+    public void fetchesEntryInsideJar() throws Exception {
         final String content = "testContent\nSpanning\nLines";
         final File jarFile = setupJarContainer(content, TEST_PATH);
         mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_READ_PATH)
@@ -223,7 +223,7 @@ public class AgentContainerControllerTest {
     }
 
     @Test
-    public void canFailToFetchEntryFromJarWhenContainerDoesNotExist() throws Exception {
+    public void failsToFetchEntryFromJarWhenContainerDoesNotExist() throws Exception {
         when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(Optional.empty());
         mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_READ_PATH)
                 .param(CLASS_ENTRY_NAME, TEST_NAME))
@@ -231,9 +231,9 @@ public class AgentContainerControllerTest {
     }
 
     @Test
-    public void canFailToFetchEntryFromJarWhenEntryDoesNotExist() throws Exception {
+    public void failsToFetchEntryFromJarWhenEntryDoesNotExist() throws Exception {
         final String content = "TestContent";
-        final File jarFile = setupJarContainer(content, TEST_PATH);
+        final File jarFile = setupJarContainer(content, TEST_PATH + AgentContainerController.JAVA_CLASS_SUFFIX);
         mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_READ_PATH)
                 .param(CLASS_ENTRY_NAME, "IDoNotExist"))
                 .andExpect(status().isBadRequest());

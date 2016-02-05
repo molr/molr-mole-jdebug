@@ -16,8 +16,9 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * Reads entries as strings from inside a jar file.
@@ -31,7 +32,7 @@ public class JarReader implements AutoCloseable {
      *
      * @param jarFile The jar to read from.
      */
-    public JarReader(JarFile jarFile) {
+    private JarReader(JarFile jarFile) {
         this.jarFile = jarFile;
     }
 
@@ -43,7 +44,8 @@ public class JarReader implements AutoCloseable {
     /**
      * Reads the content of the given entry file in the jar of this JarReader, if it exists.
      *
-     * @param entryName The name of the entry inside the jar file. Example: <code>cern.test.Class.java</code>
+     * @param entryName The name of the entry inside the jar file written as a regular file path, where each
+     *                  folder-level is represented as a slash (/). Example: <code>cern/test/Class.java</code>
      * @return A String with the contents of the file.
      * @throws IOException If the entry could not be read.
      */
@@ -55,7 +57,7 @@ public class JarReader implements AutoCloseable {
         try (InputStream input = jarFile.getInputStream(entry);
              InputStreamReader inputReader = new InputStreamReader(input);
              BufferedReader reader = new BufferedReader(inputReader)) {
-            return reader.lines().collect(Collectors.joining("\n"));
+            return reader.lines().collect(joining("\n"));
         }
     }
 
@@ -70,7 +72,7 @@ public class JarReader implements AutoCloseable {
      * @throws IOException If the jar file could not be read.
      */
     public static <R> R ofContainer(AgentContainer container, Function<JarReader, R> function) throws IOException {
-        Objects.requireNonNull(container, "Container may not be null");
+        Objects.requireNonNull(container, "Container must not be null");
         final JarFile jarFile = new JarFile(container.getContainerPath());
         try (JarReader jarReader = new JarReader(jarFile)) {
             return function.apply(jarReader);

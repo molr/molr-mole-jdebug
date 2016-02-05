@@ -36,7 +36,6 @@ public class AgentContainerController {
     @Autowired
     private Server server;
 
-
     @RequestMapping(value = "/deploy/{" + CONTAINER_NAME_VARIABLE_NAME + "}", method = RequestMethod.POST)
     public void deploy(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName, @RequestBody byte[] jar) throws Exception {
         server.deploy(containerName, jar);
@@ -56,7 +55,6 @@ public class AgentContainerController {
     public String runService(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
                              @RequestParam(value = "service") String serviceName,
                              @RequestParam(value = "entryPoints", defaultValue = "") String entryPoints) throws Exception {
-
         final AgentContainer agentContainer = server.getContainer(containerName).orElseThrow(() -> new IllegalArgumentException("Provided container name not found"));
         final Service service = agentContainer.getServices().stream()
                 .filter(serviceToFilter -> serviceName.equals(serviceToFilter.getClassName()))
