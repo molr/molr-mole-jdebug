@@ -1,184 +1,274 @@
+/**
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
 package cern.jarrace.controller.rest.controller;
 
-import cern.jarrace.controller.domain.Entrypoint;
-import org.hamcrest.core.IsEqual;
-import org.junit.Assert;
+import cern.jarrace.commons.domain.AgentContainer;
+import cern.jarrace.commons.domain.Service;
+import cern.jarrace.controller.server.Server;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.http.HttpMethod;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.util.NestedServletException;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.nio.file.Path;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 /**
- * Created by timartin on 25/01/2016.
+ * Class that tests the behaviour of the {@link AgentContainerController}
+ *
+ * @author tiagomr
  */
 
+@RunWith(MockitoJUnitRunner.class)
 public class AgentContainerControllerTest {
 
+    private static final String JARRACE_CONTAINER_LIST_PATH = "/jarrace/container/list";
+    private static final String JARRACE_CONTAINER_REGISTER_PATH = "/jarrace/container/register";
+    private static final String TEST_CONTAINER_NAME = "TEST_CONTAINER_NAME";
+    private static final String JARRACE_CONTAINER_TEST_NAME_START_PATH = "/jarrace/container/" + TEST_CONTAINER_NAME + "/start";
+    private static final String JARRACE_CONTAINER_TEST_NAME_READ_PATH = "/jarrace/container/" + TEST_CONTAINER_NAME + "/read";
+
+    private static final String TEST_SERVICE_NAME = "TEST_SERVICE_NAME";
+    private static final String TEST_ENTRY_POINT_1 = "TEST_ENTRY_POINT_1";
+    private static final String TEST_ENTRY_POINT_2 = "TEST_ENTRY_POINT_2";
+    private static final String TEST_AGENT_NAME = "TEST_AGENT_NAME";
+    private static final String TEST_NAME1 = "TEST_NAME";
+    private static final String TEST_PATH = "TEST_PATH";
+
+    private static final String SERVICE_PARAM_NAME = "service";
+    private static final String ENTRY_POINTS_PARAM_NAME = "entryPoints";
+    private static final String CLASS_ENTRY_NAME = "class";
+    private static final String JAVA_CLASS_SUFFIX = ".java";
+    private static final byte[] TEST_CONTAINER_BYTES = "TEST_CONTAINER_BYTES".getBytes();
+    private static final String TEST_EXECUTION_RESULT = "TEST_EXECUTION_RESULT";
+
     private MockMvc mockMvc;
+    @InjectMocks
     private AgentContainerController agentContainerController;
+    @Mock
+    private Server server;
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
-        agentContainerController = new AgentContainerController();
-        mockMvc = MockMvcBuilders.standaloneSetup(agentContainerController).build();
-    }
-
-    @Test
-    public void testDeployWithDifferentRequestTypes() throws Exception {
-        for (HttpMethod httpMethod : HttpMethod.values()) {
-            MockHttpServletRequestBuilder request = request(httpMethod, "/jarrace/container/deploy/SampleDeploy")
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .content("SampleBytes".getBytes());
-            ResultActions perform = mockMvc.perform(request);
-
-            if (HttpMethod.POST.equals(httpMethod) || HttpMethod.OPTIONS.equals(httpMethod) || HttpMethod.TRACE.equals(httpMethod)) {
-                perform.andExpect(status().isOk());
-            } else {
-                perform.andExpect(status().isMethodNotAllowed());
-            }
-        }
+        mockMvc = MockMvcBuilders.standaloneSetup(agentContainerController)
+                .addPlaceHolderValue("rest.basepath", "/jarrace")
+                .build();
     }
 
     @Test
     public void testDeploy() throws Exception {
-        mockMvc.perform(post("/jarrace/container/deploy/SampleDeploy")
+        mockMvc.perform(post("/jarrace/container/deploy/" + TEST_CONTAINER_NAME)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .content("SampleBytes".getBytes()));
-        Assert.assertEquals(1, agentContainerController.paths.size());
-        File deployFile = new File(agentContainerController.paths.get("SampleDeploy"));
-        Assert.assertTrue(deployFile.exists());
-        Assert.assertTrue(deployFile.isFile());
-        byte[] bytes = Files.readAllBytes(Paths.get(deployFile.getAbsolutePath()));
-        Assert.assertThat("SampleBytes".getBytes(), equalTo(bytes));
+                .content(TEST_CONTAINER_BYTES))
+                .andExpect(status().isOk());
+        verify(server).deploy(TEST_CONTAINER_NAME, TEST_CONTAINER_BYTES);
     }
 
     @Test
-    public void testRegisterServiceWithDifferentRequestTypes() throws Exception {
-        agentContainerController.entrypoints.put("SampleAgentName", new ArrayList<>());
-        for (HttpMethod httpMethod : HttpMethod.values()) {
-            MockHttpServletRequestBuilder request = request(httpMethod, "/jarrace/service/register/SampleAgentName")
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content("{\"agentName\":\"SampleAgentName\", \"path\":\"SamplePath\"}");
-            ResultActions perform = mockMvc.perform(request);
-
-            if (HttpMethod.POST.equals(httpMethod) || HttpMethod.OPTIONS.equals(httpMethod) || HttpMethod.TRACE.equals(httpMethod)) {
-                perform.andExpect(status().isOk());
-            } else {
-                perform.andExpect(status().isMethodNotAllowed());
-            }
-        }
+    public void testRegister() throws Exception {
+        AgentContainer testAgentContainer = getTestAgentContainer();
+        mockMvc.perform(post(JARRACE_CONTAINER_REGISTER_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(getJson(testAgentContainer)))
+                .andExpect(status().isOk());
+        verify(server).registerService(testAgentContainer);
     }
 
     @Test
-    public void testRegisterServiceWrongMediaType() throws Exception {
-        agentContainerController.entrypoints.put("SampleAgentName", new ArrayList<>());
-        MockHttpServletRequestBuilder request = post("/jarrace/service/register/SampleAgentName")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .content("{\"agentName\":\"SampleAgentName\", \"path\":\"SamplePath\"}");
-        mockMvc.perform(request)
+    public void testRegisterWithWrongMediaType() throws Exception {
+        mockMvc.perform(post(JARRACE_CONTAINER_REGISTER_PATH)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM))
                 .andExpect(status().isUnsupportedMediaType());
     }
 
     @Test
-    public void testRegisterServiceWithWrongContent() throws Throwable {
-        try {
-            agentContainerController.entrypoints.put("SampleAgentName", new ArrayList<>());
-            MockHttpServletRequestBuilder request = post("/jarrace/service/register/SampleAgentName")
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content("{\"path\":\"SamplePath\"}");
-            mockMvc.perform(request)
-                    .andExpect(status().isInternalServerError());
-        } catch (NestedServletException exception) {
-            Assert.assertEquals(exception.getRootCause().getClass(), IllegalArgumentException.class);
+    public void testRegisterWithWrongMethodType() throws Exception {
+        mockMvc.perform(get(JARRACE_CONTAINER_REGISTER_PATH))
+                .andExpect(status().isMethodNotAllowed());
+    }
+
+    @Test
+    public void testRegisterWithNoContent() throws Exception {
+        mockMvc.perform(post(JARRACE_CONTAINER_REGISTER_PATH)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testListWithAgentContainers() throws Exception {
+        Set<AgentContainer> containers = Collections.singleton(getTestAgentContainer());
+        when(server.getAllContainers()).thenReturn(containers);
+        mockMvc.perform(get(JARRACE_CONTAINER_LIST_PATH))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(getJson(containers)));
+        verify(server).getAllContainers();
+    }
+
+    @Test
+    public void testListWithNoAgentContainers() throws Exception {
+        Set<AgentContainer> containers = Collections.emptySet();
+        when(server.getAllContainers()).thenReturn(containers);
+        mockMvc.perform(get(JARRACE_CONTAINER_LIST_PATH))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(getJson(containers)));
+        verify(server).getAllContainers();
+    }
+
+    @Test
+    public void testListWithWrongRequestType() throws Exception {
+        mockMvc.perform(post(JARRACE_CONTAINER_LIST_PATH))
+                .andExpect(status().isMethodNotAllowed());
+    }
+
+    @Test
+    public void testStartWithWrongRequestType() throws Exception {
+        mockMvc.perform(post(JARRACE_CONTAINER_TEST_NAME_START_PATH))
+                .andExpect(status().isMethodNotAllowed());
+    }
+
+    @Test
+    public void testStartWithNoParameters() throws Exception {
+        mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_START_PATH))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testStartWithNonExistentContainerName() throws Exception {
+        AgentContainer agentContainer = mock(AgentContainer.class);
+        when(agentContainer.getContainerPath()).thenReturn(TEST_PATH);
+        when(server.getContainer(TEST_CONTAINER_NAME)).thenReturn(Optional.of(agentContainer));
+        when(server.runService(anyString(), any(Service.class), anyList())).thenReturn(TEST_EXECUTION_RESULT);
+        mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_START_PATH)
+                .param(SERVICE_PARAM_NAME, TEST_SERVICE_NAME))
+                .andExpect(content().string(TEST_EXECUTION_RESULT));
+        verify(server).getContainer(TEST_CONTAINER_NAME);
+        verify(server).runService(anyString(), any(Service.class), anyList());
+    }
+/*
+    @Test
+    public void testStartWithNoNonExistentService() throws Exception {
+        expectedException.expect(NestedServletException.class);
+        expectedException.expectCause(isA(IllegalArgumentException.class));
+        AgentContainer container = getTestAgentContainer();
+        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(Optional.of(container));
+        mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_START_PATH)
+                .param(SERVICE_PARAM_NAME, TEST_SERVICE_NAME));
+    }
+
+    @Test
+    public void testStartWithNonExistentEntrypoint() throws Exception {
+        expectedException.expect(NestedServletException.class);
+        expectedException.expectCause(isA(IllegalArgumentException.class));
+        AgentContainer container = getTestAgentContainer();
+        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(Optional.of(container));
+        mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_START_PATH)
+                .param(SERVICE_PARAM_NAME, TEST_SERVICE_NAME)
+                .param(ENTRY_POINTS_PARAM_NAME, TEST_ENTRY_POINT_1 + "_NON_EXISTENT"));
+    }
+
+    @Test
+    public void testStart() throws Exception {
+        AgentContainer container = getTestAgentContainer();
+        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(Optional.of(container));
+        mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_START_PATH)
+                .param(SERVICE_PARAM_NAME, TEST_SERVICE_NAME)
+                .param(ENTRY_POINTS_PARAM_NAME, TEST_ENTRY_POINT_1, TEST_ENTRY_POINT_2))
+                .andExpect(status().isOk());
+        verify(agentRunnerSpawner).spawnAgentRunner(Matchers.any(Service.class), anyString(), anyList());
+    }
+
+    @Test
+    public void canFetchEntryInsideJar() throws Exception {
+        final String content = "testContent\nSpanning\nLines";
+        final File jarFile = setupJarContainer(content, TEST_PATH);
+        mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_READ_PATH)
+                .param(CLASS_ENTRY_NAME, TEST_PATH))
+                .andExpect(content().string(content));
+        //noinspection ResultOfMethodCallIgnored
+        jarFile.delete();
+    }
+
+    @Test
+    public void canFailToFetchEntryFromJarWhenContainerDoesNotExist() throws Exception {
+        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(Optional.empty());
+        mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_READ_PATH)
+                .param(CLASS_ENTRY_NAME, TEST_NAME))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void canFailToFetchEntryFromJarWhenEntryDoesNotExist() throws Exception {
+        final String content = "TestContent";
+        final File jarFile = setupJarContainer(content, TEST_PATH);
+        mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_READ_PATH)
+                .param(CLASS_ENTRY_NAME, "IDoNotExist"))
+                .andExpect(status().isBadRequest());
+    }*/
+
+    private AgentContainer getTestAgentContainer() {
+        List<String> entryPoints = new ArrayList<>();
+        entryPoints.add(TEST_ENTRY_POINT_1);
+        entryPoints.add(TEST_ENTRY_POINT_2);
+        List<Service> services = new ArrayList<>();
+        services.add(new Service(TEST_AGENT_NAME, TEST_SERVICE_NAME, entryPoints));
+        return new AgentContainer(TEST_NAME1, TEST_PATH, services);
+    }
+
+    private String getJson(Object object) throws JsonProcessingException {
+        ObjectWriter writer = new ObjectMapper().writer();
+        return writer.writeValueAsString(object);
+    }
+
+    /*private File setupJarContainer(String content, String entry) throws IOException {
+        final File jarFile = writeToZip(entry + JAVA_CLASS_SUFFIX, content);
+        final AgentContainer mockedContainer = mock(AgentContainer.class);
+        when(agentContainerManager.findAgentContainer(TEST_NAME)).thenReturn(Optional.of(mockedContainer));
+        when(mockedContainer.getContainerPath()).thenReturn(jarFile.toString());
+        return jarFile;
+    }*/
+
+    private File writeToZip(String entry, String data) throws IOException {
+        File tmpFile = File.createTempFile("test", null);
+        try (FileOutputStream fileOutput = new FileOutputStream(tmpFile);
+             ZipOutputStream zipOutput = new ZipOutputStream(fileOutput)) {
+            ZipEntry zipEntry = new JarEntry(entry);
+            zipOutput.putNextEntry(zipEntry);
+            zipOutput.write(data.getBytes());
         }
-
-        try {
-            agentContainerController.entrypoints.put("SampleAgentName", new ArrayList<>());
-            MockHttpServletRequestBuilder request = post("/jarrace/service/register/SampleAgentName")
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content("{\"agentName\":\"SampleAgentName\"}");
-            mockMvc.perform(request)
-                    .andExpect(status().isInternalServerError());
-        } catch (NestedServletException exception) {
-            Assert.assertEquals(exception.getRootCause().getClass(), IllegalArgumentException.class);
-        }
-    }
-
-    @Test
-    public void testListContainersWithDifferentRequestTypes() throws Exception {
-        for (HttpMethod httpMethod : HttpMethod.values()) {
-            ResultActions perform = mockMvc.perform(request(httpMethod, "/jarrace/container/list"));
-            if (HttpMethod.GET.equals(httpMethod) || HttpMethod.OPTIONS.equals(httpMethod) || HttpMethod.TRACE.equals(httpMethod)) {
-                perform.andExpect(status().isOk());
-            } else {
-                perform.andExpect(status().isMethodNotAllowed());
-            }
-        }
-    }
-
-    @Test
-    public void testListContainersWithNoContainers() throws Exception {
-        mockMvc.perform(get("/jarrace/container/list"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$", hasSize(0)));
-    }
-
-    @Test
-    public void testListContainersWithMultipleContainers() throws Exception {
-        for (int i = 1; i <= 3; ++i) {
-            agentContainerController.entrypoints.put("SampleContainer" + i, new ArrayList<>());
-            mockMvc.perform(get("/jarrace/container/list"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                    .andExpect(jsonPath("$", hasSize(i)));
-        }
-    }
-
-    @Test
-    public void testListServicesWithNonexistentOrEmptyContainer() throws Exception {
-        agentContainerController.entrypoints.put("SampleContainer", new ArrayList<>());
-        mockMvc.perform(get("/jarrace/NonexistantContainer/entrypoint/list"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
-        mockMvc.perform(get("/jarrace/SampleContainer/entrypoint/list"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
-    }
-
-    @Test
-    public void testListServicesWithOneOrMoreNonEmptyContainer() throws Exception {
-        agentContainerController.entrypoints.put("SampleContainer",
-                Collections.singletonList(new Entrypoint("Agent1", "Path1")));
-        mockMvc.perform(get("/jarrace/SampleContainer/entrypoint/list"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)));
-        agentContainerController.entrypoints.put("SampleContainer1",
-                Arrays.asList(new Entrypoint("Service1", "Path1"), new Entrypoint("Service2", "Path2")));
-        mockMvc.perform(get("/jarrace/SampleContainer1/entrypoint/list"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
-
+        return tmpFile;
     }
 }

@@ -8,6 +8,7 @@ package cern.jarrace.gradle
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.jvm.tasks.Jar
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -28,6 +29,7 @@ import java.nio.file.Paths
  */
 class DeployRace implements Plugin<Project> {
 
+    public static final String TASKS_GROUP = "JarRace"
     public static final String HTTP_CONTENT_TYPE_HEADER = "Content-Type"
     public static final String HTTP_POST_METHOD = "POST"
     public static final String SERVER_CONTENT_TYPE = "application/octet-stream"
@@ -42,7 +44,7 @@ class DeployRace implements Plugin<Project> {
 
         def jarName = project.name + JARRACE_JAR_SUFFIX
 
-        project.task('createJarraceAgent', type: Jar) {
+        def createAgentTask = project.task('createJarraceAgent', type: Jar) {
             description = "Creates a deployable jar with all the classes in the classpath and the source code of the " +
                     "dependent project"
 
@@ -55,9 +57,11 @@ class DeployRace implements Plugin<Project> {
 
             // Include all source code for this project
             from project.sourceSets.main.allSource
+            exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
         }
+        createAgentTask.setGroup(TASKS_GROUP)
 
-        project.task('deployJarraceAgent').dependsOn('createJarraceAgent') << {
+        def deployTask = project.task('deployJarraceAgent').dependsOn('createJarraceAgent') << {
             description = "Sends jar file to a REST endpoint specified in jarrace.host"
             verifySettings(project)
 
@@ -76,6 +80,7 @@ class DeployRace implements Plugin<Project> {
                 throw new GradleException("Failed to upload jarrace agent to $url. Response code was $response")
             }
         }
+        deployTask.setGroup(TASKS_GROUP)
     }
 
     static HttpURLConnection openConnection(String urlString) {

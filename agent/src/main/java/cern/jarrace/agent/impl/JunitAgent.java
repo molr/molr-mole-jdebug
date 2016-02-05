@@ -1,3 +1,8 @@
+/**
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
 package cern.jarrace.agent.impl;
 
 import cern.jarrace.agent.Agent;
@@ -10,7 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by timartin on 20/01/2016.
+ * Implementation of {@link Agent} which allows for the discovery and execution of Junit tests.
+ * <h3>Discovery:</h3> All methods annotated with {@link Test} are be exposed as entry points and their respective
+ * classes are exposed as services.
+ * <h3>Execution:</h3> Allows for the execution of the whole test suite annotated with the
+ * {@link cern.jarrace.agent.RunWithAgent} annotation or individual entry points. Uses the JUnit framework for the
+ * execution of the tests.
+ *
+ * @author tiagomr
  */
 public class JunitAgent implements Agent {
 
@@ -24,7 +36,7 @@ public class JunitAgent implements Agent {
         List<Method> annotatedMethods = new ArrayList<>();
         Method[] methods = clazz.getMethods();
         for (Method method : methods) {
-            if(method.isAnnotationPresent(Test.class)) {
+            if (method.isAnnotationPresent(Test.class)) {
                 annotatedMethods.add(method);
             }
         }
@@ -35,7 +47,7 @@ public class JunitAgent implements Agent {
     public void run(Object... args) throws IOException {
         String entry = (String) args[0];
         try {
-            Class<?> c = Class.forName(entry.substring(0, entry.indexOf(' ')));
+            Class<?> c = Class.forName(entry);
             JUnitCore.runClasses(c);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
