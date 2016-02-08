@@ -7,6 +7,8 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A GSON serialiser and de-serialiser for {@link Service} objects.
@@ -17,15 +19,16 @@ public class ServiceTypeAdapter extends TypeAdapter<Service> {
 
     @Override
     public void write(JsonWriter out, Service service) throws IOException {
+        Objects.requireNonNull(service.getAgentName(), "Agent name cannot be null");
+        Objects.requireNonNull(service.getClassName(), "Class name cannot be null");
+        Objects.requireNonNull(service.getEntryPoints(), "Entry points list cannot be null");
         out.beginObject()
                 .name("agentName")
                 .value(service.getAgentName())
                 .name("className")
                 .value(service.getClassName())
                 .name("entryPoints")
-                .beginArray()
-                .value(service.getEntryPoints().toString())
-                .endArray()
+                .value(service.getEntryPoints().stream().collect(Collectors.joining(LIST_SEPARATOR)))
                 .endObject();
     }
 
@@ -37,9 +40,7 @@ public class ServiceTypeAdapter extends TypeAdapter<Service> {
         in.nextName();
         final String className = in.nextString();
         in.nextName();
-        in.beginArray();
         final String entryPointsString = in.nextString();
-        in.endArray();
         in.endObject();
 
         return new Service(agentName, className, Arrays.asList(entryPointsString.split(LIST_SEPARATOR)));
