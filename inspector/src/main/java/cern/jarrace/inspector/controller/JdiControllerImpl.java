@@ -16,7 +16,6 @@ import com.sun.jdi.VMDisconnectedException;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.VMStartException;
 import org.jdiscript.JDIScript;
-import org.jdiscript.handlers.OnVMDeath;
 import org.jdiscript.util.VMLauncher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,22 +79,19 @@ public class JdiControllerImpl implements JdiController, Closeable {
         private static final String CLASSPATH_PREFIX = "-cp ";
 
         private String classPath;
-        private String mainClass;
         private Service service;
-        private OnVMDeath onShutdown;
 
         public JdiControllerImpl build() throws IOException, IllegalConnectorArgumentsException, VMStartException {
             Objects.requireNonNull(classPath, "Classpath must be set");
-            Objects.requireNonNull(mainClass, "Entry class with a main method must be set");
             Objects.requireNonNull(service, "Service to inspect must be set");
-            final VMLauncher launcher = new VMLauncher(CLASSPATH_PREFIX + classPath, mainClass);
+            final VMLauncher launcher = new VMLauncher(CLASSPATH_PREFIX + classPath, service.getAgentName());
 
             JdiEntryRegistry<BlockingEntryListener> entryRegistry = new JdiEntryRegistry<>();
             BlockingCallbackFactory callbackFactory = new BlockingCallbackFactory(entryRegistry);
 
             JdiFactoryInstance instance = JdiFactory
                     .withLauncher(launcher)
-                    .spawnJdi(service, callbackFactory);
+                    .spawnJdi(service.getClassName(), service.getEntryPoints(), callbackFactory);
 
             return new JdiControllerImpl(instance.getJdi(), instance.getEventHandler(), entryRegistry);
         }
@@ -107,11 +103,6 @@ public class JdiControllerImpl implements JdiController, Closeable {
 
         public Builder setClassPath(String path) {
             this.classPath = path;
-            return this;
-        }
-
-        public Builder setOnShutdown(OnVMDeath onShutdown) {
-            this.onShutdown = onShutdown;
             return this;
         }
 

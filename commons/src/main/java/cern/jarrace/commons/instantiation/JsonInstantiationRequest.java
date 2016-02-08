@@ -7,13 +7,16 @@
 package cern.jarrace.commons.instantiation;
 
 import cern.jarrace.commons.domain.Service;
+import cern.jarrace.commons.gson.ServiceTypeAdapter;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * A JSON implementation of the {@link InspectorInstantiationRequest}.
  */
 public class JsonInstantiationRequest implements InspectorInstantiationRequest {
 
+    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Service.class, new ServiceTypeAdapter()).create();
     private final String classPath;
     private final Service entryPoints;
 
@@ -33,11 +36,11 @@ public class JsonInstantiationRequest implements InspectorInstantiationRequest {
     }
 
     public String toJson() {
-        return new Gson().toJson(this);
+        return GSON.toJson(this);
     }
 
     public static JsonInstantiationRequest fromJson(String input) {
-        return new Gson().fromJson(input, JsonInstantiationRequest.class);
+        return GSON.fromJson(input, JsonInstantiationRequest.class);
     }
 
     public static class Builder {

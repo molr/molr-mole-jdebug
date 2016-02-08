@@ -6,7 +6,6 @@
 
 package cern.jarrace.inspector.controller.factory;
 
-import cern.jarrace.commons.domain.Service;
 import cern.jarrace.inspector.controller.JdiEventHandler;
 import cern.jarrace.inspector.controller.SteppingJdiEventHandler;
 import cern.jarrace.inspector.entry.EntryListener;
@@ -52,18 +51,16 @@ public class JdiFactory {
     }
 
     public <Listener extends EntryListener> JdiFactoryInstance spawnJdi(
-            Service entry, EntryListenerFactory<Listener> callbackFactory) throws IOException {
+            String className, List<String> entryPoints, EntryListenerFactory<Listener> callbackFactory) throws IOException {
         try {
             VirtualMachine virtualMachine = launcher.safeStart();
             JDIScript jdi = new JDIScript(virtualMachine);
             SteppingJdiEventHandler eventHandler = new SteppingJdiEventHandler(jdi, callbackFactory);
 
             ClassInstantiationListener instantiationListener =
-                    new ClassInstantiationListener(entry.getClassName(),
-                            classType -> {
-                                entry.getEntryPoints().forEach(methodName ->
-                                        register(jdi, eventHandler, classType, methodName));
-                            });
+                    new ClassInstantiationListener(className,
+                            classType -> entryPoints.forEach(methodName ->
+                                    register(jdi, eventHandler, classType, methodName)));
 
             ExecutorService executorService = Executors.newFixedThreadPool(1);
             executorService.execute(() -> {
