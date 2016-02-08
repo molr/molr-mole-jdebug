@@ -2,6 +2,7 @@ package cern.jarrace.controller.server.impl;
 
 import cern.jarrace.commons.domain.AgentContainer;
 import cern.jarrace.commons.domain.Service;
+import cern.jarrace.commons.instantiation.InstantiationRequest;
 import cern.jarrace.controller.io.JarReader;
 import cern.jarrace.controller.io.JarWriter;
 import cern.jarrace.controller.jvm.AgentRegistrySpawner;
@@ -64,6 +65,11 @@ public class ServerImpl implements Server {
     @Override
     public String runService(String agentPath, Service service, List<String> entryPoints) throws Exception {
         return agentRunnerSpawner.spawnAgentRunner(service, agentPath, entryPoints);
+    }
+
+    @Override
+    public String run(InstantiationRequest request) throws Exception {
+        return null;
     }
 
     @Override

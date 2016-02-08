@@ -12,9 +12,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * A JSON implementation of the {@link InspectorInstantiationRequest}.
+ * A JSON implementation of the {@link InstantiationRequest}.
  */
-public class JsonInstantiationRequest implements InspectorInstantiationRequest {
+public class JsonInstantiationRequest implements InstantiationRequest {
 
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(Service.class, new ServiceTypeAdapter().nullSafe())

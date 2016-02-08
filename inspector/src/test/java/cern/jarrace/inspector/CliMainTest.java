@@ -7,7 +7,6 @@
 package cern.jarrace.inspector;
 
 import cern.jarrace.commons.domain.Service;
-import cern.jarrace.commons.instantiation.InspectorInstantiationRequest;
 import cern.jarrace.commons.instantiation.JsonInstantiationRequest;
 import org.junit.Before;
 import org.junit.Test;

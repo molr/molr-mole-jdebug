@@ -2,6 +2,7 @@ package cern.jarrace.controller.server;
 
 import cern.jarrace.commons.domain.AgentContainer;
 import cern.jarrace.commons.domain.Service;
+import cern.jarrace.commons.instantiation.InstantiationRequest;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
@@ -51,6 +52,8 @@ public interface Server {
      * @return A {@link String} with the result of the execution
      */
     String runService(String agentPath, Service service, List<String> entryPoints) throws Exception;
+
+    String run(InstantiationRequest request) throws Exception;
 
     /**
      * Fetches the source code of a {@link Class} from a specific {@link AgentContainer}

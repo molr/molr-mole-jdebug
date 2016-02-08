@@ -11,7 +11,7 @@ import cern.jarrace.commons.domain.Service;
 /**
  * A request to instantiate an inspector with a given classpath and a {@link Service} to run.
  */
-public interface InspectorInstantiationRequest {
+public interface InstantiationRequest {
 
     String getClassPath();
 

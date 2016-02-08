@@ -6,7 +6,7 @@
 
 package cern.jarrace.inspector;
 
-import cern.jarrace.commons.instantiation.InspectorInstantiationRequest;
+import cern.jarrace.commons.instantiation.InstantiationRequest;
 import cern.jarrace.commons.instantiation.JsonInstantiationRequest;
 import cern.jarrace.inspector.controller.JdiController;
 import cern.jarrace.inspector.controller.JdiControllerImpl;
@@ -54,7 +54,7 @@ public class CliMain implements Closeable {
         }
     }
 
-    private static JdiControllerImpl startJdi(InspectorInstantiationRequest request) throws Exception {
+    private static JdiControllerImpl startJdi(InstantiationRequest request) throws Exception {
         try {
             return JdiControllerImpl.builder()
                     .setClassPath(request.getClassPath())
