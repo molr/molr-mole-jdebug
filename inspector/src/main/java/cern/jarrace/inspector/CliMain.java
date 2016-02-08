@@ -54,7 +54,6 @@ public class CliMain implements Closeable {
         }
     }
 
-
     private static JdiControllerImpl startJdi(InspectorInstantiationRequest request) throws Exception {
         try {
             return JdiControllerImpl.builder()

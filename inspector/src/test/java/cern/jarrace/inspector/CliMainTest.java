@@ -37,7 +37,6 @@ public class CliMainTest {
         when(mockedService.getClassName()).thenReturn(inspectionClass);
         when(mockedService.getEntryPoints()).thenReturn(entryPoints);
         final JsonInstantiationRequest request = new JsonInstantiationRequest(classPath, mockedService);
-        System.out.println(request.toJson());
         CliMain.main(new String[]{request.toJson()});
     }
 
