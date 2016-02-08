@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 /**
  * An implementation of an {@link EntryListener} which relays listener calls to a {@link java.io.PrintWriter}.
  */
-public class EntryListenerWriter implements EntryListener {
+public class EntryListenerWriter implements EntryListener, AutoCloseable {
 
     private final PrintWriter writer;
     private final Gson gson = new Gson();
@@ -35,6 +35,11 @@ public class EntryListenerWriter implements EntryListener {
         writer.println(EntryListenerMethod.ON_INSPECTION_END.ordinal());
         writer.println(gson.toJson(state));
         writer.flush();
+    }
+
+    @Override
+    public void close() {
+        writer.close();
     }
 
 }

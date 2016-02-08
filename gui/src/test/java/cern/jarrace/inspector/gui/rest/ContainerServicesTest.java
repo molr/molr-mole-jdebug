@@ -60,5 +60,4 @@ public class ContainerServicesTest {
         assertEquals(mockedService, new ContainerServices(mockedService, mockedService).getContainerService());
     }
 
-
 }

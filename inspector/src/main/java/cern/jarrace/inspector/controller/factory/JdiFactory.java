@@ -6,11 +6,11 @@
 
 package cern.jarrace.inspector.controller.factory;
 
+import cern.jarrace.commons.domain.Service;
 import cern.jarrace.inspector.controller.JdiEventHandler;
 import cern.jarrace.inspector.controller.SteppingJdiEventHandler;
 import cern.jarrace.inspector.entry.EntryListener;
 import cern.jarrace.inspector.entry.EntryListenerFactory;
-import cern.jarrace.inspector.entry.EntryMethod;
 import cern.jarrace.inspector.jdi.ClassInstantiationListener;
 import com.sun.jdi.*;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
@@ -35,31 +35,9 @@ public class JdiFactory {
         this.launcher = launcher;
     }
 
-    public <Listener extends EntryListener> JdiFactoryInstance spawnJdi(
-            EntryMethod entry, EntryListenerFactory<Listener> callbackFactory) throws IOException {
-        try {
-            VirtualMachine virtualMachine = launcher.safeStart();
-            JDIScript jdi = new JDIScript(virtualMachine);
-
-            JdiEventHandler eventHandler = new SteppingJdiEventHandler(jdi, callbackFactory);
-            ClassInstantiationListener instantiationListener =
-                    new ClassInstantiationListener(entry.getMethodClass(),
-                            classType -> register(jdi, eventHandler, classType, entry));
-
-            ExecutorService executorService = Executors.newFixedThreadPool(1);
-            executorService.execute(() -> {
-                jdi.onClassPrep(instantiationListener);
-                jdi.run(eventHandler);
-            });
-            return new JdiFactoryInstance(jdi, eventHandler);
-        } catch (VMStartException | IllegalConnectorArgumentsException e) {
-            throw new IOException("Failed to starte VM: ", e);
-        }
-    }
-
     public static void register(JDIScript jdi, JdiEventHandler eventHandler,
-                                ClassType classType, EntryMethod inspectableMethod) {
-        Method runMethod = classType.methodsByName(inspectableMethod.getMethodName()).get(0);
+                                ClassType classType, String inspectableMethod) {
+        Method runMethod = classType.methodsByName(inspectableMethod).get(0);
         try {
             List<Location> lineList = new ArrayList<>(runMethod.allLineLocations());
             lineList.sort((line1, line2) -> Integer.compare(line1.lineNumber(), line2.lineNumber()));
@@ -71,6 +49,31 @@ public class JdiFactory {
 
     private static void setBreakpoint(JDIScript jdi, JdiEventHandler eventHandler, Location location) {
         jdi.breakpointRequest(location, eventHandler).enable();
+    }
+
+    public <Listener extends EntryListener> JdiFactoryInstance spawnJdi(
+            Service entry, EntryListenerFactory<Listener> callbackFactory) throws IOException {
+        try {
+            VirtualMachine virtualMachine = launcher.safeStart();
+            JDIScript jdi = new JDIScript(virtualMachine);
+            SteppingJdiEventHandler eventHandler = new SteppingJdiEventHandler(jdi, callbackFactory);
+
+            ClassInstantiationListener instantiationListener =
+                    new ClassInstantiationListener(entry.getClassName(),
+                            classType -> {
+                                entry.getEntryPoints().forEach(methodName ->
+                                        register(jdi, eventHandler, classType, methodName));
+                            });
+
+            ExecutorService executorService = Executors.newFixedThreadPool(1);
+            executorService.execute(() -> {
+                jdi.onClassPrep(instantiationListener);
+                jdi.run(eventHandler);
+            });
+            return new JdiFactoryInstance(jdi, eventHandler);
+        } catch (VMStartException | IllegalConnectorArgumentsException e) {
+            throw new IOException("Failed to starte VM: ", e);
+        }
     }
 
     public static JdiFactory withLauncher(VMLauncher launcher) {

@@ -37,6 +37,7 @@ project(":gui") {
 
 project(":inspector") {
     dependencies {
+        compile project(":commons")
         compile project(":jdiscript")
     }
 }

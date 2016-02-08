@@ -27,7 +27,7 @@ public class ClassInstantiationListener implements OnClassPrepare {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassInstantiationListener.class);
 
     private final Consumer<ClassType> implementorCallback;
-    private final Class<?> implementorClass;
+    private final String implementorClass;
     private Set<ClassType> currentImplementations = new HashSet<>();
 
     /**
@@ -38,7 +38,7 @@ public class ClassInstantiationListener implements OnClassPrepare {
      * @param implementorClass    The class or interface to search for.
      * @param implementorCallback A callback to call whenever a new (unique) class instance is created.
      */
-    public ClassInstantiationListener(Class<?> implementorClass, Consumer<ClassType> implementorCallback) {
+    public ClassInstantiationListener(String implementorClass, Consumer<ClassType> implementorCallback) {
         this.implementorClass = implementorClass;
         this.implementorCallback = implementorCallback;
     }
@@ -60,12 +60,12 @@ public class ClassInstantiationListener implements OnClassPrepare {
     /**
      * Tests if the given {@link ClassType} is representing the same class as the given {@link Class} by comparing their
      * full path names.
+     *
      * @param type The class type to test.
-     * @param clazz The Java class to test.
      * @return True if the classes are considered the same.
      */
-    static boolean isClassEquals(ClassType type, Class<?> clazz) {
-        return type.name().equals(clazz.getName());
+    static boolean isClassEquals(ClassType type, String className) {
+        return type.name().equals(className);
     }
 
 }

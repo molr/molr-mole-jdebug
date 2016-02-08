@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings("unchecked")
 public class ClassInstantiationListenerTest {
 
-    private static final Class<?> CLASS = ClassInstantiationListenerTest.class;
+    private static final String CLASS = ClassInstantiationListenerTest.class.getName();
     private Consumer mockedConsumer;
     private ClassInstantiationListener listener;
     private ClassPrepareEvent mockedEvent;
@@ -34,7 +34,7 @@ public class ClassInstantiationListenerTest {
         mockedEvent = mock(ClassPrepareEvent.class);
         mockedType = mock(ClassType.class);
         when(mockedEvent.referenceType()).thenReturn(mockedType);
-        when(mockedType.name()).thenReturn(CLASS.getName());
+        when(mockedType.name()).thenReturn(CLASS);
         listener = new ClassInstantiationListener(CLASS, mockedConsumer);
     }
 

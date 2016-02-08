@@ -16,9 +16,11 @@ import com.sun.jdi.Location;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.event.BreakpointEvent;
 import com.sun.jdi.event.StepEvent;
+import com.sun.jdi.event.VMDeathEvent;
 import com.sun.jdi.event.VMStartEvent;
 import com.sun.jdi.request.StepRequest;
 import org.jdiscript.JDIScript;
+import org.jdiscript.handlers.OnVMDeath;
 import org.jdiscript.requests.ChainingStepRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +45,9 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
     /**
      * Creates a new event handler that is
      *
-     * @param jdi
-     * @param callbackFactory
+     * @param jdi             The {@link JDIScript} instance that interfaces Java Debug Interface (JDI).
+     * @param callbackFactory A factory that can create new {@link EntryListener}s when a new instance that should be
+     *                        listened to is spawned in the JVM.
      */
     public SteppingJdiEventHandler(JDIScript jdi, EntryListenerFactory<?> callbackFactory) {
         super(jdi.vm());
