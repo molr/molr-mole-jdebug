@@ -16,7 +16,9 @@ import com.google.gson.GsonBuilder;
  */
 public class JsonInstantiationRequest implements InspectorInstantiationRequest {
 
-    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Service.class, new ServiceTypeAdapter()).create();
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(Service.class, new ServiceTypeAdapter().nullSafe())
+            .create();
     private final String classPath;
     private final Service entryPoints;
 

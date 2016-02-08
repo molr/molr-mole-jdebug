@@ -13,7 +13,7 @@ import java.util.Arrays;
  */
 public class ServiceTypeAdapter extends TypeAdapter<Service> {
 
-    private final String LIST_SEPARATOR = ",";
+    private static final String LIST_SEPARATOR = ",";
 
     @Override
     public void write(JsonWriter out, Service service) throws IOException {
