@@ -6,12 +6,12 @@
 
 package cern.jarrace.inspector;
 
-import cern.jarrace.commons.instantiation.InstantiationRequest;
-import cern.jarrace.commons.instantiation.JsonInstantiationRequest;
 import cern.jarrace.inspector.controller.JdiController;
 import cern.jarrace.inspector.controller.JdiControllerImpl;
 import cern.jarrace.inspector.remote.EntryListenerWriter;
 import cern.jarrace.inspector.remote.JdiControllerReader;
+import cern.molr.inspector.domain.InstantiationRequest;
+import cern.molr.inspector.domain.JsonInstantiationRequest;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +67,7 @@ public class CliMain implements Closeable {
         try {
             return JdiControllerImpl.builder()
                     .setClassPath(request.getClassPath())
-                    .setService(request.getEntryPoints())
+                    .setService(request.getService())
                     .build();
         } catch (IllegalConnectorArgumentsException e) {
             LOGGER.warn("Bad connection parameters {} when starting JDI", request, e);

@@ -2,7 +2,6 @@ package cern.jarrace.controller.server;
 
 import cern.jarrace.commons.domain.AgentContainer;
 import cern.jarrace.commons.domain.Service;
-import cern.jarrace.commons.instantiation.InstantiationRequest;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;

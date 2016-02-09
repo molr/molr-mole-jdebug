@@ -1,9 +1,7 @@
 package cern.molr.demo;
 
-
 import cern.jarrace.commons.domain.Service;
-import cern.jarrace.commons.instantiation.InstantiationRequest;
-import cern.jarrace.commons.instantiation.JsonInstantiationRequest;
+import cern.molr.inspector.domain.JsonInstantiationRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +9,7 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        final String molrJarPath = "/home/jens/workspace/molr/demo/build/libs/demo-jarrace.jar";
+        final String molrJarPath = "/home/jepeders/workspace/cern/molr/demo/build/libs/demo-jarrace.jar";
         final String localClassPath = Main.class.getProtectionDomain().getCodeSource().getLocation().getFile();
         final String classPath = molrJarPath + File.pathSeparator + localClassPath;
         final Service entryPoint = new Service("cern.jarrace.agent.impl.JunitAgent", "cern.jarrace.gradle.SimpleTest");

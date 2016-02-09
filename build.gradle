@@ -21,6 +21,7 @@ project(":demo") {
 project(":agent") {
     dependencies {
         compile project(":commons")
+        compile project(":inspector")
     }
 }
 

@@ -6,7 +6,6 @@
 package cern.jarrace.controller.jvm;
 
 import cern.jarrace.commons.domain.Service;
-import cern.jarrace.commons.instantiation.JsonInstantiationRequest;
 
 import java.util.List;
 
@@ -17,6 +16,4 @@ import java.util.List;
  */
 public interface AgentRunnerSpawner {
     public String spawnAgentRunner(Service service, String jarPath, List<String> args) throws Exception;
-
-    String run(JsonInstantiationRequest request) throws Exception;
 }

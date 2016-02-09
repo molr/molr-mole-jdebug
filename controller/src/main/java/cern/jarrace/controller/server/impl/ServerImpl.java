@@ -2,7 +2,6 @@ package cern.jarrace.controller.server.impl;
 
 import cern.jarrace.commons.domain.AgentContainer;
 import cern.jarrace.commons.domain.Service;
-import cern.jarrace.commons.instantiation.InstantiationRequest;
 import cern.jarrace.controller.io.JarReader;
 import cern.jarrace.controller.io.JarWriter;
 import cern.jarrace.controller.jvm.AgentRegistrySpawner;
