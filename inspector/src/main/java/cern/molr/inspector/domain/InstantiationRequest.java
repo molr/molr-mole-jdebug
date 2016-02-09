@@ -4,7 +4,7 @@
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
-package cern.jarrace.commons.instantiation;
+package cern.molr.inspector.domain;
 
 import cern.jarrace.commons.domain.Service;
 
@@ -13,8 +13,18 @@ import cern.jarrace.commons.domain.Service;
  */
 public interface InstantiationRequest {
 
+    /**
+     * Returns the full class path containing all the necessary libraries to run the request in a Java environment.
+     *
+     * @return A {@link String} containing zero or more classpaths, separated by {@link java.io.File#pathSeparator}.
+     */
     String getClassPath();
 
-    Service getEntryPoints();
+    /**
+     * The {@link Service} that should be run with this request.
+     *
+     * @return A {@link Service} containing information about what main class to run with what arguments.
+     */
+    Service getService();
 
 }
