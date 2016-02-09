@@ -47,6 +47,11 @@ public class ServerImpl implements Server {
     }
 
     @Override
+    public void deploy(AgentContainer container) {
+        agentContainerManager.registerAgentContainer(container);
+    }
+
+    @Override
     public void registerService(@RequestBody AgentContainer agentContainer) {
         agentContainerManager.registerAgentContainer(agentContainer);
         LOGGER.info("Registered new AgentContainer: [{}]", agentContainer);
@@ -65,11 +70,6 @@ public class ServerImpl implements Server {
     @Override
     public String runService(String agentPath, Service service, List<String> entryPoints) throws Exception {
         return agentRunnerSpawner.spawnAgentRunner(service, agentPath, entryPoints);
-    }
-
-    @Override
-    public String run(InstantiationRequest request) throws Exception {
-        return null;
     }
 
     @Override

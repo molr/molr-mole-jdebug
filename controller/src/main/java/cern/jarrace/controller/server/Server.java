@@ -23,6 +23,8 @@ public interface Server {
      */
     void deploy(String containerName, byte[] file) throws Exception;
 
+    void deploy(AgentContainer container);
+
     /**
      * Registers a specific container as available
      *
@@ -52,8 +54,6 @@ public interface Server {
      * @return A {@link String} with the result of the execution
      */
     String runService(String agentPath, Service service, List<String> entryPoints) throws Exception;
-
-    String run(InstantiationRequest request) throws Exception;
 
     /**
      * Fetches the source code of a {@link Class} from a specific {@link AgentContainer}

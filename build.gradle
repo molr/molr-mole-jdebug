@@ -13,6 +13,8 @@ subprojects {
 project(":demo") {
     dependencies {
         compile project(":agent")
+        compile project(":commons")
+        compile project(":inspector")
     }
 }
 

@@ -16,10 +16,9 @@ import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.Closeable;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A class containing a main method which can instantiate a {@link cern.jarrace.inspector.controller.JdiController}
@@ -29,14 +28,24 @@ public class CliMain implements Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CliMain.class);
 
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
     private JdiController controller;
     private JdiControllerReader commandReader;
     private EntryListenerWriter entryWriter;
 
-    public CliMain(JdiController controller, JdiControllerReader commandReader, EntryListenerWriter entryWriter) {
+    public CliMain(JdiControllerImpl controller, JdiControllerReader commandReader, EntryListenerWriter entryWriter) {
         this.controller = controller;
         this.commandReader = commandReader;
         this.entryWriter = entryWriter;
+        executor.submit(() -> {
+            Process process = controller.getProcess();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                reader.lines().forEach(System.out::println);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public static void main(String[] args) throws Exception {
@@ -74,5 +83,6 @@ public class CliMain implements Closeable {
         controller.terminate();
         commandReader.close();
         entryWriter.close();
+        executor.shutdown();
     }
 }

@@ -32,11 +32,13 @@ public class JdiControllerImpl implements JdiController, Closeable {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdiControllerImpl.class);
 
     private final JdiEntryRegistry<BlockingEntryListener> entryRegistry;
+    private final Process process;
     private final JDIScript jdi;
     private final JdiEventHandler eventHandler;
     private Runnable onClose;
 
-    private JdiControllerImpl(JDIScript jdi, JdiEventHandler eventHandler, JdiEntryRegistry<BlockingEntryListener> entryRegistry) {
+    private JdiControllerImpl(Process process, JDIScript jdi, JdiEventHandler eventHandler, JdiEntryRegistry<BlockingEntryListener> entryRegistry) {
+        this.process = process;
         this.jdi = jdi;
         this.eventHandler = eventHandler;
         this.entryRegistry = entryRegistry;
@@ -56,6 +58,10 @@ public class JdiControllerImpl implements JdiController, Closeable {
             /* Already disconnected */
         }
         onClose.run();
+    }
+
+    public Process getProcess() {
+        return process;
     }
 
     @Override
@@ -84,7 +90,7 @@ public class JdiControllerImpl implements JdiController, Closeable {
         public JdiControllerImpl build() throws IOException, IllegalConnectorArgumentsException, VMStartException {
             Objects.requireNonNull(classPath, "Classpath must be set");
             Objects.requireNonNull(service, "Service to inspect must be set");
-            final VMLauncher launcher = new VMLauncher(CLASSPATH_PREFIX + classPath, service.getAgentName());
+            final VMLauncher launcher = new VMLauncher(CLASSPATH_PREFIX + classPath, service.getAgentName() + " " + service.getClassName());
 
             JdiEntryRegistry<BlockingEntryListener> entryRegistry = new JdiEntryRegistry<>();
             BlockingCallbackFactory callbackFactory = new BlockingCallbackFactory(entryRegistry);
@@ -93,7 +99,7 @@ public class JdiControllerImpl implements JdiController, Closeable {
                     .withLauncher(launcher)
                     .spawnJdi(service.getClassName(), service.getEntryPoints(), callbackFactory);
 
-            return new JdiControllerImpl(instance.getJdi(), instance.getEventHandler(), entryRegistry);
+            return new JdiControllerImpl(launcher.getProcess(), instance.getJdi(), instance.getEventHandler(), entryRegistry);
         }
 
         public Builder setService(Service method) {
