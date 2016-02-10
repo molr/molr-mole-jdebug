@@ -8,26 +8,18 @@ package cern.jarrace.inspector.controller;
 
 import cern.jarrace.inspector.entry.EntryListener;
 import cern.jarrace.inspector.entry.EntryListenerFactory;
-import cern.jarrace.inspector.entry.EntryState;
 import cern.jarrace.inspector.entry.impl.EntryStateImpl;
 import cern.jarrace.inspector.jdi.LocationRange;
-import com.sun.jdi.AbsentInformationException;
-import com.sun.jdi.Location;
-import com.sun.jdi.ThreadReference;
-import com.sun.jdi.event.BreakpointEvent;
-import com.sun.jdi.event.StepEvent;
-import com.sun.jdi.event.VMDeathEvent;
-import com.sun.jdi.event.VMStartEvent;
+import com.sun.jdi.*;
+import com.sun.jdi.event.*;
 import com.sun.jdi.request.StepRequest;
 import org.jdiscript.JDIScript;
-import org.jdiscript.handlers.OnVMDeath;
 import org.jdiscript.requests.ChainingStepRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An event handler receiving events from the running JDI instance. This handler attempts to hide
@@ -38,9 +30,8 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(SteppingJdiEventHandler.class);
 
     private final JDIScript jdi;
-    private final Map<ThreadReference, InspectableState> threads = new HashMap<>();
-    private final Map<String, ThreadReference> classNamesToThreads = new HashMap<>();
     private final EntryListenerFactory<?> callbackHandler;
+    private final JdiEntryRegistry<EntryListener> registry;
 
     /**
      * Creates a new event handler that is
@@ -49,54 +40,60 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
      * @param callbackFactory A factory that can create new {@link EntryListener}s when a new instance that should be
      *                        listened to is spawned in the JVM.
      */
-    public SteppingJdiEventHandler(JDIScript jdi, EntryListenerFactory<?> callbackFactory) {
+    public SteppingJdiEventHandler(JDIScript jdi, EntryListenerFactory<?> callbackFactory, JdiEntryRegistry<EntryListener> registry) {
         super(jdi.vm());
         this.jdi = jdi;
         this.callbackHandler = callbackFactory;
+        this.registry = registry;
     }
 
     @Override
     public void breakpoint(BreakpointEvent event) {
-        try {
-            final ThreadReference threadReference = event.thread();
-            threadReference.suspend();
-            final LocationRange range = LocationRange.ofMethod(event.location().method());
-            final ChainingStepRequest request = jdi.stepRequest(threadReference, StepRequest.STEP_LINE,
-                    StepRequest.STEP_OVER);
-            request.addHandler(this);
-            request.enable();
+        final ThreadReference threadReference = event.thread();
+        threadReference.suspend();
+        final ChainingStepRequest request = jdi.stepRequest(threadReference, StepRequest.STEP_LINE,
+                StepRequest.STEP_OVER);
+        request.addHandler(this);
+        request.enable();
 
-            final String sourcePath = event.location().sourcePath();
-            classNamesToThreads.put(sourcePath, event.thread());
+        EntryStateImpl.ofLocation(event.location()).ifPresent(entryState -> {
+            final EntryListener callbackListener = callbackHandler.createListenerOn(
+                    event.thread(), entryState);
+            registry.register(event.thread(), callbackListener);
+            callbackListener.onLocationChange(entryState);
+        });
+    }
 
-            EntryStateImpl.ofLocation(event.location()).ifPresent(entryState -> {
-                final EntryListener callbackListener = callbackHandler.createListenerOn(
-                        event.thread(), entryState);
-                final InspectableState state = new InspectableState(callbackListener, range);
-                threads.put(event.thread(), state);
-            });
-        } catch (AbsentInformationException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public void exception(ExceptionEvent e) {
+        System.out.println("Got exception: " + e.exception());
     }
 
     public ThreadReference getReferenceForClass(String className) {
-        return classNamesToThreads.get(className);
+        return registry.getThreadReference().get();
     }
 
     @Override
     public synchronized void step(StepEvent e) {
-        InspectableState state = threads.get(e.thread());
-        if (state != null) {
-            fromStepEvent(e).ifPresent(entryState -> {
-                if (state.methodRange.isWithin(e.location())) {
-                    threads.get(e.thread()).listener.onLocationChange(entryState);
-                    e.thread().suspend();
-                } else {
-                    threads.remove(e.thread()).listener.onInspectionEnd(entryState);
-                }
-            });
+        try {
+            if (LocationRange.ofMethod(e.location().method()).isWithin(e.location())) {
+                EntryStateImpl.ofLocation(e.location()).ifPresent(registry.getEntryListener().get()::onLocationChange);
+            } else {
+                registry.unregister();
+            }
+        } catch (AbsentInformationException e1) {
+            e1.printStackTrace();
         }
+    }
+
+    @Override
+    public void threadDeath(ThreadDeathEvent e) {
+        System.out.println("Thread death: " + e.thread());
+    }
+
+    @Override
+    public void vmDeath(VMDeathEvent e) {
+        System.out.println("VM death " + e);
     }
 
     @Override
@@ -106,29 +103,28 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
         }
     }
 
-    private static Optional<EntryState> fromStepEvent(StepEvent event) {
+    /**
+     * Called when a new class has been registered in the running JDI instance, and creates a breakpoint in the
+     * method of that class which should be inspected. When the breakpoint is reached, it will be picked up by the
+     * same {@link JdiEventHandler}.
+     *
+     * @param classType         The type of class that was registered.
+     * @param inspectableMethod The method in the class which should be monitored.
+     */
+    public void registerClassInstantiation(ClassType classType, String inspectableMethod) {
         try {
-            final Location location = event.location();
-            final int lineNumber = location.lineNumber();
-            final String className = location.sourcePath();
-            final String methodName = location.method().name();
-            return Optional.of(new EntryStateImpl(className, methodName, lineNumber));
-        } catch (AbsentInformationException e) {
-            LOGGER.warn("Failed to read source path from event {}", e);
-            return Optional.empty();
+            Method runMethod = classType.methodsByName(inspectableMethod).get(0);
+            try {
+                List<Location> lineList = new ArrayList<>(runMethod.allLineLocations());
+                lineList.sort((line1, line2) -> Integer.compare(line1.lineNumber(), line2.lineNumber()));
+                jdi.breakpointRequest(lineList.get(0), this).enable();
+            } catch (AbsentInformationException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (IndexOutOfBoundsException e) {
+            throw new IllegalStateException("No method by the name " + inspectableMethod + " found in class " +
+                    classType);
         }
-    }
-
-    private static class InspectableState {
-
-        private final EntryListener listener;
-        private final LocationRange methodRange;
-
-        private InspectableState(EntryListener listener, LocationRange methodRange) {
-            this.listener = listener;
-            this.methodRange = methodRange;
-        }
-
     }
 
 }

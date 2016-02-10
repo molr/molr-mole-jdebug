@@ -38,4 +38,9 @@ public class JdiEntryRegistry<Listener extends EntryListener> {
         this.listener = Optional.ofNullable(listener);
     }
 
+    public void unregister() {
+        this.thread = Optional.empty();
+        this.listener = Optional.empty();
+    }
+
 }

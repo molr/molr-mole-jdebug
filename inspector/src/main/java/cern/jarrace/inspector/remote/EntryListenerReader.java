@@ -73,16 +73,18 @@ public class EntryListenerReader extends RemoteReader {
     }
 
     private Optional<EntryListenerMethod> readCommand(String input) {
-        if (input == null || input.length() != 1) {
-            LOGGER.warn("Expected numeric character, but received {}", input);
-        } else {
-            int method = Character.getNumericValue(input.charAt(0));
-            EntryListenerMethod[] methods = EntryListenerMethod.values();
-            if (method != -1) {
-                if (method >= 0 && method < methods.length) {
-                    return Optional.of(methods[method]);
-                } else {
-                    LOGGER.warn("Received illegal command {}, expected a number between 0 and {}", method, methods.length);
+        if (input != null) {
+            if (input.length() != 1) {
+                LOGGER.warn("Expected numeric character, but received {}", input);
+            } else {
+                int method = Character.getNumericValue(input.charAt(0));
+                EntryListenerMethod[] methods = EntryListenerMethod.values();
+                if (method != -1) {
+                    if (method >= 0 && method < methods.length) {
+                        return Optional.of(methods[method]);
+                    } else {
+                        LOGGER.warn("Received illegal command {}, expected a number between 0 and {}", method, methods.length);
+                    }
                 }
             }
         }
@@ -90,13 +92,15 @@ public class EntryListenerReader extends RemoteReader {
     }
 
     private Optional<EntryState> readState(String input) {
-        if (input == null || input.isEmpty()) {
-            LOGGER.warn("Expected an EntryState, but got {}", input);
-        } else {
-            try {
-                return Optional.of(gson.fromJson(input, EntryStateImpl.class));
-            } catch (JsonSyntaxException e) {
-                LOGGER.warn("Error when parsing json", e);
+        if (input != null) {
+            if (input.isEmpty()) {
+                LOGGER.warn("Expected an EntryState, but got {}", input);
+            } else {
+                try {
+                    return Optional.of(gson.fromJson(input, EntryStateImpl.class));
+                } catch (JsonSyntaxException e) {
+                    LOGGER.warn("Error when parsing json", e);
+                }
             }
         }
 

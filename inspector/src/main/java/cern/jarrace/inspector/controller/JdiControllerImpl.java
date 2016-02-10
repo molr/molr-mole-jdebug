@@ -7,10 +7,8 @@
 package cern.jarrace.inspector.controller;
 
 import cern.jarrace.commons.domain.Service;
-import cern.jarrace.inspector.controller.factory.JdiFactory;
-import cern.jarrace.inspector.controller.factory.JdiFactory.JdiFactoryInstance;
-import cern.jarrace.inspector.entry.BlockingCallbackFactory;
-import cern.jarrace.inspector.entry.BlockingEntryListener;
+import cern.jarrace.inspector.entry.EntryListener;
+import cern.jarrace.inspector.entry.EntryListenerFactory;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.VMDisconnectedException;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
@@ -22,6 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Objects;
 
 /**
@@ -31,17 +31,15 @@ public class JdiControllerImpl implements JdiController, Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdiControllerImpl.class);
 
-    private final JdiEntryRegistry<BlockingEntryListener> entryRegistry;
-    private final Process process;
+    private static final String AGENT_RUNNER_CLASS = "cern.jarrace.agent.AgentRunner";
+
+    private final JdiEntryRegistry<EntryListener> entryRegistry;
     private final JDIScript jdi;
-    private final JdiEventHandler eventHandler;
     private Runnable onClose;
 
-    private JdiControllerImpl(Process process, JDIScript jdi, JdiEventHandler eventHandler, JdiEntryRegistry<BlockingEntryListener> entryRegistry) {
-        this.process = process;
+    private JdiControllerImpl(JDIScript jdi, JdiEntryRegistry<EntryListener> registry) {
         this.jdi = jdi;
-        this.eventHandler = eventHandler;
-        this.entryRegistry = entryRegistry;
+        entryRegistry = registry;
     }
 
     public static Builder builder() {
@@ -60,14 +58,15 @@ public class JdiControllerImpl implements JdiController, Closeable {
         onClose.run();
     }
 
-    public Process getProcess() {
-        return process;
+    public InputStream getProcessError() {
+        return jdi.vm().process().getErrorStream();
     }
 
     @Override
     public void stepForward() {
         ThreadReference threadReference = entryRegistry.getThreadReference()
                 .orElseThrow(() -> new IllegalStateException("No active entry"));
+        System.err.println("Resuming " + threadReference);
         threadReference.resume();
     }
 
@@ -86,29 +85,40 @@ public class JdiControllerImpl implements JdiController, Closeable {
 
         private String classPath;
         private Service service;
+        private EntryListenerFactory<?> factory;
 
         public JdiControllerImpl build() throws IOException, IllegalConnectorArgumentsException, VMStartException {
             Objects.requireNonNull(classPath, "Classpath must be set");
+            Objects.requireNonNull(factory, "Listener factory must be set");
             Objects.requireNonNull(service, "Service to inspect must be set");
-            final VMLauncher launcher = new VMLauncher(CLASSPATH_PREFIX + classPath, service.getAgentName() + " " + service.getClassName());
 
-            JdiEntryRegistry<BlockingEntryListener> entryRegistry = new JdiEntryRegistry<>();
-            BlockingCallbackFactory callbackFactory = new BlockingCallbackFactory(entryRegistry);
+            final String launchArguments = AGENT_RUNNER_CLASS + " " + service.getAgentName() + " " + service.getClassName();
+            final VMLauncher launcher = new VMLauncher(CLASSPATH_PREFIX + classPath, launchArguments);
 
-            JdiFactoryInstance instance = JdiFactory
-                    .withLauncher(launcher)
-                    .spawnJdi(service.getClassName(), service.getEntryPoints(), callbackFactory);
+            JdiEntryRegistry<EntryListener> entryRegistry = new JdiEntryRegistry<>();
 
-            return new JdiControllerImpl(launcher.getProcess(), instance.getJdi(), instance.getEventHandler(), entryRegistry);
+            JDIScript jdi = new JdiInstanceBuilder()
+                    .setLauncher(launcher)
+                    .setService(service)
+                    .setEntryRegistry(entryRegistry)
+                    .setListenerFactory(factory)
+                    .build();
+
+            return new JdiControllerImpl(jdi, entryRegistry);
         }
 
-        public Builder setService(Service method) {
-            this.service = method;
+        public Builder setListenerFactory(EntryListenerFactory<?> factory) {
+            this.factory = factory;
             return this;
         }
 
         public Builder setClassPath(String path) {
             this.classPath = path;
+            return this;
+        }
+
+        public Builder setService(Service method) {
+            this.service = method;
             return this;
         }
 
