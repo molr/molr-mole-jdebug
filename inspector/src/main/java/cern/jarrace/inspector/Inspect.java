@@ -9,6 +9,7 @@ package cern.jarrace.inspector;
 import cern.jarrace.commons.domain.Service;
 import cern.jarrace.inspector.controller.JdiController;
 import cern.jarrace.inspector.entry.EntryListener;
+import cern.jarrace.inspector.remote.EntryListenerReader;
 import cern.jarrace.inspector.remote.JdiControllerWriter;
 import cern.molr.inspector.domain.InstantiationRequest;
 import cern.molr.inspector.json.ServiceTypeAdapter;
@@ -57,8 +58,15 @@ public enum Inspect {
         @Override
         public JdiController instantiate(InstantiationRequest request, EntryListener listener) throws IOException {
             ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/java", "-cp", request.getClassPath(), INSPECTOR_MAIN_CLASS, GSON.toJson(request));
+//            ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/java", "-cp", request.getClassPath(), INSPECTOR_MAIN_CLASS, "{\"classPath\":\"/local/acalia/test.jar\",\"service\":{\"agentName\":\"cern.jarrace.agent.impl.RunnableAgent\",\"className\":\"cern.lhc.opcoupling.mole.procedure.Beam1ScanProcedure\",\"entryPoints\":\"run\"}}");
+            System.err.println(processBuilder.command()); // TODO
             Process process = processBuilder.start();
 
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                process.destroy();
+            }));
+            
+            EntryListenerReader listenerReader = new EntryListenerReader(new BufferedReader(new InputStreamReader(process.getInputStream())), listener);
             JdiControllerWriter writer = new JdiControllerWriter(new PrintWriter(process.getOutputStream()));
             redirectError(process.getErrorStream(), System.err);
             return writer;

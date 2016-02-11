@@ -1,26 +1,18 @@
 /**
- * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
- * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
- * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
-package cern.jarrace.agent.impl;
 
-import cern.jarrace.agent.Agent;
+package cern.jarrace.agent.impl;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Implementation of {@link Agent} which allows for the discovery and execution of classes implementing the
- * {@link Runnable} interface.
- * <h3>Discovery:</h3> All classes annotated with {@link Runnable} are exposed as services.
- * <h3>Execution:</h3> Allows for the execution of the {@link Runnable#run()} entry point.
- *
- * @author tiagomr
- */
-public class RunnableAgent implements Agent {
+import cern.jarrace.agent.Agent;
+
+public class SpringAgent implements Agent{
+
     @Override
     public void initialize() {
         // Nothing to do here
@@ -50,4 +42,5 @@ public class RunnableAgent implements Agent {
             e.printStackTrace(System.err);
         }
     }
+
 }

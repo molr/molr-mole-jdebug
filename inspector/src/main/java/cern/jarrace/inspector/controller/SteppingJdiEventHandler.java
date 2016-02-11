@@ -76,6 +76,7 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
     @Override
     public synchronized void step(StepEvent e) {
         try {
+            e.thread().suspend();
             if (LocationRange.ofMethod(e.location().method()).isWithin(e.location())) {
                 EntryStateImpl.ofLocation(e.location()).ifPresent(registry.getEntryListener().get()::onLocationChange);
             } else {

@@ -86,5 +86,10 @@ public class EntryStateImpl implements EntryState {
         result = 31 * result + position;
         return result;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("%s %s line %d", getClassName(), getMethodName(), getLine());
+    }
 
 }
