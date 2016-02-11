@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +24,7 @@ public abstract class RemoteReader implements AutoCloseable {
 
     private final ScheduledExecutorService service;
     private final BufferedReader reader;
+    private Optional<Runnable> onClose = Optional.empty();
 
     /**
      * Creates a reader which reads commands from the given reader and forwards them to the controller.
@@ -60,6 +62,7 @@ public abstract class RemoteReader implements AutoCloseable {
     public void close() {
         closeResource(reader, e -> LOGGER.warn("Failed to close reader", e));
         service.shutdown();
+        onClose.ifPresent(Runnable::run);
     }
 
     static void closeResource(AutoCloseable closeable, Consumer<Exception> onError) {
@@ -68,6 +71,10 @@ public abstract class RemoteReader implements AutoCloseable {
         } catch (Exception e) {
             onError.accept(e);
         }
+    }
+
+    public void setOnClose(Runnable onClose) {
+        this.onClose = Optional.of(onClose);
     }
 
 }

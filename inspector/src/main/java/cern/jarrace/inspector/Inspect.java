@@ -9,6 +9,7 @@ package cern.jarrace.inspector;
 import cern.jarrace.commons.domain.Service;
 import cern.jarrace.inspector.controller.JdiController;
 import cern.jarrace.inspector.entry.EntryListener;
+import cern.jarrace.inspector.remote.EntryListenerReader;
 import cern.jarrace.inspector.remote.JdiControllerWriter;
 import cern.molr.inspector.domain.InstantiationRequest;
 import cern.molr.inspector.json.ServiceTypeAdapter;
@@ -19,7 +20,7 @@ import java.io.*;
 import java.util.concurrent.Executors;
 
 /**
- * The main entry-ooint for using the inspector library. The {@link #instance(InstantiationRequest, EntryListener)}
+ * The main entry-point for using the inspector library. The {@link #instance(InstantiationRequest, EntryListener)}
  * method spawns and connects to running inspector instances which can be controlled through the returned
  * {@link JdiController} interface. The running VM will reply to the given {@link EntryListener} whenever instances
  * of the requested {@link Service} in the {@link InstantiationRequest} is being stepped through.
@@ -59,8 +60,13 @@ public enum Inspect {
             ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/java", "-cp", request.getClassPath(), INSPECTOR_MAIN_CLASS, GSON.toJson(request));
             Process process = processBuilder.start();
 
+            Runtime.getRuntime().addShutdownHook(new Thread(process::destroy));
+
             JdiControllerWriter writer = new JdiControllerWriter(new PrintWriter(process.getOutputStream()));
             redirectError(process.getErrorStream(), System.err);
+            EntryListenerReader listenerReader = new EntryListenerReader(new BufferedReader(new InputStreamReader(process.getInputStream())), listener);
+            listenerReader.setOnClose(process::destroy);
+
             return writer;
         }
     }

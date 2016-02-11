@@ -22,6 +22,7 @@ public class EntryListenerReader extends RemoteReader {
 
     private final Gson gson = new Gson();
     private final EntryListener listener;
+    private Optional<Runnable> onVmDeath = Optional.empty();
 
     /**
      * Instructs the reader to receive commands from the given {@link BufferedReader} and forward them to a
@@ -48,13 +49,17 @@ public class EntryListenerReader extends RemoteReader {
         this.listener = listener;
     }
 
-    private void forwardEntry(EntryListenerMethod method, EntryState state) {
+    private void readCommand(EntryListenerMethod method, BufferedReader reader) throws IOException {
         switch (method) {
+            case ON_VM_DEATH:
+                listener.onVmDeath();
+                close();
+                break;
             case ON_LOCATION_CHANGE:
-                listener.onLocationChange(state);
+                readState(reader).ifPresent(listener::onLocationChange);
                 break;
             case ON_INSPECTION_END:
-                listener.onInspectionEnd(state);
+                readState(reader).ifPresent(listener::onInspectionEnd);
                 break;
         }
     }
@@ -62,22 +67,22 @@ public class EntryListenerReader extends RemoteReader {
     @Override
     protected void readCommand(BufferedReader reader) {
         try {
-            Optional<EntryListenerMethod> listenerMethod = readCommand(reader.readLine());
-            Optional<EntryState> listenerState = readState(reader.readLine());
-            if (listenerMethod.isPresent() && listenerMethod.isPresent()) {
-                forwardEntry(listenerMethod.get(), listenerState.get());
+            Optional<EntryListenerMethod> method = readMethod(reader);
+            if (method.isPresent()) {
+                readCommand(method.get(), reader);
             }
         } catch (IOException e) {
             LOGGER.error("Failed to read call to entry listener: ", e);
         }
     }
 
-    private Optional<EntryListenerMethod> readCommand(String input) {
-        if (input != null) {
-            if (input.length() != 1) {
-                LOGGER.warn("Expected numeric character, but received {}", input);
+    private Optional<EntryListenerMethod> readMethod(BufferedReader reader) throws IOException {
+        final String line = reader.readLine();
+        if (line != null) {
+            if (line.length() != 1) {
+                LOGGER.warn("Expected numeric character, but received {}", line);
             } else {
-                int method = Character.getNumericValue(input.charAt(0));
+                int method = Character.getNumericValue(line.charAt(0));
                 EntryListenerMethod[] methods = EntryListenerMethod.values();
                 if (method != -1) {
                     if (method >= 0 && method < methods.length) {
@@ -91,13 +96,14 @@ public class EntryListenerReader extends RemoteReader {
         return Optional.empty();
     }
 
-    private Optional<EntryState> readState(String input) {
-        if (input != null) {
-            if (input.isEmpty()) {
-                LOGGER.warn("Expected an EntryState, but got {}", input);
+    private Optional<EntryState> readState(BufferedReader reader) throws IOException {
+        final String line = reader.readLine();
+        if (line != null) {
+            if (line.isEmpty()) {
+                LOGGER.warn("Expected an EntryState, but got {}", line);
             } else {
                 try {
-                    return Optional.of(gson.fromJson(input, EntryStateImpl.class));
+                    return Optional.of(gson.fromJson(line, EntryStateImpl.class));
                 } catch (JsonSyntaxException e) {
                     LOGGER.warn("Error when parsing json", e);
                 }
@@ -106,4 +112,5 @@ public class EntryListenerReader extends RemoteReader {
 
         return Optional.empty();
     }
+
 }

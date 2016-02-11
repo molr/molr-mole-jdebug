@@ -25,6 +25,14 @@ public class DebugPane extends BorderPane {
     private final ScrollPane scrollPane = new ScrollPane();
     private final TextFlow textFlow = new TextFlow();
     private final Button stepOverButton = new Button("Step Over");
+    public Button getStepOverButton() {
+        return stepOverButton;
+    }
+
+    public Button getTerminateButton() {
+        return terminateButton;
+    }
+
     private final Button terminateButton = new Button("Terminate");
     private final CheckBox scrollCheckBox = new CheckBox("Automatic Scroll");
     private int currentLine = 0;
@@ -101,5 +109,9 @@ public class DebugPane extends BorderPane {
     /* For testing */
     TextFlow getTextFlow() {
         return textFlow;
+    }
+    
+    public void setData(String text) {
+        initData(text);
     }
 }

@@ -30,4 +30,6 @@ public interface EntryListener {
      */
     void onInspectionEnd(EntryState state);
 
+    void onVmDeath();
+
 }
