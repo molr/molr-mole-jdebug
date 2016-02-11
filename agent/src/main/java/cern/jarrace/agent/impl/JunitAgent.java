@@ -6,13 +6,13 @@
 package cern.jarrace.agent.impl;
 
 import cern.jarrace.agent.Agent;
+import cern.jarrace.agent.annotations.RunWithAgent;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -20,7 +20,7 @@ import java.util.List;
  * <h3>Discovery:</h3> All methods annotated with {@link Test} are be exposed as entry points and their respective
  * classes are exposed as services.
  * <h3>Execution:</h3> Allows for the execution of the whole test suite annotated with the
- * {@link cern.jarrace.agent.RunWithAgent} annotation or individual entry points. Uses the JUnit framework for the
+ * {@link RunWithAgent} annotation or individual entry points. Uses the JUnit framework for the
  * execution of the tests.
  *
  * @author tiagomr

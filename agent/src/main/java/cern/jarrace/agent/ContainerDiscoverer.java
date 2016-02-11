@@ -5,6 +5,7 @@
  */
 package cern.jarrace.agent;
 
+import cern.jarrace.agent.annotations.RunWithAgent;
 import com.impetus.annovention.ClasspathDiscoverer;
 import com.impetus.annovention.Discoverer;
 import com.impetus.annovention.listener.ClassAnnotationObjectDiscoveryListener;
@@ -13,7 +14,6 @@ import javassist.bytecode.annotation.Annotation;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class ContainerDiscoverer {
 
-    private static final String[] SUPPORTED_ANNOTATIONS = new String[]{"cern.jarrace.agent.RunWithAgent"};
+    private static final String[] SUPPORTED_ANNOTATIONS = new String[]{"cern.jarrace.agent.annotations.RunWithAgent"};
 
     private ContainerDiscoverer() {
         /* Should not be instantiated */
