@@ -11,7 +11,9 @@ import cern.jarrace.controller.jvm.AgentRunnerSpawner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class SimpleAgentRunnerSpawner extends AbstractJvmSpawner implements Agen
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAgentRunnerSpawner.class);
     private static final String AGENT_RUNNER_MAIN_CASS = "cern.jarrace.agent.AgentRunner";
+    private static final String INSPECTOR_MAIN_CLASS = "cern.molr.inspector.CliMain";
 
     @Override
     public String spawnAgentRunner(Service service, String jarPath, List<String> args) throws Exception {
@@ -46,12 +49,21 @@ public class SimpleAgentRunnerSpawner extends AbstractJvmSpawner implements Agen
         }
 
         Process process = spawnJvm(arguments);
-        StringBuilder stringBuilder = new StringBuilder();
-        BufferedInputStream bs = new BufferedInputStream(process.getInputStream());
+        return readFromProcess(process);
+    }
 
+    private String readFromProcess(Process process) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        InputStreamReader ir = new InputStreamReader(process.getInputStream());
+        BufferedReader bf = new BufferedReader(ir);
         while (process.isAlive()) {
-            stringBuilder.append(bs.read());
+            String lineRead = bf.readLine();
+            if (lineRead != null) {
+                stringBuilder.append(lineRead);
+            }
         }
         return stringBuilder.toString();
+
     }
+
 }

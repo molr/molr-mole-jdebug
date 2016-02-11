@@ -6,12 +6,10 @@
 
 package cern.jarrace.inspector.controller;
 
-import java.io.Closeable;
-
 /**
  * A controller for a JDI instance that can control any running JVM instances by stepping through or terminating them.
  */
-public interface JdiController extends Closeable {
+public interface JdiController {
 
     /**
      * Takes one <i>step</i> in an entry by executing one line / instruction in the running JVM.
