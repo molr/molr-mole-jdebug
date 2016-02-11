@@ -22,6 +22,7 @@ public class EntryListenerReader extends RemoteReader {
 
     private final Gson gson = new Gson();
     private final EntryListener listener;
+    private Optional<Runnable> onVmDeath = Optional.empty();
 
     /**
      * Instructs the reader to receive commands from the given {@link BufferedReader} and forward them to a
@@ -52,6 +53,7 @@ public class EntryListenerReader extends RemoteReader {
         switch (method) {
             case ON_VM_DEATH:
                 listener.onVmDeath();
+                close();
                 break;
             case ON_LOCATION_CHANGE:
                 readState(reader).ifPresent(listener::onLocationChange);
@@ -110,4 +112,5 @@ public class EntryListenerReader extends RemoteReader {
 
         return Optional.empty();
     }
+
 }

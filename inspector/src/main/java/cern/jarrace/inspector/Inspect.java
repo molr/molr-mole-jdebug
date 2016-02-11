@@ -58,17 +58,15 @@ public enum Inspect {
         @Override
         public JdiController instantiate(InstantiationRequest request, EntryListener listener) throws IOException {
             ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/java", "-cp", request.getClassPath(), INSPECTOR_MAIN_CLASS, GSON.toJson(request));
-//            ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/java", "-cp", request.getClassPath(), INSPECTOR_MAIN_CLASS, "{\"classPath\":\"/local/acalia/test.jar\",\"service\":{\"agentName\":\"cern.jarrace.agent.impl.RunnableAgent\",\"className\":\"cern.lhc.opcoupling.mole.procedure.Beam1ScanProcedure\",\"entryPoints\":\"run\"}}");
-            System.err.println(processBuilder.command()); // TODO
             Process process = processBuilder.start();
 
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                process.destroy();
-            }));
-            
-            EntryListenerReader listenerReader = new EntryListenerReader(new BufferedReader(new InputStreamReader(process.getInputStream())), listener);
+            Runtime.getRuntime().addShutdownHook(new Thread(process::destroy));
+
             JdiControllerWriter writer = new JdiControllerWriter(new PrintWriter(process.getOutputStream()));
             redirectError(process.getErrorStream(), System.err);
+            EntryListenerReader listenerReader = new EntryListenerReader(new BufferedReader(new InputStreamReader(process.getInputStream())), listener);
+            listenerReader.setOnClose(process::destroy);
+
             return writer;
         }
     }

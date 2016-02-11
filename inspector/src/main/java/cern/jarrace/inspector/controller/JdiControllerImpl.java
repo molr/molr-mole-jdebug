@@ -64,7 +64,6 @@ public class JdiControllerImpl implements JdiController, Closeable {
     public void stepForward() {
         ThreadReference threadReference = entryRegistry.getThreadReference()
                 .orElseThrow(() -> new IllegalStateException("No active entry"));
-        System.err.println("Resuming " + threadReference);
         threadReference.resume();
     }
 
