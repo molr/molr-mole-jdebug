@@ -9,9 +9,9 @@ buildscript {
         }
     }
 
-//    dependencies {
-//        classpath group: 'cern.jarrace', name: 'gradle', version: '0.1'
-//    }
+    dependencies {
+        //classpath group: 'cern.jarrace', name: 'gradle', version: '0.1'
+    }
 }
 
 version 'unspecified'
@@ -33,13 +33,15 @@ repositories {
 }
 
 dependencies {
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.+'
     compile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'cern.jarrace', name: 'agent', version: '0.1'
 }
+/*
+apply plugin: 'cern.jarrace.gradle'
 
-//apply plugin: 'cern.jarrace.gradle'
-//
-//jarrace {
-//    host = 'localhost:8080'
-//    name = 'demo1'
-//}
+jarrace {
+    host = 'localhost:8080'
+    name = 'demo1'
+}
+*/

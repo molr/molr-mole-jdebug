@@ -9,6 +9,7 @@ import cern.jarrace.controller.io.IOConfiguration;
 import cern.jarrace.controller.jvm.JvmConfiguration;
 import cern.jarrace.controller.manager.ManagementConfiguration;
 import cern.jarrace.controller.rest.RestConfiguration;
+import cern.jarrace.controller.server.ServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -25,7 +26,7 @@ import org.springframework.context.annotation.Import;
  */
 
 @SpringBootApplication
-@Import({ManagementConfiguration.class, RestConfiguration.class, JvmConfiguration.class, IOConfiguration.class})
+@Import({ManagementConfiguration.class, RestConfiguration.class, JvmConfiguration.class, IOConfiguration.class, ServerConfiguration.class})
 public class JarRaceServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(JarRaceServer.class);
 

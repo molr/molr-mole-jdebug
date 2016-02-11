@@ -47,7 +47,7 @@ public class RunnableAgent implements Agent {
             Runnable runnable = (Runnable) c.getConstructor().newInstance();
             runnable.run();
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 }
