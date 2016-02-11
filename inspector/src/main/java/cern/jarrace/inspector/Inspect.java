@@ -52,9 +52,11 @@ public enum Inspect {
                 .registerTypeAdapter(Service.class, new ServiceTypeAdapter().nullSafe())
                 .create();
 
+        private static final String INSPECTOR_MAIN_CLASS = "cern.jarrace.inspector.remote.SystemMain";
+
         @Override
         public JdiController instantiate(InstantiationRequest request, EntryListener listener) throws IOException {
-            ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/java", "-cp", request.getClassPath(), "cern.jarrace.inspector.remote.CliMain", GSON.toJson(request));
+            ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/java", "-cp", request.getClassPath(), INSPECTOR_MAIN_CLASS, GSON.toJson(request));
             Process process = processBuilder.start();
 
             JdiControllerWriter writer = new JdiControllerWriter(new PrintWriter(process.getOutputStream()));
