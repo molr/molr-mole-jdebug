@@ -1,22 +1,26 @@
 apply plugin: "java"
+apply plugin: "idea"
+apply plugin: "eclipse"
 
 subprojects {
     apply plugin: "java"
     dependencies {
         compile 'org.slf4j:slf4j-api:1.7.13'
-        runtime 'org.slf4j:slf4j-log4j12:1.7.13'
     }
 }
 
 project(":demo") {
     dependencies {
         compile project(":agent")
+        compile project(":commons")
+        compile project(":inspector")
     }
 }
 
 project(":agent") {
     dependencies {
         compile project(":commons")
+        compile project(":inspector")
     }
 }
 
@@ -35,6 +39,7 @@ project(":gui") {
 
 project(":inspector") {
     dependencies {
+        compile project(":commons")
         compile project(":jdiscript")
     }
 }

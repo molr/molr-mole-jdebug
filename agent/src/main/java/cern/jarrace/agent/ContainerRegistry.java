@@ -71,7 +71,7 @@ public class ContainerRegistry {
     }
 
     private static URL getRegisterUrl(String name, String controllerEndpoint) throws MalformedURLException {
-        return new URL("http://" + controllerEndpoint + "/jarrace/container/register/");
+        return new URL("http://" + controllerEndpoint + "/jarrace/container/registerClassInstantiation/");
     }
 
     private static void registerContainer(URL endpoint, AgentContainer agentContainer) {

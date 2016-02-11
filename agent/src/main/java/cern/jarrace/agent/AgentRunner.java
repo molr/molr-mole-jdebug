@@ -21,9 +21,11 @@ public class AgentRunner {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("Done running");
     }
 
     private static Agent createAgent(String agentName) throws Exception {
+        System.out.println("Running " + agentName);
         Class<Agent> clazz = (Class<Agent>) Class.forName(agentName);
         return (Agent) clazz.getConstructor().newInstance();
     }

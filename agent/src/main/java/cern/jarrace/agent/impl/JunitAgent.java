@@ -12,6 +12,7 @@ import org.junit.runner.JUnitCore;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -49,7 +50,7 @@ public class JunitAgent implements Agent {
         try {
             Class<?> c = Class.forName(entry);
             JUnitCore.runClasses(c);
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
