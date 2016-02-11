@@ -38,6 +38,12 @@ public class EntryListenerWriter implements EntryListener, AutoCloseable {
     }
 
     @Override
+    public void onVmDeath() {
+        writer.println(EntryListenerMethod.ON_VM_DEATH.ordinal());
+        writer.flush();
+    }
+
+    @Override
     public void close() {
         writer.close();
     }

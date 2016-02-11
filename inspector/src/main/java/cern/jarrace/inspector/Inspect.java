@@ -20,7 +20,7 @@ import java.io.*;
 import java.util.concurrent.Executors;
 
 /**
- * The main entry-ooint for using the inspector library. The {@link #instance(InstantiationRequest, EntryListener)}
+ * The main entry-point for using the inspector library. The {@link #instance(InstantiationRequest, EntryListener)}
  * method spawns and connects to running inspector instances which can be controlled through the returned
  * {@link JdiController} interface. The running VM will reply to the given {@link EntryListener} whenever instances
  * of the requested {@link Service} in the {@link InstantiationRequest} is being stepped through.

@@ -35,15 +35,22 @@ public class EntryListenerReaderWriterTest {
     @Test
     public void readsOnLocationChange() throws InterruptedException {
         writer.onLocationChange(state);
-        Thread.sleep(8);
+        Thread.sleep(20);
         verify(mockedListener).onLocationChange(state);
     }
 
     @Test
     public void readsOnInspectionEnd() throws InterruptedException {
         writer.onInspectionEnd(state);
-        Thread.sleep(8);
+        Thread.sleep(20);
         verify(mockedListener).onInspectionEnd(state);
+    }
+
+    @Test
+    public void readsOnVmDeath() throws InterruptedException {
+        writer.onVmDeath();
+        Thread.sleep(20);
+        verify(mockedListener).onVmDeath();
     }
 
 }

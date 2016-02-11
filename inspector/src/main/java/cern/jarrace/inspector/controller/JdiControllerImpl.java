@@ -21,8 +21,8 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A controller for a JDI instance that can
@@ -49,9 +49,7 @@ public class JdiControllerImpl implements JdiController, Closeable {
     @Override
     public void close() {
         try {
-            jdi.vmDeathRequest(death -> {
-                LOGGER.debug("Closed vm {}", death);
-            });
+            jdi.vmDeathRequest(event -> entryRegistry.getEntryListener().ifPresent(EntryListener::onVmDeath));
         } catch (VMDisconnectedException e) {
             /* Already disconnected */
         }
@@ -72,7 +70,16 @@ public class JdiControllerImpl implements JdiController, Closeable {
 
     @Override
     public void terminate() {
+        Optional<EntryListener> entryListener = entryRegistry.getEntryListener();
+        Optional<ThreadReference> threadReference = entryRegistry.getThreadReference();
+        if (entryListener.isPresent() && threadReference.isPresent()) {
+            closeThread(threadReference.get(), entryListener.get());
+        }
         close();
+    }
+
+    private void closeThread(ThreadReference thread, EntryListener listener) {
+
     }
 
     public void setOnClose(Runnable onClose) {
