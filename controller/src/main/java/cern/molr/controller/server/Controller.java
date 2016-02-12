@@ -2,6 +2,8 @@ package cern.molr.controller.server;
 
 import cern.molr.commons.domain.Mole;
 import cern.molr.commons.domain.Service;
+import cern.molr.inspector.controller.JdiController;
+import cern.molr.inspector.entry.EntryListener;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
@@ -53,6 +55,8 @@ public interface Controller {
      * @return A {@link String} with the result of the execution
      */
     String runMole(String agentPath, Service service, List<String> entryPoints) throws Exception;
+
+    JdiController debugMole(String agentPath, Service service, List<String> entryPoints, EntryListener entryListener) throws Exception;
 
     /**
      * Fetches the source code of a {@link Class} from a specific {@link Mole}

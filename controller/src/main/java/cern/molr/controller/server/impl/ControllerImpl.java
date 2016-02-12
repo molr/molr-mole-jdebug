@@ -8,6 +8,9 @@ import cern.molr.controller.jvm.MoleRegistrySpawner;
 import cern.molr.controller.jvm.MoleRunnerSpawner;
 import cern.molr.controller.manager.MoleManager;
 import cern.molr.controller.server.Controller;
+import cern.molr.inspector.controller.JdiController;
+import cern.molr.inspector.controller.JdiControllerImpl;
+import cern.molr.inspector.entry.EntryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +72,15 @@ public class ControllerImpl implements Controller {
     @Override
     public String runMole(String agentPath, Service service, List<String> entryPoints) throws Exception {
         return moleRunnerSpawner.spawnAgentRunner(service, agentPath, entryPoints);
+    }
+
+    @Override
+    public JdiController debugMole(String agentPath, Service service, List<String> entryPoints, EntryListener entryListener) throws Exception {
+        return JdiControllerImpl.builder()
+                .setClassPath(agentPath)
+                .setListenerFactory((x, y) -> entryListener)
+                .setService(service)
+                .build();
     }
 
     @Override

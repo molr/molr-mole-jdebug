@@ -27,6 +27,7 @@ project(":agent") {
 project(":controller") {
     dependencies {
         compile project(":commons")
+        compile project(":inspector")
     }
 }
 
