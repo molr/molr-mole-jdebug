@@ -1,9 +1,7 @@
-version '0.1'
-
 apply plugin: 'java'
 apply plugin: 'maven'
 
-group = "cern.jarrace"
+group = "cern.molr"
 version = "0.1"
 
 sourceCompatibility = 1.8

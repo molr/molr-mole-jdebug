@@ -6,7 +6,7 @@
 
 package cern.molr.inspector.domain;
 
-import cern.jarrace.commons.domain.Service;
+import cern.molr.commons.domain.Service;
 
 /**
  * A request to instantiate an inspector with a given classpath and a {@link Service} to run.

@@ -6,8 +6,7 @@
 
 package cern.molr.inspector.json;
 
-import cern.jarrace.commons.domain.Service;
-import cern.molr.inspector.json.ServiceTypeAdapter;
+import cern.molr.commons.domain.Service;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.google.gson.stream.MalformedJsonException;

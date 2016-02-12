@@ -6,7 +6,7 @@
 
 package cern.molr.inspector.domain;
 
-import cern.jarrace.commons.domain.Service;
+import cern.molr.commons.domain.Service;
 
 /**
  * An immutable implementation of an {@link InstantiationRequest}.

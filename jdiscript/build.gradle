@@ -1,6 +1,7 @@
-version 'unspecified'
-
 apply plugin: 'java'
+
+group = "cern.molr"
+version = "0.1"
 
 sourceCompatibility = 1.8
 

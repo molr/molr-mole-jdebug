@@ -1,8 +1,8 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
 
-group = 'cern.jarrace'
-version = '0.1'
+group = "cern.molr"
+version = "0.1"
 
 repositories {
     jcenter()
