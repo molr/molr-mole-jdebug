@@ -102,6 +102,7 @@ public class DebugPane extends BorderPane {
         scrollPane.setContent(textFlow);
         setCenter(scrollPane);
         setBottom(hBox);
+        setPrefSize(700, 400);
     }
 
     /* For testing */
