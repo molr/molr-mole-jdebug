@@ -10,6 +10,7 @@ import cern.molr.controller.io.JarWriter;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.InvalidPropertyException;
@@ -37,6 +38,9 @@ public class JarWriterTest {
     private static final byte[] TEST_BYTES = "TestBytes".getBytes();
 
     @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
+    @Rule
     public TemporaryFolder tempDirectory = new TemporaryFolder();
 
     @Autowired
@@ -47,53 +51,62 @@ public class JarWriterTest {
         jarWriter.setDeploymentPath(tempDirectory.getRoot().getAbsolutePath());
     }
 
-    @Test(expected = InvalidPropertyException.class)
+    @Test
     public void testInitWithNullDeploymentPath() {
+        expectedException.expect(InvalidPropertyException.class);
         jarWriter.setDeploymentPath(null);
         jarWriter.init();
     }
 
-    @Test(expected = InvalidPropertyException.class)
+    @Test
     public void testInitWithEmptyDeploymentPath() {
+        expectedException.expect(InvalidPropertyException.class);
         jarWriter.setDeploymentPath("");
         jarWriter.init();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testInitWithUnreachableDeploymentPath() {
-        jarWriter.setDeploymentPath("/Some/Unexixtent/Path");
+        expectedException.expect(IllegalStateException.class);
+        jarWriter.setDeploymentPath("UNREACHABLE:/Some/Unexixtent/Path");
         jarWriter.init();
     }
 
-    @Test(expected = InvalidPropertyException.class)
+    @Test
     public void testInitWithFileDeploymentPath() throws IOException {
+        expectedException.expect(InvalidPropertyException.class);
         File tempFile = File.createTempFile("temp", "file");
         jarWriter.setDeploymentPath(tempFile.getAbsolutePath());
         jarWriter.init();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWriteFileWithNullName() throws IOException, IllegalAccessException {
+        expectedException.expect(IllegalArgumentException.class);
         jarWriter.writeFile(null, TEST_BYTES);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWriteFileWithEmptyName() throws IOException, IllegalAccessException {
+        expectedException.expect(IllegalArgumentException.class);
         jarWriter.writeFile("", TEST_BYTES);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWriteFileWithNullBytes() throws IOException, IllegalAccessException {
+        expectedException.expect(IllegalArgumentException.class);
         jarWriter.writeFile(TEST_NAME, null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWriteFileWithEmptyBytes() throws IOException, IllegalAccessException {
+        expectedException.expect(IllegalArgumentException.class);
         jarWriter.writeFile(TEST_NAME, null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWriteFileWithInvalidName() throws IOException, IllegalAccessException {
+        expectedException.expect(IllegalArgumentException.class);
         jarWriter.writeFile(INVALID_NAME, TEST_BYTES);
     }
 
