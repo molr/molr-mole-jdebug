@@ -1,15 +1,15 @@
 package cern.molr.gradle;
 
-import cern.molr.agent.annotations.RunWithAgent;
-import cern.molr.agent.annotations.AgentSpringConfiguration;
-import cern.molr.agent.impl.RunnableSpringAgent;
+import cern.molr.agent.annotations.RunWithMole;
+import cern.molr.agent.annotations.MoleSpringConfiguration;
+import cern.molr.agent.impl.RunnableSpringMole;
 
 /**
  * @author timartin
  */
 
-@RunWithAgent(RunnableSpringAgent.class)
-@AgentSpringConfiguration(locations = {"sample-bean-defenition.xml"})
+@RunWithMole(RunnableSpringMole.class)
+@MoleSpringConfiguration(locations = {"sample-bean-defenition.xml"})
 public class SimpleSpringAgentImpl implements Runnable{
 
     @Override

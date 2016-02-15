@@ -5,7 +5,6 @@
  */
 package cern.molr.agent;
 
-import cern.molr.commons.domain.Mole;
 import cern.molr.commons.domain.Service;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
@@ -27,9 +26,9 @@ import java.util.stream.Collectors;
  * @author tiagomr
  */
 
-public class ContainerRegistry {
+public class MoleRegistry {
 
-    private static final Map<Agent, Map<Class<?>, List<Method>>> agents = new HashMap<>();
+    private static final Map<Mole, Map<Class<?>, List<Method>>> agents = new HashMap<>();
 
     public static void main(String[] args) {
         if (args.length != 3) {
@@ -41,8 +40,8 @@ public class ContainerRegistry {
         final String stringUri = args[2];
         try {
             final URL registerUrl = getRegisterUrl(name, stringUri);
-            ContainerDiscoverer.discover(agents);
-            Mole mole = getAgentContainer(name, path);
+            MoleDiscoverer.discover(agents);
+            cern.molr.commons.domain.Mole mole = getAgentContainer(name, path);
             registerContainer(registerUrl, mole);
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException(
@@ -50,7 +49,7 @@ public class ContainerRegistry {
         }
     }
 
-    private static Mole getAgentContainer(String containerName, String containerPath) {
+    private static cern.molr.commons.domain.Mole getAgentContainer(String containerName, String containerPath) {
 
         List<Service> services = new ArrayList<>();
         agents.entrySet().forEach( agentEntry -> {
@@ -62,11 +61,11 @@ public class ContainerRegistry {
             });
         });
 
-        return new Mole(containerName, containerPath, services);
+        return new cern.molr.commons.domain.Mole(containerName, containerPath, services);
     }
 
 
-    public Map<Agent, Map<Class<?>, List<Method>>> getAgents() {
+    public Map<Mole, Map<Class<?>, List<Method>>> getAgents() {
         return agents;
     }
 
@@ -74,7 +73,7 @@ public class ContainerRegistry {
         return new URL("http://" + controllerEndpoint + "/jarrace/container/registerClassInstantiation/");
     }
 
-    private static void registerContainer(URL endpoint, Mole mole) {
+    private static void registerContainer(URL endpoint, cern.molr.commons.domain.Mole mole) {
         try {
             HttpURLConnection connection = (HttpURLConnection) endpoint.openConnection();
             connection.setRequestMethod("POST");

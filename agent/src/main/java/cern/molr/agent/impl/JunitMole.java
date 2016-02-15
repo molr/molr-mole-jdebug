@@ -5,8 +5,8 @@
  */
 package cern.molr.agent.impl;
 
-import cern.molr.agent.Agent;
-import cern.molr.agent.annotations.RunWithAgent;
+import cern.molr.agent.Mole;
+import cern.molr.agent.annotations.RunWithMole;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
@@ -16,16 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of {@link Agent} which allows for the discovery and execution of Junit tests.
+ * Implementation of {@link Mole} which allows for the discovery and execution of Junit tests.
  * <h3>Discovery:</h3> All methods annotated with {@link Test} are be exposed as entry points and their respective
  * classes are exposed as services.
  * <h3>Execution:</h3> Allows for the execution of the whole test suite annotated with the
- * {@link RunWithAgent} annotation or individual entry points. Uses the JUnit framework for the
+ * {@link RunWithMole} annotation or individual entry points. Uses the JUnit framework for the
  * execution of the tests.
  *
  * @author tiagomr
  */
-public class JunitAgent implements Agent {
+public class JunitMole implements Mole {
 
     @Override
     public void initialize() {

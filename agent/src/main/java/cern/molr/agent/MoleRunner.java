@@ -3,7 +3,7 @@ package cern.molr.agent;
 /**
  * Created by jepeders on 1/22/16.
  */
-public class AgentRunner {
+public class MoleRunner {
 
     public static void main(String[] args) {
         if (args.length < 1) {
@@ -14,17 +14,17 @@ public class AgentRunner {
         final String entry = args[1];
 
         try {
-            Agent agent = createAgent(agentName);
-            agent.run(entry);
+            Mole mole = createAgent(agentName);
+            mole.run(entry);
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("Done running");
     }
 
-    private static Agent createAgent(String agentName) throws Exception {
+    private static Mole createAgent(String agentName) throws Exception {
         System.out.println("Running " + agentName);
-        Class<Agent> clazz = (Class<Agent>) Class.forName(agentName);
-        return (Agent) clazz.getConstructor().newInstance();
+        Class<Mole> clazz = (Class<Mole>) Class.forName(agentName);
+        return (Mole) clazz.getConstructor().newInstance();
     }
 }

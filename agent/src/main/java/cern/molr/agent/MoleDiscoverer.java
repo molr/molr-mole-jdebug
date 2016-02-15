@@ -5,7 +5,7 @@
  */
 package cern.molr.agent;
 
-import cern.molr.agent.annotations.RunWithAgent;
+import cern.molr.agent.annotations.RunWithMole;
 import com.impetus.annovention.ClasspathDiscoverer;
 import com.impetus.annovention.Discoverer;
 import com.impetus.annovention.listener.ClassAnnotationObjectDiscoveryListener;
@@ -22,15 +22,15 @@ import java.util.Map;
  *
  * @author jepeders
  */
-public class ContainerDiscoverer {
+public class MoleDiscoverer {
 
-    private static final String[] SUPPORTED_ANNOTATIONS = new String[]{"RunWithAgent"};
+    private static final String[] SUPPORTED_ANNOTATIONS = new String[]{"RunWithMole"};
 
-    private ContainerDiscoverer() {
+    private MoleDiscoverer() {
         /* Should not be instantiated */
     }
 
-    public static void discover(Map<Agent, Map<Class<?>, List<Method>>> agents) {
+    public static void discover(Map<Mole, Map<Class<?>, List<Method>>> agents) {
         Discoverer discoverer = new ClasspathDiscoverer();
         discoverer.addAnnotationListener(
                 new ClassAnnotationObjectDiscoveryListener() {
@@ -39,26 +39,26 @@ public class ContainerDiscoverer {
                          try {
                             System.out.println("Found " + clazz);
                              Class<?> mClazz = Class.forName(clazz.getName());
-                             RunWithAgent agentAnnotation = mClazz.getAnnotation(RunWithAgent.class);
-                             Agent agent = agents.keySet().stream()
-                                     .filter((Agent key) -> key.getClass().equals(agentAnnotation.value())).findAny().orElseGet(() -> {
+                             RunWithMole agentAnnotation = mClazz.getAnnotation(RunWithMole.class);
+                             Mole mole = agents.keySet().stream()
+                                     .filter((Mole key) -> key.getClass().equals(agentAnnotation.value())).findAny().orElseGet(() -> {
                                          Constructor constructor = null;
                                          try {
                                              constructor = agentAnnotation.value().getConstructor();
-                                             Agent newAgent = (Agent) constructor.newInstance();
-                                             newAgent.initialize();
-                                             agents.put(newAgent, new HashMap<>());
-                                             return newAgent;
+                                             Mole newMole = (Mole) constructor.newInstance();
+                                             newMole.initialize();
+                                             agents.put(newMole, new HashMap<>());
+                                             return newMole;
                                          } catch ( Exception e) {
                                              e.printStackTrace();
                                          }
 
                                          return null;
                                      });
-                             Map<Class<?>, List<Method>> agentMethods = agents.get(agent);
+                             Map<Class<?>, List<Method>> agentMethods = agents.get(mole);
                              try {
                                  Class<?> classDefinition = Class.forName(clazz.getName());
-                                 agentMethods.put(classDefinition, agent.discover(classDefinition));
+                                 agentMethods.put(classDefinition, mole.discover(classDefinition));
                              } catch (ClassNotFoundException e) {
                                  e.printStackTrace();
                              }

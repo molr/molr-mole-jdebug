@@ -5,13 +5,25 @@
  */
 package cern.molr.agent.annotations;
 
+import cern.molr.agent.Mole;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Provides information about which classes shall be exposed as services and which {@link Mole} implementation must be
+ * used to execute the discovery and execution methods.
+ *
+ * @author tiagomr
+ * @author jepeders
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AgentSpringConfiguration {
-    public String[] locations() default {};
+public @interface RunWithMole {
+    /**
+     * @return {@link Mole} implementation to be used for the discovery and execution
+     */
+    public Class<? extends Mole> value();
 }

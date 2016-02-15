@@ -5,7 +5,7 @@
  */
 package cern.molr.agent.impl;
 
-import cern.molr.agent.Agent;
+import cern.molr.agent.Mole;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -13,14 +13,14 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Implementation of {@link Agent} which allows for the discovery and execution of classes implementing the
+ * Implementation of {@link Mole} which allows for the discovery and execution of classes implementing the
  * {@link Runnable} interface.
  * <h3>Discovery:</h3> All classes annotated with {@link Runnable} are exposed as services.
  * <h3>Execution:</h3> Allows for the execution of the {@link Runnable#run()} entry point.
  *
  * @author tiagomr
  */
-public class RunnableAgent implements Agent {
+public class RunnableMole implements Mole {
     @Override
     public void initialize() {
         // Nothing to do here

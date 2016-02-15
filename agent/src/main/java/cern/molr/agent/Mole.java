@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author tiagomr
  */
-public interface Agent {
+public interface Mole {
 
     public void initialize();
 

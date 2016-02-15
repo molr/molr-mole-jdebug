@@ -1,13 +1,13 @@
 package cern.molr.gradle;
 
-import cern.molr.agent.annotations.RunWithAgent;
-import cern.molr.agent.impl.JunitAgent;
+import cern.molr.agent.annotations.RunWithMole;
+import cern.molr.agent.impl.JunitMole;
 import org.junit.Test;
 
 /**
  * Created by jepeders on 1/19/16.
  */
-@RunWithAgent(JunitAgent.class)
+@RunWithMole(JunitMole.class)
 public class SimpleTest {
 
     @Test

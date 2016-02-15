@@ -1,7 +1,7 @@
 package cern.molr.agent.impl;
 
-import cern.molr.agent.Agent;
-import cern.molr.agent.annotations.AgentSpringConfiguration;
+import cern.molr.agent.Mole;
+import cern.molr.agent.annotations.MoleSpringConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author timartin
  */
-public class RunnableSpringAgent implements Agent {
+public class RunnableSpringMole implements Mole {
     @Override
     public void initialize() {
         // Nothing to do here
@@ -21,7 +21,7 @@ public class RunnableSpringAgent implements Agent {
 
     @Override
     public List<Method> discover(Class<?> clazz) {
-        if (Runnable.class.isAssignableFrom(clazz) && clazz.getAnnotation(AgentSpringConfiguration.class) != null) {
+        if (Runnable.class.isAssignableFrom(clazz) && clazz.getAnnotation(MoleSpringConfiguration.class) != null) {
             try {
                 return Collections.singletonList(clazz.getMethod("run"));
             } catch (NoSuchMethodException e) {
@@ -37,8 +37,8 @@ public class RunnableSpringAgent implements Agent {
         String entry = (String) args[0];
         try {
             Class<?> c = Class.forName(entry);
-            AgentSpringConfiguration agentSpringConfigurationAnnotation = c.getAnnotation(AgentSpringConfiguration.class);
-            ApplicationContext context = new ClassPathXmlApplicationContext(agentSpringConfigurationAnnotation.locations());
+            MoleSpringConfiguration moleSpringConfigurationAnnotation = c.getAnnotation(MoleSpringConfiguration.class);
+            ApplicationContext context = new ClassPathXmlApplicationContext(moleSpringConfigurationAnnotation.locations());
             Runnable runnable = (Runnable) context.getBean(c);
             runnable.run();
         } catch (Exception e) {

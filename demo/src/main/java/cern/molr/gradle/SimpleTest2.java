@@ -1,12 +1,12 @@
 package cern.molr.gradle;
 
-import cern.molr.agent.annotations.RunWithAgent;
-import cern.molr.agent.impl.RunnableAgent;
+import cern.molr.agent.annotations.RunWithMole;
+import cern.molr.agent.impl.RunnableMole;
 
 /**
  * Created by jepeders on 1/19/16.
  */
-@RunWithAgent(RunnableAgent.class)
+@RunWithMole(RunnableMole.class)
 public class SimpleTest2 implements Runnable {
 
     public void run() {

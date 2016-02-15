@@ -1,6 +1,6 @@
 package cern.molr.gradle;
 
-import cern.molr.agent.impl.RunnableSpringAgent;
+import cern.molr.agent.impl.RunnableSpringMole;
 
 import java.io.IOException;
 
@@ -9,7 +9,7 @@ import java.io.IOException;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        RunnableSpringAgent runnableSpringAgent = new RunnableSpringAgent();
+        RunnableSpringMole runnableSpringAgent = new RunnableSpringMole();
         runnableSpringAgent.run("SimpleSpringAgentImpl");
     }
 }
