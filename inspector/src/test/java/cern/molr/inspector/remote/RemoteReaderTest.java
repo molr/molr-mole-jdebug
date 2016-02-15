@@ -32,7 +32,7 @@ public class RemoteReaderTest {
 
     @Test
     public void schedulesCallsToReadCommand() throws InterruptedException {
-        Thread.sleep(2);
+        Thread.sleep(100);
         verify(mockedConsumer, atLeast(2)).accept(mockedReader);
     }
 

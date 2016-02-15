@@ -32,14 +32,14 @@ public class JdiControllerReaderWriterTest {
     @Test
     public void forwardsStepCommands() throws InterruptedException {
         writer.stepForward();
-        Thread.sleep(4);
+        Thread.sleep(100);
         verify(mockedController).stepForward();
     }
 
     @Test
     public void forwardsTerminateCommands() throws InterruptedException {
         writer.terminate();
-        Thread.sleep(4);
+        Thread.sleep(100);
         verify(mockedController).terminate();
     }
 
