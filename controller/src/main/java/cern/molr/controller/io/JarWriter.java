@@ -26,9 +26,9 @@ public class JarWriter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JarWriter.class);
     private static final String FILE_EXTENSION = "jar";
-    private static final String IO_DEPLOYMENT_DIR_PROPERTY_NAME = "{io.deploymentdir";
+    private static final String IO_DEPLOYMENT_DIR_PROPERTY_NAME = "io.deploymentdir";
 
-    @Value("$" + IO_DEPLOYMENT_DIR_PROPERTY_NAME + "}")
+    @Value("${" + IO_DEPLOYMENT_DIR_PROPERTY_NAME + "}")
     private String deploymentPath;
     private Pattern pattern = Pattern.compile("^[a-zA-Z0-9]+$");
 
@@ -43,10 +43,8 @@ public class JarWriter {
 
     private void checkDirectory(File deploymentDir) {
         if (!deploymentDir.exists()) {
-            if (!deploymentDir.mkdirs()) {
-                throw new IllegalStateException(String.format("Deployment folder cannot be created: [%s]",
+                throw new IllegalStateException(String.format("Deployment folder does not exist: [%s]",
                         deploymentPath));
-            }
         } else if (!deploymentDir.isDirectory()) {
             throw new InvalidPropertyException(JarWriter.class, "deployment_dir", "Property points to a file and not a directory.");
         }
