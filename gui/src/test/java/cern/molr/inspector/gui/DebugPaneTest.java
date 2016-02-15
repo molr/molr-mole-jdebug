@@ -7,6 +7,9 @@
 package cern.molr.inspector.gui;
 
 import cern.molr.inspector.controller.JdiController;
+import cern.molr.inspector.jdi.ThreadState;
+import javafx.application.Platform;
+import javafx.print.PageLayout;
 import javafx.scene.Scene;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
@@ -19,6 +22,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.testfx.framework.junit.ApplicationTest;
+
+import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.assertEquals;
 
@@ -50,57 +55,68 @@ public class DebugPaneTest extends ApplicationTest {
     }
 
     @Test
-    public void testCreateDebugPaneWithEmptyString() {
+    public void testCreateDebugPaneWithEmptyString() throws InterruptedException {
         DebugPane debugPane = new DebugPane("", jdiController);
-        rootPane.getChildren().add(debugPane);
+        addDebugPane(debugPane);
         assertEquals(0, debugPane.getTextFlow().getChildren().size());
     }
 
     @Test
-    public void testCreateDebugPaneWithOneLineString() {
+    public void testCreateDebugPaneWithOneLineString() throws InterruptedException {
         DebugPane debugPane = new DebugPane("TEST_LINE", jdiController);
-        rootPane.getChildren().add(debugPane);
+        addDebugPane(debugPane);
         assertEquals(1, debugPane.getTextFlow().getChildren().size());
     }
 
     @Test
-    public void testCreateDebugPaneWithMultipleLineString() {
+    public void testCreateDebugPaneWithMultipleLineString() throws InterruptedException {
         DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE", jdiController);
-        rootPane.getChildren().add(debugPane);
+        addDebugPane(debugPane);
         assertEquals(2, debugPane.getTextFlow().getChildren().size());
     }
 
+    private void addDebugPane(DebugPane debugPane) throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            rootPane.getChildren().add(debugPane);
+            latch.countDown();
+        });
+        latch.await();
+    }
+
     @Test
-    public void testSetCurrentLineWithZero() {
+    public void testSetCurrentLineWithZero() throws InterruptedException {
         expectedException.expect(IllegalArgumentException.class);
         DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE", jdiController);
-        rootPane.getChildren().add(debugPane);
+        addDebugPane(debugPane);
         debugPane.setCurrentLine(0);
     }
 
     @Test
-    public void testSetCurrentLineWithNegativeValue() {
+    public void testSetCurrentLineWithNegativeValue() throws InterruptedException {
         expectedException.expect(IllegalArgumentException.class);
         DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE", jdiController);
-        rootPane.getChildren().add(debugPane);
+        addDebugPane(debugPane);
         debugPane.setCurrentLine(-1);
     }
 
     @Test
-    public void testSetCurrentLineWithTooBigValue() {
+    public void testSetCurrentLineWithTooBigValue() throws InterruptedException {
         expectedException.expect(IllegalArgumentException.class);
         DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE", jdiController);
-        rootPane.getChildren().add(debugPane);
+        addDebugPane(debugPane);
         debugPane.setCurrentLine(4);
     }
 
     @Test
-    public void testSetCurrentLineWithValidValue() {
+    public void testSetCurrentLineWithValidValue() throws InterruptedException {
         DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE", jdiController);
-        rootPane.getChildren().add(debugPane);
+        addDebugPane(debugPane);
         debugPane.setCurrentLine(1);
+        Thread.sleep(100);
         assertEquals(Color.RED, ((Text) debugPane.getTextFlow().getChildren().get(0)).getFill());
         debugPane.setCurrentLine(2);
+        Thread.sleep(100);
         assertEquals(Color.BLACK, ((Text) debugPane.getTextFlow().getChildren().get(0)).getFill());
         assertEquals(Color.RED, ((Text) debugPane.getTextFlow().getChildren().get(1)).getFill());
     }

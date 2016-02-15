@@ -44,20 +44,21 @@ public class PeriodicObservableBuilderTest {
     @Test
     public void buildsObservable() throws InterruptedException {
         build();
+        Thread.sleep(100);
         verify(mockedAction, atLeastOnce()).call(Matchers.anyInt());
     }
 
     @Test
     public void callsSupplierPeriodically() throws InterruptedException {
         build();
-        Thread.sleep(5);
+        Thread.sleep(100);
         verify(mockedSupplier, atLeast(5)).get();
     }
 
     @Test
     public void callsSubscriberPeriodically() throws InterruptedException {
         build();
-        Thread.sleep(5);
+        Thread.sleep(100);
         verify(mockedAction, atLeast(5)).call(Matchers.anyInt());
     }
 

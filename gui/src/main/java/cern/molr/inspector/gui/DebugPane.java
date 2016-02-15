@@ -1,6 +1,7 @@
 package cern.molr.inspector.gui;
 
 import cern.molr.inspector.controller.JdiController;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -46,7 +47,7 @@ public class DebugPane extends BorderPane {
      *
      * @param lineNumber Line to be highlighted
      */
-    public void setCurrentLine(int lineNumber) {
+    public void setCurrentLine(final int lineNumber) {
         if (lineNumber < 1) {
             throw new IllegalArgumentException("Line number must have a positive value");
         }
@@ -54,16 +55,17 @@ public class DebugPane extends BorderPane {
             throw new IllegalArgumentException("Line number must not be bigger than the existent number of lines");
         }
 
-        lineNumber--;
-        Text textLine;
-        textLine = (Text) textFlow.getChildren().get(currentLine);
-        textLine.setFill(Color.BLACK);
-        textLine = (Text) textFlow.getChildren().get(lineNumber - 1);
-        textLine.setFill(Color.RED);
-        currentLine = lineNumber - 1;
-        if (scrollCheckBox.isSelected()) {
-            scrollPane(textLine);
-        }
+        Platform.runLater(() -> {
+            Text textLine;
+            textLine = (Text) textFlow.getChildren().get(currentLine);
+            textLine.setFill(Color.BLACK);
+            textLine = (Text) textFlow.getChildren().get(lineNumber - 1);
+            textLine.setFill(Color.RED);
+            currentLine = lineNumber - 1;
+            if (scrollCheckBox.isSelected()) {
+                scrollPane(textLine);
+            }
+        });
     }
 
     private void scrollPane(Text textLine) {
@@ -93,7 +95,7 @@ public class DebugPane extends BorderPane {
         hBox.getChildren().add(stepOverButton);
         terminateButton.setOnMouseClicked(event -> {
             jdiController.terminate();
-            ((Stage)getScene().getWindow()).close();
+            ((Stage) getScene().getWindow()).close();
         });
         hBox.getChildren().add(terminateButton);
         hBox.getChildren().add(scrollCheckBox);
@@ -113,6 +115,7 @@ public class DebugPane extends BorderPane {
     public Button getStepOverButton() {
         return stepOverButton;
     }
+
     public Button getTerminateButton() {
         return terminateButton;
     }
