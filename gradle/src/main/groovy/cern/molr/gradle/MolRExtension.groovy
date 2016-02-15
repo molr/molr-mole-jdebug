@@ -11,7 +11,7 @@ package cern.molr.gradle;
  * If the host is not defined, an exception will be thrown at runtime.
  * If the name of the project is not defined, the project name will be used as default.
  */
-public class DeployRaceExtension {
+public class MolRExtension {
 
     def String host
     def String name

@@ -28,22 +28,22 @@ import java.nio.file.Paths
  */
 class DeployRace implements Plugin<Project> {
 
-    public static final String TASKS_GROUP = "JarRace"
+    public static final String TASKS_GROUP = "MolR"
     public static final String HTTP_CONTENT_TYPE_HEADER = "Content-Type"
     public static final String HTTP_POST_METHOD = "POST"
     public static final String SERVER_CONTENT_TYPE = "application/octet-stream"
-    public static final String SERVER_DEPLOY_URL = "/jarrace/container/deploy/"
+    public static final String SERVER_DEPLOY_URL = "/molr/container/deploy/"
     public static final String SERVER_PROTOCOL = "http://"
-    public static final String JARRACE_JAR_SUFFIX = "-jarrace"
+    public static final String MOLR_JAR_SUFFIX = "-molr"
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeployRace)
 
     void apply(Project project) {
-        project.extensions.create("jarrace", DeployRaceExtension)
+        project.extensions.create("molr", MolRExtension)
 
-        def jarName = project.name + JARRACE_JAR_SUFFIX
+        def jarName = project.name + MOLR_JAR_SUFFIX
 
-        def createAgentTask = project.task('createJarraceAgent', type: Jar) {
+        def createAgentTask = project.task('createMole', type: Jar) {
             description = "Creates a deployable jar with all the classes in the classpath and the source code of the " +
                     "dependent project"
 
@@ -60,11 +60,11 @@ class DeployRace implements Plugin<Project> {
         }
         createAgentTask.setGroup(TASKS_GROUP)
 
-        def deployTask = project.task('deployJarraceAgent').dependsOn('createJarraceAgent') << {
-            description = "Sends jar file to a REST endpoint specified in jarrace.host"
+        def deployTask = project.task('deployMole').dependsOn('createMole') << {
+            description = "Sends jar file to a REST endpoint specified in molr.host"
             verifySettings(project)
 
-            def url = SERVER_PROTOCOL + project.jarrace.host + SERVER_DEPLOY_URL + project.jarrace.name
+            def url = SERVER_PROTOCOL + project.molr.host + SERVER_DEPLOY_URL + project.molr.name
             def jarPath = project.jar.destinationDir.toString() + File.separator + jarName + ".jar"
             LOGGER.info("Sending $jarPath to deploy server at $url")
 
@@ -73,10 +73,10 @@ class DeployRace implements Plugin<Project> {
 
             def response = connection.getResponseCode()
             if (response == 200) {
-                LOGGER.info("Successfully uploaded jarrace agent")
+                LOGGER.info("Successfully uploaded mole")
             } else {
                 LOGGER.error("Server returned error code $response")
-                throw new GradleException("Failed to upload jarrace agent to $url. Response code was $response")
+                throw new GradleException("Failed to upload mole to $url. Response code was $response")
             }
         }
         deployTask.setGroup(TASKS_GROUP)
@@ -92,13 +92,13 @@ class DeployRace implements Plugin<Project> {
     }
 
     static void verifySettings(Project project) {
-        if (project.jarrace.host == null) {
-            throw new GradleException("'host' was not defined for the jarrace plugin extension. Please define it in" +
-                    "your build.gradle file with the following syntax:\njarrace {\n\thost = \"host:port\"\n}")
+        if (project.molr.host == null) {
+            throw new GradleException("'host' was not defined for the molr plugin extension. Please define it in" +
+                    "your build.gradle file with the following syntax:\nmolr {\n\thost = \"host:port\"\n}")
         }
 
-        if (project.jarrace.name == null) {
-            project.jarrace.name = project.name
+        if (project.molr.name == null) {
+            project.molr.name = project.name
         }
     }
 

@@ -6,7 +6,6 @@
 
 package cern.molr.gradle
 
-import cern.molr.gradle.DeployRaceExtension
 import org.gradle.api.Project
 import org.gradle.api.internal.ClosureBackedAction
 import org.gradle.api.internal.plugins.PluginApplicationException
@@ -19,15 +18,15 @@ public class DeployRacePluginTest {
     @Test(expected = PluginApplicationException)
     public void canFailWhenMissingProperties() {
         Project project = ProjectBuilder.builder().build();
-        project.pluginManager.apply 'cern.jarrace.gradle'
+        project.pluginManager.apply 'molr'
     }
 
     @Test
     public void canRunPluginWithProperties() {
         Project project = ProjectBuilder.builder().build();
         project.pluginManager.apply 'java'
-        project.pluginManager.apply 'cern.jarrace.gradle'
-        project.extensions.configure(DeployRaceExtension, new ClosureBackedAction<DeployRaceExtension>({
+        project.pluginManager.apply 'molr'
+        project.extensions.configure(MolRExtension, new ClosureBackedAction<MolRExtension>({
             host = "testHost"
         }))
     }
@@ -36,12 +35,12 @@ public class DeployRacePluginTest {
     public void canSetDefaultNameToProjectName() {
         Project project = ProjectBuilder.builder().build();
         project.pluginManager.apply 'java'
-        project.pluginManager.apply 'cern.jarrace.gradle'
-        project.extensions.configure(DeployRaceExtension, new ClosureBackedAction<DeployRaceExtension>({
+        project.pluginManager.apply 'molr'
+        project.extensions.configure(MolRExtension, new ClosureBackedAction<MolRExtension>({
             host = "testHost"
         }))
 
-        assertEquals(project.jarrace.name, null)
+        assertEquals(project.molr.name, null)
     }
 
     @Test
@@ -49,12 +48,12 @@ public class DeployRacePluginTest {
         def hostName = "testHost"
         Project project = ProjectBuilder.builder().build();
         project.pluginManager.apply 'java'
-        project.pluginManager.apply 'cern.jarrace.gradle'
-        project.extensions.configure(DeployRaceExtension, new ClosureBackedAction<DeployRaceExtension>({
+        project.pluginManager.apply 'molr'
+        project.extensions.configure(MolRExtension, new ClosureBackedAction<MolRExtension>({
             host = hostName
         }))
 
-        assertEquals(project.jarrace.host, hostName)
+        assertEquals(project.molr.host, hostName)
     }
 
     @Test
@@ -62,12 +61,12 @@ public class DeployRacePluginTest {
         def projectName = "testName"
         Project project = ProjectBuilder.builder().build();
         project.pluginManager.apply 'java'
-        project.pluginManager.apply 'cern.jarrace.gradle'
-        project.extensions.configure(DeployRaceExtension, new ClosureBackedAction<DeployRaceExtension>({
+        project.pluginManager.apply 'molr'
+        project.extensions.configure(MolRExtension, new ClosureBackedAction<MolRExtension>({
             name = projectName
         }))
 
-        assertEquals(project.jarrace.name, projectName)
+        assertEquals(project.molr.name, projectName)
     }
 
 

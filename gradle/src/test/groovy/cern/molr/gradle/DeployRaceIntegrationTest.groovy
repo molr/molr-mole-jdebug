@@ -6,7 +6,6 @@
 
 package cern.molr.gradle
 
-import cern.molr.gradle.DeployRaceExtension
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
@@ -25,7 +24,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
-import static cern.molr.gradle.DeployRace.JARRACE_JAR_SUFFIX
+import static cern.molr.gradle.DeployRace.MOLR_JAR_SUFFIX
 import static cern.molr.gradle.DeployRace.SERVER_DEPLOY_URL
 import static org.junit.Assert.*
 import static org.mockito.Mockito.mock
@@ -56,7 +55,7 @@ public class DeployRaceIntegrationTest {
     @Test
     public void canCreateFatJar() {
         def jarFile = getFatJarPath(project)
-        project.createJarraceAgent.execute()
+        project.createMole.execute()
         assertTrue(Files.exists(jarFile))
     }
 
@@ -68,8 +67,8 @@ public class DeployRaceIntegrationTest {
             assertArrayEquals(bytes, jarBytes)
         }
 
-        project.createJarraceAgent.execute()
-        project.deployJarraceAgent.execute()
+        project.createMole.execute()
+        project.deployMole.execute()
     }
 
     @Test
@@ -78,8 +77,8 @@ public class DeployRaceIntegrationTest {
             assertEquals(SERVER_DEPLOY_URL + project.name, exchange.requestURI.toString())
         }
 
-        project.createJarraceAgent.execute()
-        project.deployJarraceAgent.execute()
+        project.createMole.execute()
+        project.deployMole.execute()
     }
 
     @Test(expected = GradleException)
@@ -88,22 +87,22 @@ public class DeployRaceIntegrationTest {
             exchange.sendResponseHeaders(404, 0)
             exchange.close()
         }
-        project.createJarraceAgent.execute()
-        project.deployJarraceAgent.execute()
+        project.createMole.execute()
+        project.deployMole.execute()
     }
 
     private static Project buildProject() {
         Project project = ProjectBuilder.builder().build();
         project.pluginManager.apply 'java'
-        project.pluginManager.apply 'cern.jarrace.gradle'
-        project.extensions.configure(DeployRaceExtension, new ClosureBackedAction<DeployRaceExtension>({
+        project.pluginManager.apply 'molr'
+        project.extensions.configure(MolRExtension, new ClosureBackedAction<MolRExtension>({
             host = "localhost:" + SERVER_TEST_PORT
         }))
         project
     }
 
     private static Path getFatJarPath(Project project) {
-        def jarName = project.name + JARRACE_JAR_SUFFIX + ".jar"
+        def jarName = project.name + MOLR_JAR_SUFFIX + ".jar"
         Paths.get(project.jar.destinationDir.toString() + File.separator + jarName)
     }
 
