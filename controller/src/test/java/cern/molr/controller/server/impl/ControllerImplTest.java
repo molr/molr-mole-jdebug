@@ -4,7 +4,6 @@ import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.Service;
 import cern.molr.controller.io.JarReader;
 import cern.molr.controller.io.JarWriter;
-import cern.molr.jvm.MoleRegistrySpawner;
 import cern.molr.jvm.MoleRunnerSpawner;
 import cern.molr.controller.manager.MoleManager;
 import org.junit.Test;
