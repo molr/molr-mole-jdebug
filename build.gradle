@@ -11,13 +11,13 @@ subprojects {
 
 project(":demo") {
     dependencies {
-        compile project(":agent")
+        compile project(":mole")
         compile project(":commons")
         compile project(":inspector")
     }
 }
 
-project(":agent") {
+project(":mole") {
     dependencies {
         compile project(":commons")
         compile project(":inspector")

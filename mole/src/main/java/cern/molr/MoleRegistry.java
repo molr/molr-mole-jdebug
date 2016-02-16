@@ -3,22 +3,7 @@
  * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
-package cern.molr.agent;
-
-import cern.molr.commons.domain.Service;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
-
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+package cern.molr;
 
 /**
  *
@@ -28,9 +13,7 @@ import java.util.stream.Collectors;
 
 public class MoleRegistry {
 
-    private static final Map<Mole, Map<Class<?>, List<Method>>> agents = new HashMap<>();
-
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
         if (args.length != 3) {
             throw new IllegalArgumentException("Expected three arguments (name path host[:port]), but received " + args.length);
         }
@@ -40,8 +23,9 @@ public class MoleRegistry {
         final String stringUri = args[2];
         try {
             final URL registerUrl = getRegisterUrl(name, stringUri);
-            MoleDiscoverer.discover(agents);
-            cern.molr.commons.domain.Mole mole = getAgentContainer(name, path);
+            ClasspathAnnotatedTaskDiscoverer classpathAnnotatedTaskDiscoverer = new ClasspathAnnotatedTaskDiscoverer();
+            Map<Mole, Map<Class<?>, List<Method>>> moles = classpathAnnotatedTaskDiscoverer.discover();
+            MoleContainer moleContainer = getAgentContainer(name, path);
             registerContainer(registerUrl, mole);
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException(
@@ -49,8 +33,7 @@ public class MoleRegistry {
         }
     }
 
-    private static cern.molr.commons.domain.Mole getAgentContainer(String containerName, String containerPath) {
-
+    private static MoleContainer getAgentContainer(String containerName, String containerPath) {
         List<Service> services = new ArrayList<>();
         agents.entrySet().forEach( agentEntry -> {
             agentEntry.getValue().entrySet().forEach( classEntry -> {
@@ -61,7 +44,7 @@ public class MoleRegistry {
             });
         });
 
-        return new cern.molr.commons.domain.Mole(containerName, containerPath, services);
+        return new MoleContainer(containerName, containerPath, services);
     }
 
 
@@ -73,19 +56,19 @@ public class MoleRegistry {
         return new URL("http://" + controllerEndpoint + "/jarrace/container/registerClassInstantiation/");
     }
 
-    private static void registerContainer(URL endpoint, cern.molr.commons.domain.Mole mole) {
+    private static void registerContainer(URL endpoint, MoleContainer moleContainer) {
         try {
             HttpURLConnection connection = (HttpURLConnection) endpoint.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
             ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
-            String response = objectWriter.writeValueAsString(mole);
+            String response = objectWriter.writeValueAsString(moleContainer);
             System.out.println(response);
             connection.getOutputStream().write(response.getBytes());
             System.out.println(connection.getResponseCode());
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }

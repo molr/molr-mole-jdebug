@@ -5,7 +5,7 @@
  */
 package cern.molr.controller.rest.controller;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.Service;
 import cern.molr.controller.server.Controller;
 import org.slf4j.Logger;
@@ -42,12 +42,12 @@ public class AgentContainerController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void registerService(@RequestBody Mole mole) {
-        controller.registerService(mole);
+    public void registerService(@RequestBody MoleContainer moleContainer) {
+        controller.registerService(moleContainer);
     }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<Mole> listContainers() {
+    public Set<MoleContainer> listContainers() {
         return controller.getAllContainers();
     }
 
@@ -55,9 +55,9 @@ public class AgentContainerController {
     public String runService(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
                              @RequestParam(value = "service") String serviceName,
                              @RequestParam(value = "entryPoints", defaultValue = "") String entryPoints) throws Exception {
-        final Mole mole = controller.getContainer(containerName).orElseThrow(() -> new IllegalArgumentException("Provided container name not found"));
-        final Service service = mole.getServices().stream()
-                .filter(serviceToFilter -> serviceName.equals(serviceToFilter.getClassName()))
+        final MoleContainer moleContainer = controller.getContainer(containerName).orElseThrow(() -> new IllegalArgumentException("Provided container name not found"));
+        final Service service = moleContainer.getServices().stream()
+                .filter(serviceToFilter -> serviceName.equals(serviceToFilter.getServiceClassName()))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("Provided service name not found"));
 
         final List<String> parsedEntryPoints = (List<String>) Arrays.asList(entryPoints.split(",")).stream()
@@ -70,13 +70,13 @@ public class AgentContainerController {
             }
         });
 
-        return controller.runMole(mole.getContainerPath(), service, parsedEntryPoints);
+        return controller.runMole(moleContainer.getContainerPath(), service, parsedEntryPoints);
     }
 
     @RequestMapping(value = "/{" + CONTAINER_NAME_VARIABLE_NAME + "}/read", method = RequestMethod.GET)
     public String readSource(@PathVariable(CONTAINER_NAME_VARIABLE_NAME) String containerName,
                              @RequestParam("class") String className) throws IOException {
-        final Mole mole = controller.getContainer(containerName).orElseThrow(() -> new IllegalArgumentException("Provided container name not found"));
-        return controller.readSource(mole, className.replace(".", "/"));
+        final MoleContainer moleContainer = controller.getContainer(containerName).orElseThrow(() -> new IllegalArgumentException("Provided container name not found"));
+        return controller.readSource(moleContainer, className.replace(".", "/"));
     }
 }

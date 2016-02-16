@@ -10,7 +10,7 @@ import cern.molr.commons.domain.Service;
 import java.util.List;
 
 /**
- * Interface that is responsible for spawning JVMs executing cern.jarrace.agent.AgentRunner
+ * Interface that is responsible for spawning JVMs executing cern.jarrace.mole.AgentRunner
  *
  * @author tiagomr
  */

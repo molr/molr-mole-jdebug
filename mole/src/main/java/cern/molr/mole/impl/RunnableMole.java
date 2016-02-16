@@ -3,9 +3,9 @@
  * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
-package cern.molr.agent.impl;
+package cern.molr.mole.impl;
 
-import cern.molr.agent.Mole;
+import cern.molr.mole.Mole;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -21,10 +21,6 @@ import java.util.List;
  * @author tiagomr
  */
 public class RunnableMole implements Mole {
-    @Override
-    public void initialize() {
-        // Nothing to do here
-    }
 
     @Override
     public List<Method> discover(Class<?> clazz) {

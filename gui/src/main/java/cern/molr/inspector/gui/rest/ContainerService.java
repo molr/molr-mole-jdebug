@@ -6,7 +6,7 @@
 
 package cern.molr.inspector.gui.rest;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -15,15 +15,15 @@ import retrofit2.http.Query;
 import java.util.List;
 
 /**
- * A service that can access a remote endpoint with methods related to {@link Mole}s.
+ * A service that can access a remote endpoint with methods related to {@link MoleContainer}s.
  */
 public interface ContainerService {
 
     /**
-     * @return A list of {@link Mole}s available in the remote server.
+     * @return A list of {@link MoleContainer}s available in the remote server.
      */
     @GET("container/list")
-    Call<List<Mole>> getContainers();
+    Call<List<MoleContainer>> getContainers();
 
     /**
      * Starts an entry within the given container and returns the result of the execution as a String.

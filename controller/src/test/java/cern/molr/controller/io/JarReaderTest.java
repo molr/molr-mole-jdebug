@@ -5,8 +5,7 @@
  */
 package cern.molr.controller.io;
 
-import cern.molr.commons.domain.Mole;
-import cern.molr.controller.io.JarReader;
+import cern.molr.commons.domain.MoleContainer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,11 +24,11 @@ public class JarReaderTest {
     public static final String MANIFEST_ENTRY = "META-INF/MANIFEST.MF";
     public static final String RT_PATH = JAVA_HOME + File.separator + "lib" + File.separator + "rt.jar";
 
-    private Mole mockedContainer;
+    private MoleContainer mockedContainer;
 
     @Before
     public void setup() {
-        mockedContainer = mock(Mole.class);
+        mockedContainer = mock(MoleContainer.class);
         when(mockedContainer.getContainerPath()).thenReturn(RT_PATH);
     }
 

@@ -41,8 +41,8 @@ public class SystemMainTest {
         final String inspectionClass = "cern.jarrace.inspector.remote.CliMain";
         final String mainClass = "cern.jarrace.inspector.remote.CliMain";
         final List<String> entryPoints = Collections.singletonList("main");
-        when(mockedService.getAgentName()).thenReturn(mainClass);
-        when(mockedService.getClassName()).thenReturn(inspectionClass);
+        when(mockedService.getMoleClassName()).thenReturn(mainClass);
+        when(mockedService.getServiceClassName()).thenReturn(inspectionClass);
         when(mockedService.getEntryPoints()).thenReturn(entryPoints);
         final InstantiationRequest request = new InstantiationRequestImpl(classPath, mockedService);
         SystemMain.main(new String[]{GSON.toJson(request)});

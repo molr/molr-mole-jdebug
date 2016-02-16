@@ -1,7 +1,7 @@
-package cern.molr.agent.impl;
+package cern.molr.mole.impl;
 
-import cern.molr.agent.Mole;
-import cern.molr.agent.annotations.MoleSpringConfiguration;
+import cern.molr.mole.Mole;
+import cern.molr.mole.annotations.MoleSpringConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -14,10 +14,6 @@ import java.util.List;
  * @author timartin
  */
 public class RunnableSpringMole implements Mole {
-    @Override
-    public void initialize() {
-        // Nothing to do here
-    }
 
     @Override
     public List<Method> discover(Class<?> clazz) {

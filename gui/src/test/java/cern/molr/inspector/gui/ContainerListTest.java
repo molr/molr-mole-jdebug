@@ -6,7 +6,7 @@
 
 package cern.molr.inspector.gui;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.Service;
 import cern.molr.inspector.gui.rest.PeriodicObservableBuilder;
 import javafx.scene.Scene;
@@ -32,10 +32,10 @@ public class ContainerListTest extends ApplicationTest {
 
     private static final List<String> ENTRY_POINTS = Arrays.asList("method1", "method2");
     private static final List<Service> SERVICES = Collections.singletonList(new Service("testAgent", "testClass", ENTRY_POINTS));
-    private static final List<Mole> CONTAINERS = Collections.singletonList(new Mole("testName", "testPath", SERVICES));
+    private static final List<MoleContainer> CONTAINERS = Collections.singletonList(new MoleContainer("testName", "testPath", SERVICES));
 
-    private Supplier<List<Mole>> mockedSupplier;
-    private Observable<List<Mole>> containerObservable;
+    private Supplier<List<MoleContainer>> mockedSupplier;
+    private Observable<List<MoleContainer>> containerObservable;
     private ContainerList containerList;
 
     @Override

@@ -51,7 +51,7 @@ public class JdiInstanceBuilder {
             SteppingJdiEventHandler eventHandler = new SteppingJdiEventHandler(jdi, listenerFactory, registry);
 
             ClassInstantiationListener instantiationListener =
-                    new ClassInstantiationListener(service.getClassName(),
+                    new ClassInstantiationListener(service.getServiceClassName(),
                             classType -> service.getEntryPoints().forEach(methodName ->
                                     eventHandler.registerClassInstantiation(classType, methodName)));
 

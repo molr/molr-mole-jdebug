@@ -1,6 +1,6 @@
 package cern.molr.controller.server.impl;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.Service;
 import cern.molr.controller.io.JarReader;
 import cern.molr.controller.io.JarWriter;
@@ -49,23 +49,23 @@ public class ControllerImpl implements Controller {
     }
 
     @Override
-    public void deploy(Mole mole) {
-        moleManager.registerMole(mole);
+    public void deploy(MoleContainer moleContainer) {
+        moleManager.registerMole(moleContainer);
     }
 
     @Override
-    public void registerService(@RequestBody Mole mole) {
-        moleManager.registerMole(mole);
-        LOGGER.info("Registered new Mole: [{}]", mole);
+    public void registerService(@RequestBody MoleContainer moleContainer) {
+        moleManager.registerMole(moleContainer);
+        LOGGER.info("Registered new MoleContainer: [{}]", moleContainer);
     }
 
     @Override
-    public Set<Mole> getAllContainers() {
+    public Set<MoleContainer> getAllContainers() {
         return moleManager.getAllMoles();
     }
 
     @Override
-    public Optional<Mole> getContainer(String moleName) {
+    public Optional<MoleContainer> getContainer(String moleName) {
         return moleManager.getMole(moleName);
     }
 
@@ -84,8 +84,8 @@ public class ControllerImpl implements Controller {
     }
 
     @Override
-    public String readSource(Mole mole, String className) throws IOException {
-        return JarReader.ofContainer(mole, reader -> readSource(reader, className))
+    public String readSource(MoleContainer moleContainer, String className) throws IOException {
+        return JarReader.ofContainer(moleContainer, reader -> readSource(reader, className))
                 .orElseThrow(() -> new IOException("Failed to read source file from jar"));
     }
 

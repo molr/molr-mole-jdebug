@@ -6,7 +6,7 @@
 
 package cern.molr.inspector.gui.rest;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import org.junit.Before;
 import org.junit.Test;
 import retrofit2.Call;
@@ -23,15 +23,15 @@ import static org.mockito.Mockito.*;
 
 public class ContainerServicesTest {
 
-    private static final List<Mole> CONTAINER_LIST = Collections.emptyList();
+    private static final List<MoleContainer> CONTAINER_LIST = Collections.emptyList();
 
     private ContainerService mockedService;
 
     @Before
     public void setup() throws IOException {
         mockedService = mock(ContainerService.class);
-        Call<List<Mole>> mockedCall = mock(Call.class);
-        Response<List<Mole>> response = Response.success(CONTAINER_LIST);
+        Call<List<MoleContainer>> mockedCall = mock(Call.class);
+        Response<List<MoleContainer>> response = Response.success(CONTAINER_LIST);
         when(mockedService.getContainers()).thenReturn(mockedCall);
         when(mockedCall.execute()).thenReturn(response);
     }
@@ -48,8 +48,8 @@ public class ContainerServicesTest {
 
     @Test
     public void createsPeriodicObservableFromAContainerService() {
-        Action1<List<Mole>> mockedAction = mock(Action1.class);
-        Observable<List<Mole>> observable = new ContainerServices(mockedService, mockedService)
+        Action1<List<MoleContainer>> mockedAction = mock(Action1.class);
+        Observable<List<MoleContainer>> observable = new ContainerServices(mockedService, mockedService)
                 .createObservable(ContainerService::getContainers);
         observable.subscribe(mockedAction);
         verify(mockedAction).call(CONTAINER_LIST);

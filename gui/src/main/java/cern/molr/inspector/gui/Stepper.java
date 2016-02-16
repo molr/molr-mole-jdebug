@@ -6,7 +6,7 @@
 
 package cern.molr.inspector.gui;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import cern.molr.inspector.gui.rest.ContainerService;
 import cern.molr.inspector.gui.rest.ContainerServices;
 import javafx.application.Application;
@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 /**
- * A user interface that can list and run {@link Mole}s. The containers are known from a remote HTTP REST
+ * A user interface that can list and run {@link MoleContainer}s. The containers are known from a remote HTTP REST
  * endpoint.
  */
 public class Stepper extends Application {

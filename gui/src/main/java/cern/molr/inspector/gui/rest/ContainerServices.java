@@ -1,6 +1,6 @@
 package cern.molr.inspector.gui.rest;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * A service which fetches information about {@link Mole}s from a remote endpoint..
+ * A service which fetches information about {@link MoleContainer}s from a remote endpoint..
  */
 public class ContainerServices {
 

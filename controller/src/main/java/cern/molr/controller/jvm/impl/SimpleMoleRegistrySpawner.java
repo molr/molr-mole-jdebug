@@ -16,14 +16,14 @@ import java.util.List;
 
 /**
  * Implementation of {@link MoleRegistrySpawner} that uses an the {@link ProcessBuilder} class to start a new JVM
- * running cern.jarrace.agent.ContainerRegistry#main.
+ * running cern.jarrace.mole.ContainerRegistry#main.
  *
  * @author tiagomr
  */
 public class SimpleMoleRegistrySpawner extends AbstractJvmSpawner implements MoleRegistrySpawner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMoleRegistrySpawner.class);
-    private static final String AGENT_CONTAINER_MAIN_CASS = "cern.jarrace.agent.ContainerRegistry";
+    private static final String AGENT_CONTAINER_MAIN_CASS = "cern.jarrace.mole.ContainerRegistry";
 
     @Value("${server.port}")
     private int controllerPort;

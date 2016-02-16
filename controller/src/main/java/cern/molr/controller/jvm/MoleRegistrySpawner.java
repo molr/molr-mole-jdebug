@@ -6,7 +6,7 @@
 package cern.molr.controller.jvm;
 
 /**
- * Interface that is responsible for spawning JVMs executing cern.jarrace.agent.AgentRegistry#main
+ * Interface that is responsible for spawning JVMs executing cern.jarrace.mole.AgentRegistry#main
  *
  * @author tiagomr
  */

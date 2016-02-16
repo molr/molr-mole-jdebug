@@ -1,7 +1,7 @@
 package cern.molr.gradle;
 
-import cern.molr.agent.annotations.RunWithMole;
-import cern.molr.agent.impl.RunnableMole;
+import cern.molr.mole.annotations.RunWithMole;
+import cern.molr.mole.impl.RunnableMole;
 
 /**
  * Created by jepeders on 1/19/16.

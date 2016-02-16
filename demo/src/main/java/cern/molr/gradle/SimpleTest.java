@@ -1,7 +1,7 @@
 package cern.molr.gradle;
 
-import cern.molr.agent.annotations.RunWithMole;
-import cern.molr.agent.impl.JunitMole;
+import cern.molr.mole.annotations.RunWithMole;
+import cern.molr.mole.impl.JunitMole;
 import org.junit.Test;
 
 /**

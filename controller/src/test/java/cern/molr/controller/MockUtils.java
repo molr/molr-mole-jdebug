@@ -5,7 +5,7 @@
  */
 package cern.molr.controller;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.Service;
 
 import java.util.ArrayList;
@@ -20,21 +20,21 @@ import static org.mockito.Mockito.when;
  * @author tiagomr
  */
 public class MockUtils {
-    public static List<Mole> getMockedContainers(int numberOfAgentContainers, int numberOfServices, int numberOfEntryPoints) {
-        List<Mole> mockedMoles = new ArrayList<>();
+    public static List<MoleContainer> getMockedContainers(int numberOfAgentContainers, int numberOfServices, int numberOfEntryPoints) {
+        List<MoleContainer> mockedMoleContainers = new ArrayList<>();
         for (int index = 0; index < numberOfAgentContainers; ++index) {
-            mockedMoles.add(getMockedContainer(index, numberOfServices, numberOfEntryPoints));
+            mockedMoleContainers.add(getMockedContainer(index, numberOfServices, numberOfEntryPoints));
         }
-        return mockedMoles;
+        return mockedMoleContainers;
     }
 
-    public static Mole getMockedContainer(int containerNumber, int numberOfServices, int numberOfEntryPoints) {
-        Mole mockedMole = mock(Mole.class);
-        when(mockedMole.getContainerName()).thenReturn("MockedContainerName" + containerNumber);
-        when(mockedMole.getContainerPath()).thenReturn("MockedContainerPath" + containerNumber);
+    public static MoleContainer getMockedContainer(int containerNumber, int numberOfServices, int numberOfEntryPoints) {
+        MoleContainer mockedMoleContainer = mock(MoleContainer.class);
+        when(mockedMoleContainer.getContainerName()).thenReturn("MockedContainerName" + containerNumber);
+        when(mockedMoleContainer.getContainerPath()).thenReturn("MockedContainerPath" + containerNumber);
         List<Service> mockedService = getMockedService(numberOfServices, numberOfEntryPoints);
-        when(mockedMole.getServices()).thenReturn(mockedService);
-        return mockedMole;
+        when(mockedMoleContainer.getServices()).thenReturn(mockedService);
+        return mockedMoleContainer;
     }
 
     public static List<Service> getMockedService(int numberOfServices, int numberOfEntryPoints) {
@@ -45,8 +45,8 @@ public class MockUtils {
                 entryPoints.add("MockedEntryPoint" + index);
             }
             Service mockedService = mock(Service.class);
-            when(mockedService.getAgentName()).thenReturn("MockedAgentName");
-            when(mockedService.getClassName()).thenReturn("MockedClassName");
+            when(mockedService.getMoleClassName()).thenReturn("MockedAgentName");
+            when(mockedService.getServiceClassName()).thenReturn("MockedClassName");
             when(mockedService.getEntryPoints()).thenReturn(entryPoints);
             mockedServices.add(mockedService);
         }

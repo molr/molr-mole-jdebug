@@ -5,7 +5,7 @@
  */
 package cern.molr.controller.manager.impl;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import cern.molr.controller.MockUtils;
 import org.junit.Test;
 
@@ -20,27 +20,27 @@ import static org.junit.Assert.assertTrue;
  *
  * @author tiagomr
  */
-public class InMemoryMoleManagerTest {
+public class InMemoryMoleContainerManagerTest {
 
     private static final String NON_EXISTENT_CONTAINER_NAME = "NON_EXISTENT_CONTAINER_NAME";
     private final InMemoryMoleManager containerManager = new InMemoryMoleManager();
 
     @Test(expected = IllegalArgumentException.class)
     public void testFindAgentContainerWithNull() {
-        containerManager.getMoles().add(MockUtils.getMockedContainer(1, 1, 1));
+        containerManager.getMoleContainers().add(MockUtils.getMockedContainer(1, 1, 1));
         containerManager.getMole(null);
     }
 
     @Test
     public void testFindAgentContainerWithNonExistentContainerName() {
-        containerManager.getMoles().add(MockUtils.getMockedContainer(1, 1, 1));
+        containerManager.getMoleContainers().add(MockUtils.getMockedContainer(1, 1, 1));
         assertEquals(Optional.empty(), containerManager.getMole(NON_EXISTENT_CONTAINER_NAME));
     }
 
     @Test
     public void testFindAgentContainerWithExistentContainerName() {
-        Mole mockedContainer = MockUtils.getMockedContainer(1, 1, 1);
-        containerManager.getMoles().add(mockedContainer);
+        MoleContainer mockedContainer = MockUtils.getMockedContainer(1, 1, 1);
+        containerManager.getMoleContainers().add(mockedContainer);
         assertEquals(Optional.of(mockedContainer), containerManager.getMole(mockedContainer.getContainerName()));
     }
 
@@ -51,13 +51,13 @@ public class InMemoryMoleManagerTest {
 
     @Test
     public void testfindAllAgentContainersWithOneOrMoreContainers() {
-        Queue<Mole> containerQueue = new LinkedList<>(MockUtils.getMockedContainers(5, 1, 1));
+        Queue<MoleContainer> containerQueue = new LinkedList<>(MockUtils.getMockedContainers(5, 1, 1));
         for (int index = 1; index < 6; ++index) {
-            Mole polledContainer = containerQueue.poll();
-            containerManager.getMoles().add(polledContainer);
-            Set<Mole> allMoles = containerManager.getAllMoles();
-            assertEquals(index, allMoles.size());
-            assertTrue(allMoles.contains(polledContainer));
+            MoleContainer polledContainer = containerQueue.poll();
+            containerManager.getMoleContainers().add(polledContainer);
+            Set<MoleContainer> allMoleContainers = containerManager.getAllMoles();
+            assertEquals(index, allMoleContainers.size());
+            assertTrue(allMoleContainers.contains(polledContainer));
         }
     }
 
@@ -68,30 +68,30 @@ public class InMemoryMoleManagerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testRegisterAgentContainerWithNullName() {
-        Mole mole = new Mole(null, "TestPath", new ArrayList<>());
-        containerManager.registerMole(mole);
+        MoleContainer moleContainer = new MoleContainer(null, "TestPath", new ArrayList<>());
+        containerManager.registerMole(moleContainer);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testRegisterAgentContainerWithEmptyName() {
-        Mole mole = new Mole("", "TestPath", new ArrayList<>());
-        containerManager.registerMole(mole);
+        MoleContainer moleContainer = new MoleContainer("", "TestPath", new ArrayList<>());
+        containerManager.registerMole(moleContainer);
     }
 
     @Test
     public void testRegisterAgentContainer() {
-        Mole mockedContainer = MockUtils.getMockedContainer(1, 1, 1);
+        MoleContainer mockedContainer = MockUtils.getMockedContainer(1, 1, 1);
         containerManager.registerMole(mockedContainer);
-        assertEquals(1, containerManager.getMoles().size());
-        assertTrue(containerManager.getMoles().contains(mockedContainer));
+        assertEquals(1, containerManager.getMoleContainers().size());
+        assertTrue(containerManager.getMoleContainers().contains(mockedContainer));
     }
 
     @Test
     public void testRegisterRepeatedAgentContainer() {
-        Mole mockedContainer = MockUtils.getMockedContainer(1, 1, 1);
+        MoleContainer mockedContainer = MockUtils.getMockedContainer(1, 1, 1);
         containerManager.registerMole(mockedContainer);
         containerManager.registerMole(mockedContainer);
-        assertEquals(1, containerManager.getMoles().size());
-        assertTrue(containerManager.getMoles().contains(mockedContainer));
+        assertEquals(1, containerManager.getMoleContainers().size());
+        assertTrue(containerManager.getMoleContainers().contains(mockedContainer));
     }
 }

@@ -14,10 +14,10 @@ import java.util.List;
  *
  * @author tiagomr
  */
-public class Mole {
+public class MoleContainer {
 
     /**
-     * Unique identifier of each Mole, this field must always be unique
+     * Unique identifier of each MoleContainer, this field must always be unique
      */
     private String containerName;
 
@@ -27,15 +27,15 @@ public class Mole {
     private String containerPath;
 
     /**
-     * A list of services that is provided by this {@link Mole}, and can be executed
+     * A list of services that is provided by this {@link MoleContainer}, and can be executed
      */
     private final List<Service> services = new ArrayList();
 
-    public Mole() {
+    public MoleContainer() {
 
     }
 
-    public Mole(String containerName, String containerPath, List<Service> services) {
+    public MoleContainer(String containerName, String containerPath, List<Service> services) {
         this.containerName = containerName;
         this.containerPath = containerPath;
         this.services.addAll(services);
@@ -57,7 +57,7 @@ public class Mole {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Mole that = (Mole) o;
+        MoleContainer that = (MoleContainer) o;
         return !(containerName != null ? !containerName.equals(that.containerName) : that.containerName != null);
 
     }

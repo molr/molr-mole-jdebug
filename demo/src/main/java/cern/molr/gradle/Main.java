@@ -1,6 +1,6 @@
 package cern.molr.gradle;
 
-import cern.molr.agent.impl.RunnableSpringMole;
+import cern.molr.mole.impl.RunnableSpringMole;
 
 import java.io.IOException;
 

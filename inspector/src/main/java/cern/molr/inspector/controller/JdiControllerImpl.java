@@ -31,7 +31,7 @@ public class JdiControllerImpl implements JdiController, Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdiControllerImpl.class);
 
-    private static final String AGENT_RUNNER_CLASS = "cern.jarrace.agent.AgentRunner";
+    private static final String AGENT_RUNNER_CLASS = "cern.jarrace.mole.AgentRunner";
 
     private final JdiEntryRegistry<EntryListener> entryRegistry;
     private final JDIScript jdi;
@@ -98,7 +98,7 @@ public class JdiControllerImpl implements JdiController, Closeable {
             Objects.requireNonNull(factory, "Listener factory must be set");
             Objects.requireNonNull(service, "Service to inspect must be set");
 
-            final String launchArguments = AGENT_RUNNER_CLASS + " " + service.getAgentName() + " " + service.getClassName();
+            final String launchArguments = AGENT_RUNNER_CLASS + " " + service.getMoleClassName() + " " + service.getServiceClassName();
             final VMLauncher launcher = new VMLauncher(CLASSPATH_PREFIX + classPath, launchArguments);
 
             JdiEntryRegistry<EntryListener> entryRegistry = new JdiEntryRegistry<>();

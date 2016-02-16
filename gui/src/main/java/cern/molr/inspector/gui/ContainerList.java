@@ -6,7 +6,7 @@
 
 package cern.molr.inspector.gui;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import com.sun.glass.ui.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,13 +20,13 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * A list of {@link Mole}s.
+ * A list of {@link MoleContainer}s.
  */
 public class ContainerList extends ListView<ContainerList.EntryPoint> {
 
     private ObservableList<EntryPoint> list = FXCollections.emptyObservableList();
 
-    public ContainerList(Observable<List<Mole>> containerObservable) throws IOException {
+    public ContainerList(Observable<List<MoleContainer>> containerObservable) throws IOException {
         super();
         setItems(list);
 
@@ -35,19 +35,19 @@ public class ContainerList extends ListView<ContainerList.EntryPoint> {
                 .subscribe(this::setContainers);
     }
 
-    public void setContainers(List<Mole> containers) {
+    public void setContainers(List<MoleContainer> containers) {
         Application.invokeLater(() -> {
             final List<EntryPoint> entryPoints =  containersToEntryPoints(containers);
             setItems(FXCollections.observableList(entryPoints));
         });
     }
 
-    static List<EntryPoint> containersToEntryPoints(List<Mole> containers) {
+    static List<EntryPoint> containersToEntryPoints(List<MoleContainer> containers) {
         ArrayList<EntryPoint> serviceList = new ArrayList<>();
         containers.stream().forEach(agent -> agent.getServices().forEach(service -> {
             service.getEntryPoints().forEach(entry -> {
                 final EntryPoint entryPoint = new EntryPoint(agent.getContainerName(),
-                        service.getClassName(), entry);
+                        service.getServiceClassName(), entry);
                 serviceList.add(entryPoint);
             });
         }));

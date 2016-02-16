@@ -6,7 +6,7 @@
 
 package cern.molr.controller.io;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -62,7 +62,7 @@ public class JarReader implements AutoCloseable {
     }
 
     /**
-     * Creates a {@link JarReader} and executes a function on the reader. The {@link Mole#getContainerPath()}
+     * Creates a {@link JarReader} and executes a function on the reader. The {@link MoleContainer#getContainerPath()}
      * is used to locate the jar file.
      *
      * @param container The container with a path to a jar file.
@@ -71,7 +71,7 @@ public class JarReader implements AutoCloseable {
      * @return A new instance of a reader.
      * @throws IOException If the jar file could not be read.
      */
-    public static <R> R ofContainer(Mole container, Function<JarReader, R> function) throws IOException {
+    public static <R> R ofContainer(MoleContainer container, Function<JarReader, R> function) throws IOException {
         Objects.requireNonNull(container, "Container must not be null");
         final JarFile jarFile = new JarFile(container.getContainerPath());
         try (JarReader jarReader = new JarReader(jarFile)) {

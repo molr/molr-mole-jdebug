@@ -11,14 +11,14 @@ import java.util.List;
 public class Service {
 
     /**
-     * Name of the agent that can execute the service
+     * Name of the mole that can execute the service
      */
-    private String agentName;
+    private String moleClassName;
 
     /**
      * Class used by the exposed {@link Service}
      */
-    private String className;
+    private String serviceClassName;
 
     /**
      * {@link List} of entry points exposed by this service in the specific class
@@ -28,23 +28,23 @@ public class Service {
     public Service() {
     }
 
-    public Service(String agentName, String className) {
-        this.agentName = agentName;
-        this.className = className;
+    public Service(String moleClassName, String serviceClassName) {
+        this.moleClassName = moleClassName;
+        this.serviceClassName = serviceClassName;
     }
 
-    public Service(String agentName, String className, List<String> entryPoints) {
-        this.agentName = agentName;
-        this.className = className;
+    public Service(String moleClassName, String serviceClassName, List<String> entryPoints) {
+        this.moleClassName = moleClassName;
+        this.serviceClassName = serviceClassName;
         this.entryPoints.addAll(entryPoints);
     }
 
-    public String getAgentName() {
-        return agentName;
+    public String getMoleClassName() {
+        return moleClassName;
     }
 
-    public String getClassName() {
-        return className;
+    public String getServiceClassName() {
+        return serviceClassName;
     }
 
     public List<String> getEntryPoints() {
@@ -56,21 +56,21 @@ public class Service {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Service service = (Service) o;
-        if (agentName != null ? !agentName.equals(service.agentName) : service.agentName != null) return false;
-        return !(className != null ? !className.equals(service.className) : service.className != null);
+        if (moleClassName != null ? !moleClassName.equals(service.moleClassName) : service.moleClassName != null) return false;
+        return !(serviceClassName != null ? !serviceClassName.equals(service.serviceClassName) : service.serviceClassName != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = agentName != null ? agentName.hashCode() : 0;
-        result = 31 * result + (className != null ? className.hashCode() : 0);
+        int result = moleClassName != null ? moleClassName.hashCode() : 0;
+        result = 31 * result + (serviceClassName != null ? serviceClassName.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return getAgentName() + ": " + getClassName();
+        return getMoleClassName() + ": " + getServiceClassName();
     }
 
 }

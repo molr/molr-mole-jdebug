@@ -5,7 +5,7 @@
  */
 package cern.molr.controller.manager;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.Service;
 
 import java.util.List;
@@ -13,31 +13,31 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Class that manages {@link Mole}s providing ways of registering and fetching them
+ * Class that manages {@link MoleContainer}s providing ways of registering and fetching them
  *
  * @author tiagomr
  */
 public interface MoleManager {
 
     /**
-     * Searches for a specific {@link Mole} by name
+     * Searches for a specific {@link MoleContainer} by name
      *
      * @param moleName
-     * @return An {@link Optional} of {@link Mole} with the specified name
+     * @return An {@link Optional} of {@link MoleContainer} with the specified name
      */
-    Optional<Mole> getMole(String moleName);
+    Optional<MoleContainer> getMole(String moleName);
 
     /**
-     * Provides a {@link List} with all the registered {@link Mole}s
+     * Provides a {@link List} with all the registered {@link MoleContainer}s
      *
-     * @return {@link List} of {@link Mole}s
+     * @return {@link List} of {@link MoleContainer}s
      */
-    Set<Mole> getAllMoles();
+    Set<MoleContainer> getAllMoles();
 
     /**
-     * Registers a {@link Mole} that will be expose its {@link Service}s
+     * Registers a {@link MoleContainer} that will be expose its {@link Service}s
      *
-     * @param mole The {@link Mole} to be registered
+     * @param moleContainer The {@link MoleContainer} to be registered
      */
-    void registerMole(Mole mole);
+    void registerMole(MoleContainer moleContainer);
 }

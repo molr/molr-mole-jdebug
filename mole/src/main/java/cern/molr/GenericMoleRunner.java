@@ -1,9 +1,11 @@
-package cern.molr.agent;
+package cern.molr;
+
+import cern.molr.mole.Mole;
 
 /**
  * Created by jepeders on 1/22/16.
  */
-public class MoleRunner {
+public class GenericMoleRunner {
 
     public static void main(String[] args) {
         if (args.length < 1) {

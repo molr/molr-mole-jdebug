@@ -5,7 +5,7 @@
  */
 package cern.molr.controller.manager.impl;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import cern.molr.controller.manager.MoleManager;
 
 import java.util.Collections;
@@ -20,15 +20,15 @@ import java.util.Set;
  */
 public class InMemoryMoleManager implements MoleManager {
 
-    private final Set<Mole> moles = Collections.synchronizedSet(new HashSet<>());
+    private final Set<MoleContainer> moleContainers = Collections.synchronizedSet(new HashSet<>());
 
     @Override
-    public Optional<Mole> getMole(String moleName) {
+    public Optional<MoleContainer> getMole(String moleName) {
         if (moleName == null || moleName.isEmpty()) {
             throw new IllegalArgumentException("Name of the container cannot be null nor empty");
         }
-        synchronized (moles) {
-            Optional<Mole> toReturn = moles.stream().filter(agentContainer -> {
+        synchronized (moleContainers) {
+            Optional<MoleContainer> toReturn = moleContainers.stream().filter(agentContainer -> {
                 return moleName.equals(agentContainer.getContainerName()) ? true : false;
             }).findFirst();
             return toReturn;
@@ -36,26 +36,26 @@ public class InMemoryMoleManager implements MoleManager {
     }
 
     @Override
-    public Set<Mole> getAllMoles() {
-        return new HashSet<>(moles);
+    public Set<MoleContainer> getAllMoles() {
+        return new HashSet<>(moleContainers);
     }
 
     @Override
-    public void registerMole(Mole mole) {
-        if (mole == null) {
-            throw new IllegalArgumentException("Mole cannot be null");
+    public void registerMole(MoleContainer moleContainer) {
+        if (moleContainer == null) {
+            throw new IllegalArgumentException("MoleContainer cannot be null");
         }
-        if (mole.getContainerName() == null || mole.getContainerName().isEmpty()) {
-            throw new IllegalArgumentException("Mole name cannot be null nor empty");
+        if (moleContainer.getContainerName() == null || moleContainer.getContainerName().isEmpty()) {
+            throw new IllegalArgumentException("MoleContainer name cannot be null nor empty");
         }
-        if (moles.contains(mole)) {
-            moles.remove(mole);
+        if (moleContainers.contains(moleContainer)) {
+            moleContainers.remove(moleContainer);
         }
-        moles.add(mole);
+        moleContainers.add(moleContainer);
     }
 
     // Used for testing
-    Set<Mole> getMoles() {
-        return moles;
+    Set<MoleContainer> getMoleContainers() {
+        return moleContainers;
     }
 }

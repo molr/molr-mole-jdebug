@@ -1,13 +1,12 @@
 package cern.molr.controller.server.impl;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.Service;
 import cern.molr.controller.io.JarReader;
 import cern.molr.controller.io.JarWriter;
 import cern.molr.controller.jvm.MoleRegistrySpawner;
 import cern.molr.controller.jvm.MoleRunnerSpawner;
 import cern.molr.controller.manager.MoleManager;
-import cern.molr.controller.server.impl.ControllerImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -53,24 +52,24 @@ public class ControllerImplTest {
 
     @Test
     public void testRegister() throws Exception {
-        Mole mole = mock(Mole.class);
-        serverImpl.registerService(mole);
-        verify(moleManager).registerMole(mole);
+        MoleContainer moleContainer = mock(MoleContainer.class);
+        serverImpl.registerService(moleContainer);
+        verify(moleManager).registerMole(moleContainer);
     }
 
     @Test
     public void testGetAllContainers() {
-        Set<Mole> moles = mock(Set.class);
-        when(moleManager.getAllMoles()).thenReturn(moles);
-        assertEquals(moles, serverImpl.getAllContainers());
+        Set<MoleContainer> moleContainers = mock(Set.class);
+        when(moleManager.getAllMoles()).thenReturn(moleContainers);
+        assertEquals(moleContainers, serverImpl.getAllContainers());
     }
 
     @Test
     public void testGetContainer() {
-        Mole mole = mock(Mole.class);
-        Optional<Mole> optionalAgentContainer = Optional.of(mole);
+        MoleContainer moleContainer = mock(MoleContainer.class);
+        Optional<MoleContainer> optionalAgentContainer = Optional.of(moleContainer);
         when(moleManager.getMole(TEST_CONTAINER_NAME)).thenReturn(optionalAgentContainer);
-        assertEquals(mole, serverImpl.getContainer(TEST_CONTAINER_NAME).get());
+        assertEquals(moleContainer, serverImpl.getContainer(TEST_CONTAINER_NAME).get());
         verify(moleManager).getMole(TEST_CONTAINER_NAME);
     }
 

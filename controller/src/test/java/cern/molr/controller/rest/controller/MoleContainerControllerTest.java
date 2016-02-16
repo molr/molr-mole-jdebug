@@ -5,9 +5,8 @@
  */
 package cern.molr.controller.rest.controller;
 
-import cern.molr.commons.domain.Mole;
+import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.Service;
-import cern.molr.controller.rest.controller.AgentContainerController;
 import cern.molr.controller.server.Controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 
 @RunWith(MockitoJUnitRunner.class)
-public class MoleControllerTest {
+public class MoleContainerControllerTest {
 
     private static final String JARRACE_CONTAINER_LIST_PATH = "/jarrace/container/list";
     private static final String JARRACE_CONTAINER_REGISTER_PATH = "/jarrace/container/register";
@@ -97,12 +96,12 @@ public class MoleControllerTest {
 
     @Test
     public void testRegister() throws Exception {
-        Mole testMole = getTestAgentContainer();
+        MoleContainer testMoleContainer = getTestAgentContainer();
         mockMvc.perform(post(JARRACE_CONTAINER_REGISTER_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(getJson(testMole)))
+                .content(getJson(testMoleContainer)))
                 .andExpect(status().isOk());
-        verify(controller).registerService(testMole);
+        verify(controller).registerService(testMoleContainer);
     }
 
     @Test
@@ -127,7 +126,7 @@ public class MoleControllerTest {
 
     @Test
     public void testListWithAgentContainers() throws Exception {
-        Set<Mole> containers = Collections.singleton(getTestAgentContainer());
+        Set<MoleContainer> containers = Collections.singleton(getTestAgentContainer());
         when(controller.getAllContainers()).thenReturn(containers);
         mockMvc.perform(get(JARRACE_CONTAINER_LIST_PATH))
                 .andExpect(status().isOk())
@@ -138,7 +137,7 @@ public class MoleControllerTest {
 
     @Test
     public void testListWithNoAgentContainers() throws Exception {
-        Set<Mole> containers = Collections.emptySet();
+        Set<MoleContainer> containers = Collections.emptySet();
         when(controller.getAllContainers()).thenReturn(containers);
         mockMvc.perform(get(JARRACE_CONTAINER_LIST_PATH))
                 .andExpect(status().isOk())
@@ -167,7 +166,7 @@ public class MoleControllerTest {
 /*
     @Test
     public void testStartWithNonExistentContainerName() throws Exception {
-        Mole agentContainer = mock(Mole.class);
+        MoleContainer agentContainer = mock(MoleContainer.class);
         when(agentContainer.getContainerPath()).thenReturn(TEST_PATH);
         when(controller.getContainer(TEST_CONTAINER_NAME)).thenReturn(Optional.of(agentContainer));
         when(controller.runMole(anyString(), any(Service.class), anyList())).thenReturn(TEST_EXECUTION_RESULT);
@@ -182,7 +181,7 @@ public class MoleControllerTest {
     public void testStartWithNoNonExistentService() throws Exception {
         expectedException.expect(NestedServletException.class);
         expectedException.expectCause(isA(IllegalArgumentException.class));
-        Mole container = getTestAgentContainer();
+        MoleContainer container = getTestAgentContainer();
         when(agentContainerManager.getMole(TEST_NAME)).thenReturn(Optional.of(container));
         mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_START_PATH)
                 .param(SERVICE_PARAM_NAME, TEST_SERVICE_NAME));
@@ -192,7 +191,7 @@ public class MoleControllerTest {
     public void testStartWithNonExistentEntrypoint() throws Exception {
         expectedException.expect(NestedServletException.class);
         expectedException.expectCause(isA(IllegalArgumentException.class));
-        Mole container = getTestAgentContainer();
+        MoleContainer container = getTestAgentContainer();
         when(agentContainerManager.getMole(TEST_NAME)).thenReturn(Optional.of(container));
         mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_START_PATH)
                 .param(SERVICE_PARAM_NAME, TEST_SERVICE_NAME)
@@ -201,7 +200,7 @@ public class MoleControllerTest {
 
     @Test
     public void testStart() throws Exception {
-        Mole container = getTestAgentContainer();
+        MoleContainer container = getTestAgentContainer();
         when(agentContainerManager.getMole(TEST_NAME)).thenReturn(Optional.of(container));
         mockMvc.perform(get(JARRACE_CONTAINER_TEST_NAME_START_PATH)
                 .param(SERVICE_PARAM_NAME, TEST_SERVICE_NAME)
@@ -238,13 +237,13 @@ public class MoleControllerTest {
                 .andExpect(status().isBadRequest());
     }*/
 
-    private Mole getTestAgentContainer() {
+    private MoleContainer getTestAgentContainer() {
         List<String> entryPoints = new ArrayList<>();
         entryPoints.add(TEST_ENTRY_POINT_1);
         entryPoints.add(TEST_ENTRY_POINT_2);
         List<Service> services = new ArrayList<>();
         services.add(new Service(TEST_AGENT_NAME, TEST_SERVICE_NAME, entryPoints));
-        return new Mole(TEST_NAME1, TEST_PATH, services);
+        return new MoleContainer(TEST_NAME1, TEST_PATH, services);
     }
 
     private String getJson(Object object) throws JsonProcessingException {
@@ -254,7 +253,7 @@ public class MoleControllerTest {
 
     /*private File setupJarContainer(String content, String entry) throws IOException {
         final File jarFile = writeToZip(entry + JAVA_CLASS_SUFFIX, content);
-        final Mole mockedContainer = mock(Mole.class);
+        final MoleContainer mockedContainer = mock(MoleContainer.class);
         when(agentContainerManager.getMole(TEST_NAME)).thenReturn(Optional.of(mockedContainer));
         when(mockedContainer.getContainerPath()).thenReturn(jarFile.toString());
         return jarFile;
