@@ -19,14 +19,14 @@ import java.util.List;
 
 /**
  * Implementation of {@link MoleRunnerSpawner} that uses an the {@link ProcessBuilder} class to start a new JVM
- * running cern.jarrace.mole.AgentRunner#main.
+ * running cern.molr.mole.GenericMoleRunner#main.
  *
  * @author tiagomr
  */
 public class SimpleMoleRunnerSpawner extends AbstractJvmSpawner implements MoleRunnerSpawner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMoleRunnerSpawner.class);
-    private static final String AGENT_RUNNER_MAIN_CASS = "cern.jarrace.mole.AgentRunner";
+    private static final String AGENT_RUNNER_MAIN_CASS = "cern.molr.mole.GenericMoleRunner";
     private static final String INSPECTOR_MAIN_CLASS = "cern.molr.inspector.CliMain";
 
     @Override
@@ -47,7 +47,6 @@ public class SimpleMoleRunnerSpawner extends AbstractJvmSpawner implements MoleR
                 }
             }
         }
-
         Process process = spawnJvm(arguments);
         return readFromProcess(process);
     }
@@ -63,7 +62,5 @@ public class SimpleMoleRunnerSpawner extends AbstractJvmSpawner implements MoleR
             }
         }
         return stringBuilder.toString();
-
     }
-
 }
