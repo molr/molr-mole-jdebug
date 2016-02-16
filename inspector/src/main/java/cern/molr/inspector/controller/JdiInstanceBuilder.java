@@ -52,7 +52,7 @@ public class JdiInstanceBuilder {
 
             ClassInstantiationListener instantiationListener =
                     new ClassInstantiationListener(service.getServiceClassName(),
-                            classType -> service.getEntryPoints().forEach(methodName ->
+                            classType -> service.getTasks().forEach(methodName ->
                                     eventHandler.registerClassInstantiation(classType, methodName)));
 
             ExecutorService executorService = Executors.newFixedThreadPool(1);

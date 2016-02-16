@@ -23,7 +23,7 @@ public class Service {
     /**
      * {@link List} of entry points exposed by this service in the specific class
      */
-    private final List<String> entryPoints = new ArrayList<>();
+    private final List<String> tasks = new ArrayList<>();
 
     public Service() {
     }
@@ -33,10 +33,10 @@ public class Service {
         this.serviceClassName = serviceClassName;
     }
 
-    public Service(String moleClassName, String serviceClassName, List<String> entryPoints) {
+    public Service(String moleClassName, String serviceClassName, List<String> tasks) {
         this.moleClassName = moleClassName;
         this.serviceClassName = serviceClassName;
-        this.entryPoints.addAll(entryPoints);
+        this.tasks.addAll(tasks);
     }
 
     public String getMoleClassName() {
@@ -47,8 +47,8 @@ public class Service {
         return serviceClassName;
     }
 
-    public List<String> getEntryPoints() {
-        return new ArrayList<>(entryPoints);
+    public List<String> getTasks() {
+        return new ArrayList<>(tasks);
     }
 
     @Override

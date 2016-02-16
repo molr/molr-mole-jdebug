@@ -45,6 +45,12 @@ project(":inspector") {
     }
 }
 
+project(":moleRegistry") {
+    dependencies {
+        compile project(":commons")
+    }
+}
+
 project(":jdiscript") {
 
 }

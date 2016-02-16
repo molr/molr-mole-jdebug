@@ -43,7 +43,7 @@ public class SystemMainTest {
         final List<String> entryPoints = Collections.singletonList("main");
         when(mockedService.getMoleClassName()).thenReturn(mainClass);
         when(mockedService.getServiceClassName()).thenReturn(inspectionClass);
-        when(mockedService.getEntryPoints()).thenReturn(entryPoints);
+        when(mockedService.getTasks()).thenReturn(entryPoints);
         final InstantiationRequest request = new InstantiationRequestImpl(classPath, mockedService);
         SystemMain.main(new String[]{GSON.toJson(request)});
     }

@@ -27,14 +27,14 @@ public class ServiceTypeAdapter extends TypeAdapter<Service> {
     public void write(JsonWriter out, Service service) throws IOException {
         Objects.requireNonNull(service.getMoleClassName(), "Agent name cannot be null");
         Objects.requireNonNull(service.getServiceClassName(), "Class name cannot be null");
-        Objects.requireNonNull(service.getEntryPoints(), "Entry points list cannot be null");
+        Objects.requireNonNull(service.getTasks(), "Entry points list cannot be null");
         out.beginObject()
                 .name("agentName")
                 .value(service.getMoleClassName())
                 .name("className")
                 .value(service.getServiceClassName())
                 .name("entryPoints")
-                .value(service.getEntryPoints().stream().collect(Collectors.joining(LIST_SEPARATOR)))
+                .value(service.getTasks().stream().collect(Collectors.joining(LIST_SEPARATOR)))
                 .endObject();
     }
 
