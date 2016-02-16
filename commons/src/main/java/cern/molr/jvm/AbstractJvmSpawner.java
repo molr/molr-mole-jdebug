@@ -1,4 +1,4 @@
-package cern.molr.controller.jvm;
+package cern.molr.jvm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

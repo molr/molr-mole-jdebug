@@ -5,7 +5,7 @@
  */
 package cern.molr.mole.impl;
 
-import cern.molr.mole.Mole;
+import cern.molr.commons.mole.Mole;
 
 import java.io.IOException;
 import java.lang.reflect.Method;

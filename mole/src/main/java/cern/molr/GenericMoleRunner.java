@@ -1,6 +1,6 @@
 package cern.molr;
 
-import cern.molr.mole.Mole;
+import cern.molr.commons.mole.Mole;
 
 /**
  * Created by jepeders on 1/22/16.

@@ -6,7 +6,7 @@
 package cern.molr.controller;
 
 import cern.molr.controller.io.IOConfiguration;
-import cern.molr.controller.jvm.JvmConfiguration;
+import cern.molr.jvm.JvmConfiguration;
 import cern.molr.controller.manager.ManagementConfiguration;
 import cern.molr.controller.rest.RestConfiguration;
 import cern.molr.controller.server.ServerConfiguration;

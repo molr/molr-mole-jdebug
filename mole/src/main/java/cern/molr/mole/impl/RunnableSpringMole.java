@@ -1,6 +1,6 @@
 package cern.molr.mole.impl;
 
-import cern.molr.mole.Mole;
+import cern.molr.commons.mole.Mole;
 import cern.molr.mole.annotations.MoleSpringConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

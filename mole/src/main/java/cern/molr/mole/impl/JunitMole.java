@@ -5,8 +5,8 @@
  */
 package cern.molr.mole.impl;
 
-import cern.molr.mole.Mole;
-import cern.molr.mole.annotations.RunWithMole;
+import cern.molr.commons.mole.Mole;
+import cern.molr.commons.mole.RunWithMole;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 

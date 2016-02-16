@@ -3,11 +3,11 @@
  * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
-package cern.molr.controller.jvm.impl;
+package cern.molr.jvm.impl;
 
 import cern.molr.commons.domain.Service;
-import cern.molr.controller.jvm.AbstractJvmSpawner;
-import cern.molr.controller.jvm.MoleRunnerSpawner;
+import cern.molr.jvm.AbstractJvmSpawner;
+import cern.molr.jvm.MoleRunnerSpawner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

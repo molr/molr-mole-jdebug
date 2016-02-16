@@ -3,7 +3,7 @@
  * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
-package cern.molr.controller.jvm;
+package cern.molr.jvm;
 
 /**
  * Interface that is responsible for spawning JVMs executing cern.jarrace.mole.AgentRegistry#main

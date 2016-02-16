@@ -3,11 +3,11 @@
  * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
-package cern.molr.impl;
+package cern.molr.commons.mole.impl;
 
-import cern.molr.mole.Mole;
-import cern.molr.TaskDiscoverer;
-import cern.molr.mole.annotations.RunWithMole;
+import cern.molr.commons.mole.Mole;
+import cern.molr.commons.mole.RunWithMole;
+import cern.molr.commons.mole.TaskDiscoverer;
 import com.impetus.annovention.ClasspathDiscoverer;
 import com.impetus.annovention.Discoverer;
 import com.impetus.annovention.listener.ClassAnnotationObjectDiscoveryListener;

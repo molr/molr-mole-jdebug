@@ -4,8 +4,8 @@ import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.Service;
 import cern.molr.controller.io.JarReader;
 import cern.molr.controller.io.JarWriter;
-import cern.molr.controller.jvm.MoleRegistrySpawner;
-import cern.molr.controller.jvm.MoleRunnerSpawner;
+import cern.molr.jvm.MoleRegistrySpawner;
+import cern.molr.jvm.MoleRunnerSpawner;
 import cern.molr.controller.manager.MoleManager;
 import cern.molr.controller.server.Controller;
 import cern.molr.inspector.controller.JdiController;
@@ -46,11 +46,6 @@ public class ControllerImpl implements Controller {
         LOGGER.debug("Started deployment process for container: [{}]", containerName);
         String path = jarWriter.writeFile(containerName, file);
         moleRegistrySpawner.spawnAgentRegistry(containerName, path);
-    }
-
-    @Override
-    public void deploy(MoleContainer moleContainer) {
-        moleManager.registerMole(moleContainer);
     }
 
     @Override

@@ -1,6 +1,4 @@
-package cern.molr;
-
-import cern.molr.mole.Mole;
+package cern.molr.commons.mole;
 
 import java.lang.reflect.Method;
 import java.util.List;

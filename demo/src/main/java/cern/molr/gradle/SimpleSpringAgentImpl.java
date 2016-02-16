@@ -1,6 +1,6 @@
 package cern.molr.gradle;
 
-import cern.molr.mole.annotations.RunWithMole;
+import cern.molr.commons.mole.RunWithMole;
 import cern.molr.mole.annotations.MoleSpringConfiguration;
 import cern.molr.mole.impl.RunnableSpringMole;
 

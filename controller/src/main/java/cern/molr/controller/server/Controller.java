@@ -24,8 +24,6 @@ public interface Controller {
      */
     void deploy(String containerName, byte[] file) throws Exception;
 
-    void deploy(MoleContainer container);
-
     /**
      * Registers a specific container as available
      *

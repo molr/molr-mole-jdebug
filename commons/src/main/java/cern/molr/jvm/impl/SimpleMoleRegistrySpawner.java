@@ -3,10 +3,10 @@
  * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
-package cern.molr.controller.jvm.impl;
+package cern.molr.jvm.impl;
 
-import cern.molr.controller.jvm.AbstractJvmSpawner;
-import cern.molr.controller.jvm.MoleRegistrySpawner;
+import cern.molr.jvm.AbstractJvmSpawner;
+import cern.molr.jvm.MoleRegistrySpawner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
