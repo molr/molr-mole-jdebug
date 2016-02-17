@@ -50,6 +50,7 @@ public class EntryListenerReader extends RemoteReader {
     }
 
     private void readCommand(EntryListenerMethod method, BufferedReader reader) throws IOException {
+        LOGGER.debug(method.name());
         switch (method) {
             case ON_VM_DEATH:
                 listener.onVmDeath();
@@ -103,13 +104,18 @@ public class EntryListenerReader extends RemoteReader {
                 LOGGER.warn("Expected an EntryState, but got {}", line);
             } else {
                 try {
-                    return Optional.of(gson.fromJson(line, EntryStateImpl.class));
+                    EntryStateImpl entryState = gson.fromJson(line, EntryStateImpl.class);
+                    LOGGER.debug("no EntryState", entryState);
+                    return Optional.of(entryState);
                 } catch (JsonSyntaxException e) {
                     LOGGER.warn("Error when parsing json", e);
+                } catch (Throwable throwable) {
+                    LOGGER.warn("Error when parsing json", throwable);
+                    throw throwable;
                 }
             }
         }
-
+        LOGGER.debug("no EntryState");
         return Optional.empty();
     }
 

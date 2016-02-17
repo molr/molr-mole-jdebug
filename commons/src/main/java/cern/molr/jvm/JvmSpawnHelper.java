@@ -18,14 +18,14 @@ public final class JvmSpawnHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(JvmSpawnHelper.class);
 
     private static final String CLASSPATH_ARGUMENT_INDICATOR = "-cp";
-    public static final String JAVA_HOME_PROPERTY_NAME = "java.home";
+    public static final String JAVA_HOME = System.getProperty("java.home");
 
     private JvmSpawnHelper(){
     }
 
     public static final ProcessBuilder getProcessBuilder(String classpath, String mainClass, String... arguments) throws IOException {
         List<String> command = new ArrayList<>();
-        command.add(String.format("%s/bin/java", System.getProperty(JAVA_HOME_PROPERTY_NAME)));
+        command.add(String.format("%s/bin/java", JAVA_HOME));
         command.add(CLASSPATH_ARGUMENT_INDICATOR);
         command.add(classpath);
         command.add(mainClass);
@@ -35,5 +35,12 @@ public final class JvmSpawnHelper {
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         LOGGER.info("Starting JVM with parameters: [{}]", command.toString());
         return processBuilder;
+    }
+
+    public static final String appendToolsJarToClasspath(String classpath) {
+        if(classpath.contains("tools.jar")) {
+            return classpath;
+        }
+        return String.format("%s:%s/../lib/tools.jar", classpath, JAVA_HOME);
     }
 }

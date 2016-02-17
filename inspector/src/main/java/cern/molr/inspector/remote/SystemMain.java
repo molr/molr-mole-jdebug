@@ -48,7 +48,7 @@ public class SystemMain implements Closeable {
                     logLine(errorReader);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                e.printStackTrace(System.err);
             }
         });
     }

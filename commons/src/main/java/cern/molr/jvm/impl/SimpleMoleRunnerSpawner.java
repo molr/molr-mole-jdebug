@@ -14,8 +14,6 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Implementation of {@link MoleSpawner} that uses an the {@link ProcessBuilder} class to start a new JVM
@@ -27,7 +25,7 @@ import java.util.List;
 public class SimpleMoleRunnerSpawner implements MoleSpawner<String> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMoleRunnerSpawner.class);
-    private static final String AGENT_RUNNER_MAIN_CASS = "cern.molr.mole.GenericMoleRunner";
+    private static final String AGENT_RUNNER_MAIN_CLASS = "cern.molr.mole.GenericMoleRunner";
     private static final String INSPECTOR_MAIN_CLASS = "cern.molr.inspector.CliMain";
 
     @Override
@@ -41,20 +39,7 @@ public class SimpleMoleRunnerSpawner implements MoleSpawner<String> {
         if (args == null) {
             throw new IllegalArgumentException("Arguments cannot be null");
         }
-        List<String> arguments = new ArrayList<>();
-        arguments.add("-cp");
-        arguments.add(classpath);
-        arguments.add(AGENT_RUNNER_MAIN_CASS);
-        arguments.add(service.getMoleClassName());
-        arguments.add(service.getServiceClassName());
-        if (args != null) {
-            for (String argument : args) {
-                if (!argument.isEmpty()) {
-                    arguments.add(argument);
-                }
-            }
-        }
-        ProcessBuilder processBuilder = JvmSpawnHelper.getProcessBuilder(arguments.toArray(new String[]{}));
+        ProcessBuilder processBuilder = JvmSpawnHelper.getProcessBuilder(classpath, AGENT_RUNNER_MAIN_CLASS, args);
         return readFromProcess(processBuilder.start());
     }
 

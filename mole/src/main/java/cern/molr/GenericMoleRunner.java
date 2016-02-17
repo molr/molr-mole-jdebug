@@ -27,6 +27,6 @@ public class GenericMoleRunner {
     private static Mole createAgent(String agentName) throws Exception {
         System.out.println("Running " + agentName);
         Class<Mole> clazz = (Class<Mole>) Class.forName(agentName);
-        return (Mole) clazz.getConstructor().newInstance();
+        return clazz.getConstructor().newInstance();
     }
 }

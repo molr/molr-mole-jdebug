@@ -16,10 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.Executors;
 
 /**
@@ -29,7 +25,7 @@ public class DebugMoleSpawner implements MoleSpawner<JdiController> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugMoleSpawner.class);
     private static final String CURRENT_CLASSPATH_VALUE = System.getProperty("java.class.path");
-    private static final String INSPECTOR_MAIN_CLASS = "SystemMain";
+    private static final String INSPECTOR_MAIN_CLASS = "cern.molr.inspector.remote.SystemMain";
 
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(Service.class, new ServiceTypeAdapter().nullSafe())
@@ -37,15 +33,18 @@ public class DebugMoleSpawner implements MoleSpawner<JdiController> {
 
     @Override
     public JdiController spawnMoleRunner(Service service, String... args) throws Exception {
-        InstantiationRequest request = new InstantiationRequestImpl(System.getProperty("java.class.path"), service);
+        InstantiationRequest request = new InstantiationRequestImpl(CURRENT_CLASSPATH_VALUE, service);
         String[] completedArgs = new String[args.length + 1];
         completedArgs[0] = GSON.toJson(request);
         int i = 1;
         for(String arg : args) {
             completedArgs[i++] = arg;
         }
-        Process process = JvmSpawnHelper.getProcessBuilder(request.getClassPath(), INSPECTOR_MAIN_CLASS, completedArgs).start();
-        redirectError(process.getErrorStream(), System.err);
+        Process process = JvmSpawnHelper.getProcessBuilder(
+                request.getClassPath(),
+                INSPECTOR_MAIN_CLASS,
+                completedArgs).start();
+        redirectStream(process.getErrorStream(), System.err);
         Runtime.getRuntime().addShutdownHook(new Thread(process::destroy));
         return new MyJdiControllerWriter(process);
     }
@@ -71,43 +70,18 @@ public class DebugMoleSpawner implements MoleSpawner<JdiController> {
         return null;
     }
 
-    private static void redirectError(InputStream errorInput, PrintStream out) {
+    private static void redirectStream(InputStream input, PrintStream output) {
         Executors.newSingleThreadExecutor().submit(() -> {
-            try (BufferedReader errorReader = new BufferedReader(new InputStreamReader(errorInput))) {
+            try (BufferedReader errorReader = new BufferedReader(new InputStreamReader(input))) {
                 while (true) {
                     final String line = errorReader.readLine();
                     if (line != null) {
-                        out.println(line);
+                        output.println(line);
                     }
                 }
             } catch (IOException e) {
-                out.println("Error when reading from process: " + e);
+                output.println("Error when reading from process: " + e);
             }
         });
     }
-
-    /*
-     private static final class ProcessInstantiator implements Instantiator {
-        private static final Gson GSON = new GsonBuilder()
-                .registerTypeAdapter(Service.class, new ServiceTypeAdapter().nullSafe())
-                .create();
-
-        private static final String INSPECTOR_MAIN_CLASS = "SystemMain";
-
-        @Override
-        public JdiController instantiate(InstantiationRequest request, EntryListener listener) throws IOException {
-            ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/java", "-cp", request.getClassPath(), INSPECTOR_MAIN_CLASS, GSON.toJson(request));
-            Process process = processBuilder.start();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(process::destroy));
-
-            JdiControllerWriter writer = new JdiControllerWriter(new PrintWriter(process.getOutputStream()));
-            redirectError(process.getErrorStream(), System.err);
-            EntryListenerReader listenerReader = new EntryListenerReader(new BufferedReader(new InputStreamReader(process.getInputStream())), listener);
-            listenerReader.setOnClose(process::destroy);
-
-            return writer;
-        }
-    }
-     */
 }

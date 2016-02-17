@@ -30,7 +30,7 @@ import java.util.Optional;
 public class JdiControllerImpl implements JdiController, Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdiControllerImpl.class);
-    private static final String AGENT_RUNNER_CLASS = "cern.jarrace.mole.AgentRunner";
+    private static final String AGENT_RUNNER_CLASS = "cern.molr.GenericMoleRunner";
 
     private final JdiEntryRegistry<EntryListener> entryRegistry;
     private final JDIScript jdi;

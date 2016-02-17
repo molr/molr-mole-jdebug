@@ -7,9 +7,7 @@
 package cern.molr.inspector.gui;
 
 import cern.molr.inspector.controller.JdiController;
-import cern.molr.inspector.jdi.ThreadState;
 import javafx.application.Platform;
-import javafx.print.PageLayout;
 import javafx.scene.Scene;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
@@ -49,28 +47,33 @@ public class DebugPaneTest extends ApplicationTest {
     }
 
     @Test
-    public void testCreateDebugPaneWIthNullString() {
+    public void testCreateDebugPaneWithNullString() {
         expectedException.expect(IllegalArgumentException.class);
-        rootPane.getChildren().add(new DebugPane(null, jdiController));
+        DebugPane debugPane = new DebugPane(null);
+        debugPane.setJdiController(jdiController);
+        rootPane.getChildren().add(debugPane);
     }
 
     @Test
     public void testCreateDebugPaneWithEmptyString() throws InterruptedException {
-        DebugPane debugPane = new DebugPane("", jdiController);
+        DebugPane debugPane = new DebugPane("");
+        debugPane.setJdiController(jdiController);
         addDebugPane(debugPane);
         assertEquals(0, debugPane.getTextFlow().getChildren().size());
     }
 
     @Test
     public void testCreateDebugPaneWithOneLineString() throws InterruptedException {
-        DebugPane debugPane = new DebugPane("TEST_LINE", jdiController);
+        DebugPane debugPane = new DebugPane("TEST_LINE");
+        debugPane.setJdiController(jdiController);
         addDebugPane(debugPane);
         assertEquals(1, debugPane.getTextFlow().getChildren().size());
     }
 
     @Test
     public void testCreateDebugPaneWithMultipleLineString() throws InterruptedException {
-        DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE", jdiController);
+        DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE");
+        debugPane.setJdiController(jdiController);
         addDebugPane(debugPane);
         assertEquals(2, debugPane.getTextFlow().getChildren().size());
     }
@@ -87,7 +90,8 @@ public class DebugPaneTest extends ApplicationTest {
     @Test
     public void testSetCurrentLineWithZero() throws InterruptedException {
         expectedException.expect(IllegalArgumentException.class);
-        DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE", jdiController);
+        DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE");
+        debugPane.setJdiController(jdiController);
         addDebugPane(debugPane);
         debugPane.setCurrentLine(0);
     }
@@ -95,7 +99,8 @@ public class DebugPaneTest extends ApplicationTest {
     @Test
     public void testSetCurrentLineWithNegativeValue() throws InterruptedException {
         expectedException.expect(IllegalArgumentException.class);
-        DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE", jdiController);
+        DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE");
+        debugPane.setJdiController(jdiController);
         addDebugPane(debugPane);
         debugPane.setCurrentLine(-1);
     }
@@ -103,14 +108,16 @@ public class DebugPaneTest extends ApplicationTest {
     @Test
     public void testSetCurrentLineWithTooBigValue() throws InterruptedException {
         expectedException.expect(IllegalArgumentException.class);
-        DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE", jdiController);
+        DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE");
+        debugPane.setJdiController(jdiController);
         addDebugPane(debugPane);
         debugPane.setCurrentLine(4);
     }
 
     @Test
     public void testSetCurrentLineWithValidValue() throws InterruptedException {
-        DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE", jdiController);
+        DebugPane debugPane = new DebugPane("TEST_LINE\nTEST_LINE");
+        debugPane.setJdiController(jdiController);
         addDebugPane(debugPane);
         debugPane.setCurrentLine(1);
         Thread.sleep(100);
