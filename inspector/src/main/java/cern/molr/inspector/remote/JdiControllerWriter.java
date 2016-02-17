@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 /**
  * A controller which is connected to a remote implementation of a {@link JdiController} via a given output stream.
  */
-public class JdiControllerWriter implements JdiController {
+public abstract class JdiControllerWriter implements JdiController {
 
     private final PrintWriter printWriter;
 

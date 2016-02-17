@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,17 +13,27 @@ import java.util.List;
  *
  * @author tiagomr
  */
-public abstract class AbstractJvmSpawner {
+public final class JvmSpawnHelper {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractJvmSpawner.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JvmSpawnHelper.class);
+
+    private static final String CLASSPATH_ARGUMENT_INDICATOR = "-cp";
     public static final String JAVA_HOME_PROPERTY_NAME = "java.home";
 
-    protected Process spawnJvm(List<String> arguments) throws IOException {
+    private JvmSpawnHelper(){
+    }
+
+    public static final ProcessBuilder getProcessBuilder(String classpath, String mainClass, String... arguments) throws IOException {
         List<String> command = new ArrayList<>();
         command.add(String.format("%s/bin/java", System.getProperty(JAVA_HOME_PROPERTY_NAME)));
-        command.addAll(arguments);
+        command.add(CLASSPATH_ARGUMENT_INDICATOR);
+        command.add(classpath);
+        command.add(mainClass);
+        if(arguments != null) {
+            command.addAll(Arrays.asList(arguments));
+        }
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         LOGGER.info("Starting JVM with parameters: [{}]", command.toString());
-        return processBuilder.start();
+        return processBuilder;
     }
 }

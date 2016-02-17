@@ -30,7 +30,6 @@ import java.util.Optional;
 public class JdiControllerImpl implements JdiController, Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdiControllerImpl.class);
-
     private static final String AGENT_RUNNER_CLASS = "cern.jarrace.mole.AgentRunner";
 
     private final JdiEntryRegistry<EntryListener> entryRegistry;
@@ -58,6 +57,11 @@ public class JdiControllerImpl implements JdiController, Closeable {
 
     public InputStream getProcessError() {
         return jdi.vm().process().getErrorStream();
+    }
+
+    @Override
+    public void setEntryListener(EntryListener entryListener) {
+        // currently doing nothing, as handled through the entryRegistry
     }
 
     @Override

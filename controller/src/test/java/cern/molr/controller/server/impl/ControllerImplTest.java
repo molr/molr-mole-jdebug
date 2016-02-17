@@ -4,7 +4,7 @@ import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.Service;
 import cern.molr.controller.io.JarReader;
 import cern.molr.controller.io.JarWriter;
-import cern.molr.jvm.MoleRunnerSpawner;
+import cern.molr.jvm.MoleSpawner;
 import cern.molr.controller.manager.MoleManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +33,7 @@ public class ControllerImplTest {
     @Mock
     private MoleRegistrySpawner moleRegistrySpawner;
     @Mock
-    private MoleRunnerSpawner moleRunnerSpawner;
+    private MoleSpawner moleRunnerSpawner;
     @Mock
     private JarWriter jarWriter;
     @Mock
@@ -77,6 +77,6 @@ public class ControllerImplTest {
         Service service = mock(Service.class);
         List<String> stringList = mock(List.class);
         serverImpl.runMole(TEST_CONTAINER_PATH, service, stringList);
-        verify(moleRunnerSpawner).spawnAgentRunner(service, TEST_CONTAINER_PATH, stringList);
+        verify(moleRunnerSpawner).spawnMoleRunner(service, TEST_CONTAINER_PATH, stringList);
     }
 }

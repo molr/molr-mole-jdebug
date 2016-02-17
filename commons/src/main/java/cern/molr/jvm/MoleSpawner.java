@@ -14,6 +14,23 @@ import java.util.List;
  *
  * @author tiagomr
  */
-public interface MoleRunnerSpawner {
-    public String spawnAgentRunner(Service service, String jarPath, List<String> args) throws Exception;
+public interface MoleSpawner<T> {
+    /**
+     * Spawns a mole in a new JVM with the same classpath as the calling JVM
+     * @param service
+     * @param args
+     * @return
+     * @throws Exception
+     */
+    public T spawnMoleRunner(Service service, String... args) throws Exception;
+
+    /**
+     * Spawns a mole in a new JVM
+     * @param service
+     * @param classpath
+     * @param args
+     * @return
+     * @throws Exception
+     */
+    public T spawnMoleRunner(Service service, String classpath, String... args) throws Exception;
 }

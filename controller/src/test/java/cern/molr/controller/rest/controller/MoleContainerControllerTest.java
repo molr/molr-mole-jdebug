@@ -206,7 +206,7 @@ public class MoleContainerControllerTest {
                 .param(SERVICE_PARAM_NAME, TEST_SERVICE_NAME)
                 .param(ENTRY_POINTS_PARAM_NAME, TEST_ENTRY_POINT_1, TEST_ENTRY_POINT_2))
                 .andExpect(status().isOk());
-        verify(agentRunnerSpawner).spawnAgentRunner(Matchers.any(Service.class), anyString(), anyList());
+        verify(agentRunnerSpawner).spawnMoleRunner(Matchers.any(Service.class), anyString(), anyList());
     }
 
     @Test

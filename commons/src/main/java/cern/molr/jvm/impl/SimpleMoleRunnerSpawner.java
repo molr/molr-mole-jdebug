@@ -6,8 +6,8 @@
 package cern.molr.jvm.impl;
 
 import cern.molr.commons.domain.Service;
-import cern.molr.jvm.AbstractJvmSpawner;
-import cern.molr.jvm.MoleRunnerSpawner;
+import cern.molr.jvm.JvmSpawnHelper;
+import cern.molr.jvm.MoleSpawner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,25 +18,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of {@link MoleRunnerSpawner} that uses an the {@link ProcessBuilder} class to start a new JVM
+ * Implementation of {@link MoleSpawner} that uses an the {@link ProcessBuilder} class to start a new JVM
  * running cern.molr.mole.GenericMoleRunner#main.
+ * Executes the Moles as they are spawned.
  *
  * @author tiagomr
  */
-public class SimpleMoleRunnerSpawner extends AbstractJvmSpawner implements MoleRunnerSpawner {
+public class SimpleMoleRunnerSpawner implements MoleSpawner<String> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMoleRunnerSpawner.class);
     private static final String AGENT_RUNNER_MAIN_CASS = "cern.molr.mole.GenericMoleRunner";
     private static final String INSPECTOR_MAIN_CLASS = "cern.molr.inspector.CliMain";
 
     @Override
-    public String spawnAgentRunner(Service service, String jarPath, List<String> args) throws Exception {
+    public String spawnMoleRunner(Service service, String... args) throws Exception {
+        // TODO
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String spawnMoleRunner(Service service, String classpath, String... args) throws Exception {
         if (args == null) {
             throw new IllegalArgumentException("Arguments cannot be null");
         }
         List<String> arguments = new ArrayList<>();
         arguments.add("-cp");
-        arguments.add(jarPath);
+        arguments.add(classpath);
         arguments.add(AGENT_RUNNER_MAIN_CASS);
         arguments.add(service.getMoleClassName());
         arguments.add(service.getServiceClassName());
@@ -47,8 +54,8 @@ public class SimpleMoleRunnerSpawner extends AbstractJvmSpawner implements MoleR
                 }
             }
         }
-        Process process = spawnJvm(arguments);
-        return readFromProcess(process);
+        ProcessBuilder processBuilder = JvmSpawnHelper.getProcessBuilder(arguments.toArray(new String[]{}));
+        return readFromProcess(processBuilder.start());
     }
 
     private String readFromProcess(Process process) throws IOException {

@@ -4,7 +4,7 @@ import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.Service;
 import cern.molr.controller.io.JarReader;
 import cern.molr.controller.io.JarWriter;
-import cern.molr.jvm.MoleRunnerSpawner;
+import cern.molr.jvm.MoleSpawner;
 import cern.molr.controller.manager.MoleManager;
 import cern.molr.controller.server.Controller;
 import cern.molr.inspector.controller.JdiController;
@@ -36,7 +36,7 @@ public class ControllerImpl implements Controller {
     @Autowired
     private MoleRegistrySpawner moleRegistrySpawner;
     @Autowired
-    private MoleRunnerSpawner moleRunnerSpawner;
+    private MoleSpawner moleRunnerSpawner;
     @Autowired
     private JarWriter jarWriter;
 
@@ -64,8 +64,8 @@ public class ControllerImpl implements Controller {
     }
 
     @Override
-    public String runMole(String agentPath, Service service, List<String> entryPoints) throws Exception {
-        return moleRunnerSpawner.spawnAgentRunner(service, agentPath, entryPoints);
+    public String runMole(String agentPath, Service service, String... entryPoints) throws Exception {
+        return moleRunnerSpawner.spawnMoleRunner(service, agentPath, entryPoints);
     }
 
     @Override

@@ -24,17 +24,16 @@ import java.util.Arrays;
  */
 public class DebugPane extends BorderPane {
 
-    private final JdiController jdiController;
     private final ScrollPane scrollPane = new ScrollPane();
     private final TextFlow textFlow = new TextFlow();
     private final Button stepOverButton = new Button("Step Over");
     private final Button terminateButton = new Button("Terminate");
     private final CheckBox scrollCheckBox = new CheckBox("Automatic Scroll");
+    private JdiController jdiController;
     private int currentLine = 0;
 
-    public DebugPane(String sourceCodeText, JdiController jdiController) {
+    public DebugPane(String sourceCodeText) {
         super();
-        this.jdiController = jdiController;
         if (sourceCodeText == null) {
             throw new IllegalArgumentException("Source code text must not be null");
         }
@@ -118,5 +117,9 @@ public class DebugPane extends BorderPane {
 
     public Button getTerminateButton() {
         return terminateButton;
+    }
+
+    public void setJdiController(JdiController jdiController) {
+        this.jdiController = jdiController;
     }
 }
