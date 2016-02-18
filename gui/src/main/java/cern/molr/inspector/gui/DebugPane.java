@@ -12,15 +12,17 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.stage.Stage;
 
 import java.util.Arrays;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Implementation {@link BorderPane} that shows the source code in a {@link TextFlow} node and allows for the stepping
  * and termination of the execution.
  *
  * @author tiagomr
+ * @author mgalilee
  */
 public class DebugPane extends BorderPane {
 
@@ -31,6 +33,7 @@ public class DebugPane extends BorderPane {
     private final CheckBox scrollCheckBox = new CheckBox("Automatic Scroll");
     private JdiController jdiController;
     private int currentLine = 0;
+    private Optional<Consumer<DebugPane>> onTerminateListener = Optional.empty();
 
     public DebugPane(String sourceCodeText) {
         super();
@@ -94,7 +97,7 @@ public class DebugPane extends BorderPane {
         hBox.getChildren().add(stepOverButton);
         terminateButton.setOnMouseClicked(event -> {
             jdiController.terminate();
-            ((Stage) getScene().getWindow()).close();
+            onTerminateListener.ifPresent(listener -> listener.accept(this));
         });
         hBox.getChildren().add(terminateButton);
         hBox.getChildren().add(scrollCheckBox);
@@ -121,5 +124,9 @@ public class DebugPane extends BorderPane {
 
     public void setJdiController(JdiController jdiController) {
         this.jdiController = jdiController;
+    }
+
+    public void setOnTerminate(Consumer<DebugPane> consumer) {
+        onTerminateListener = Optional.ofNullable(consumer);
     }
 }

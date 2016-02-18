@@ -1,8 +1,7 @@
 package cern.molr.controller.server.impl;
 
 import cern.molr.commons.mole.Mole;
-import cern.molr.commons.mole.TaskDiscoverer;
-import cern.molr.commons.mole.impl.ClasspathAnnotatedTaskDiscoverer;
+import cern.molr.commons.mole.ServiceDiscoverer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -16,7 +15,7 @@ import java.util.Map;
 public class EmbeddedController extends ControllerImpl {
 
     @Autowired
-    TaskDiscoverer taskDiscoverer;
+    ServiceDiscoverer taskDiscoverer;
 
     @PostConstruct
     public void discoverServices() {

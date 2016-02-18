@@ -23,13 +23,13 @@ import static org.junit.Assert.assertEquals;
 public class ServiceTypeAdapterTest {
 
     private static final List<String> ENTRY_POINTS = Arrays.asList("one", "two");
-    private static final Service SERVICE = new Service("testAgent", "testClass", ENTRY_POINTS);
+    private static final Service SERVICE_IMPL = new Service("testAgent", "testClass", ENTRY_POINTS);
     private static final ServiceTypeAdapter TYPE_ADAPTER = new ServiceTypeAdapter();
 
     @Test
     public void serialisesAService() throws IOException {
         final String json = "{\"agentName\":\"testAgent\",\"className\":\"testClass\",\"entryPoints\":\"one,two\"}";
-        assertEquals(json, write(SERVICE));
+        assertEquals(json, write(SERVICE_IMPL));
     }
 
     @Test(expected = NullPointerException.class)
@@ -50,7 +50,7 @@ public class ServiceTypeAdapterTest {
     @Test
     public void deserialisesAService() throws IOException {
         final String json = "{\"agentName\":\"testAgent\",\"className\":\"testClass\",\"entryPoints\":\"one,two\"}";
-        assertEquals(SERVICE, read(json));
+        assertEquals(SERVICE_IMPL, read(json));
     }
 
     @Test(expected = MalformedJsonException.class)

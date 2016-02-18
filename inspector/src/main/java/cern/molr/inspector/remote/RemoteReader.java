@@ -47,7 +47,14 @@ public abstract class RemoteReader implements AutoCloseable {
         }
         this.reader = reader;
         service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(() -> readCommand(reader), readingInterval.toMillis(),
+        Runnable read = () -> {
+            try {
+                readCommand(reader);
+            } catch(Exception exception) {
+                LOGGER.warn("Exception trying to read command", exception);
+            }
+        };
+        service.scheduleAtFixedRate(read, readingInterval.toMillis(),
                 readingInterval.toMillis(), TimeUnit.MILLISECONDS);
     }
 

@@ -8,7 +8,7 @@ package cern.molr.inspector.controller;
 
 import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.entry.EntryListenerFactory;
-import cern.molr.inspector.entry.impl.EntryStateImpl;
+import cern.molr.inspector.entry.EntryStateBuilder;
 import cern.molr.inspector.jdi.LocationRange;
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
@@ -56,7 +56,7 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
         request.addHandler(this);
         request.enable();
 
-        EntryStateImpl.ofLocation(event.location()).ifPresent(entryState -> {
+        EntryStateBuilder.ofLocation(event.location()).ifPresent(entryState -> {
             final EntryListener callbackListener = callbackHandler.createListenerOn(
                     event.thread(), entryState);
             registry.register(event.thread(), callbackListener);
@@ -78,7 +78,7 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
         try {
             e.thread().suspend();
             if (LocationRange.ofMethod(e.location().method()).isWithin(e.location())) {
-                EntryStateImpl.ofLocation(e.location()).ifPresent(registry.getEntryListener().get()::onLocationChange);
+                EntryStateBuilder.ofLocation(e.location()).ifPresent(registry.getEntryListener().get()::onLocationChange);
             } else {
                 registry.unregister();
             }

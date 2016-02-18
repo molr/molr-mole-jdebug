@@ -7,6 +7,7 @@
 package cern.molr.inspector.json;
 
 import cern.molr.commons.domain.Service;
+import cern.molr.commons.domain.impl.ServiceImpl;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -27,14 +28,14 @@ public class ServiceTypeAdapter extends TypeAdapter<Service> {
     public void write(JsonWriter out, Service service) throws IOException {
         Objects.requireNonNull(service.getMoleClassName(), "Agent name cannot be null");
         Objects.requireNonNull(service.getServiceClassName(), "Class name cannot be null");
-        Objects.requireNonNull(service.getEntryPoints(), "Entry points list cannot be null");
+        Objects.requireNonNull(service.getTasksNames(), "Entry points list cannot be null");
         out.beginObject()
                 .name("agentName")
                 .value(service.getMoleClassName())
                 .name("className")
                 .value(service.getServiceClassName())
                 .name("entryPoints")
-                .value(service.getEntryPoints().stream().collect(Collectors.joining(LIST_SEPARATOR)))
+                .value(service.getTasksNames().stream().collect(Collectors.joining(LIST_SEPARATOR)))
                 .endObject();
     }
 
@@ -49,6 +50,6 @@ public class ServiceTypeAdapter extends TypeAdapter<Service> {
         final String entryPointsString = in.nextString();
         in.endObject();
 
-        return new Service(agentName, className, Arrays.asList(entryPointsString.split(LIST_SEPARATOR)));
+        return new ServiceImpl(agentName, className, Arrays.asList(entryPointsString.split(LIST_SEPARATOR)));
     }
 }

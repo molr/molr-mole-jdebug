@@ -45,7 +45,7 @@ public class ContainerList extends ListView<ContainerList.EntryPoint> {
     static List<EntryPoint> containersToEntryPoints(List<MoleContainer> containers) {
         ArrayList<EntryPoint> serviceList = new ArrayList<>();
         containers.stream().forEach(agent -> agent.getServices().forEach(service -> {
-            service.getEntryPoints().forEach(entry -> {
+            service.getTasksNames().forEach(entry -> {
                 final EntryPoint entryPoint = new EntryPoint(agent.getContainerName(),
                         service.getServiceClassName(), entry);
                 serviceList.add(entryPoint);

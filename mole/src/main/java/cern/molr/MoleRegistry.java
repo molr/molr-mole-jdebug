@@ -23,7 +23,7 @@ public class MoleRegistry {
         final String stringUri = args[2];
         try {
             final URL registerUrl = getRegisterUrl(name, stringUri);
-            ClasspathAnnotatedTaskDiscoverer classpathAnnotatedTaskDiscoverer = new ClasspathAnnotatedTaskDiscoverer();
+            ClasspathAnnotatedServiceDiscoverer classpathAnnotatedTaskDiscoverer = new ClasspathAnnotatedServiceDiscoverer();
             Map<Mole, Map<Class<?>, List<Method>>> moles = classpathAnnotatedTaskDiscoverer.discover();
             MoleContainer moleContainer = getAgentContainer(name, path);
             registerContainer(registerUrl, mole);

@@ -47,7 +47,7 @@ public class MockUtils {
             Service mockedService = mock(Service.class);
             when(mockedService.getMoleClassName()).thenReturn("MockedAgentName");
             when(mockedService.getServiceClassName()).thenReturn("MockedClassName");
-            when(mockedService.getEntryPoints()).thenReturn(entryPoints);
+            when(mockedService.getTasksNames()).thenReturn(entryPoints);
             mockedServices.add(mockedService);
         }
         return mockedServices;

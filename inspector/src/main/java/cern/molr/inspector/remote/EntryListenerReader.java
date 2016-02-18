@@ -22,7 +22,6 @@ public class EntryListenerReader extends RemoteReader {
 
     private final Gson gson = new Gson();
     private final EntryListener listener;
-    private Optional<Runnable> onVmDeath = Optional.empty();
 
     /**
      * Instructs the reader to receive commands from the given {@link BufferedReader} and forward them to a
@@ -109,9 +108,6 @@ public class EntryListenerReader extends RemoteReader {
                     return Optional.of(entryState);
                 } catch (JsonSyntaxException e) {
                     LOGGER.warn("Error when parsing json", e);
-                } catch (Throwable throwable) {
-                    LOGGER.warn("Error when parsing json", throwable);
-                    throw throwable;
                 }
             }
         }

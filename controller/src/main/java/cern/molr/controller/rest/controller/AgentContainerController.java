@@ -65,7 +65,7 @@ public class AgentContainerController {
                 .collect(Collectors.toList());
 
         parsedEntryPoints.forEach(entryPoint -> {
-            if (!service.getEntryPoints().contains(entryPoint)) {
+            if (!service.getTasksNames().contains(entryPoint)) {
                 throw new IllegalArgumentException("All entry points must exist");
             }
         });
