@@ -33,7 +33,7 @@ public class MockUtils {
         when(mockedMoleContainer.getContainerName()).thenReturn("MockedContainerName" + containerNumber);
         when(mockedMoleContainer.getContainerPath()).thenReturn("MockedContainerPath" + containerNumber);
         List<Service> mockedService = getMockedService(numberOfServices, numberOfEntryPoints);
-        when(mockedMoleContainer.getServices()).thenReturn(mockedService);
+        when(mockedMoleContainer.getMissions()).thenReturn(mockedService);
         return mockedMoleContainer;
     }
 

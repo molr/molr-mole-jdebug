@@ -17,7 +17,7 @@ public class JdiControllerImplIntegrationTest {
 //        final String mainPath = testPath.substring(0, testPath.length() - 5) + "/main";
 //        final String classPath = testPath + File.pathSeparator + mainPath;
 //        JdiControllerImpl controller = JdiControllerImpl.builder()
-//                .setService(method)
+//                .setMission(method)
 //                .setMainClass("TestInspectable")
 //                .setClassPath(classPath)
 //                .build();

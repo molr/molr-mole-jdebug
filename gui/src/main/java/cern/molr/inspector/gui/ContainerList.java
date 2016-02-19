@@ -44,10 +44,10 @@ public class ContainerList extends ListView<ContainerList.EntryPoint> {
 
     static List<EntryPoint> containersToEntryPoints(List<MoleContainer> containers) {
         ArrayList<EntryPoint> serviceList = new ArrayList<>();
-        containers.stream().forEach(agent -> agent.getServices().forEach(service -> {
+        containers.stream().forEach(agent -> agent.getMissions().forEach(service -> {
             service.getTasksNames().forEach(entry -> {
                 final EntryPoint entryPoint = new EntryPoint(agent.getContainerName(),
-                        service.getServiceClassName(), entry);
+                        service.getMissionContentClassName(), entry);
                 serviceList.add(entryPoint);
             });
         }));

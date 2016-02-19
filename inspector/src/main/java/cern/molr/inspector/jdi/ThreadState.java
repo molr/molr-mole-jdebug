@@ -37,14 +37,14 @@ public class ThreadState {
     }
 
     /**
-     * @return The starting position for the entrypoint in this state (see {@link EntryState}).
+     * @return The starting position for the task in this state (see {@link cern.molr.inspector.entry.EntryState}).
      */
     public Location getStartLocation() {
         return inspectableRange.getStart();
     }
 
     /**
-     * @return The ending position for the entrypoint in this state (see {@link EntryState}).
+     * @return The ending position for the task in this state (see {@link cern.molr.inspector.entry.EntryState}).
      */
     public Location getEndLocation() {
         return inspectableRange.getEnd();

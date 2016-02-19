@@ -6,7 +6,7 @@
 
 package cern.molr.inspector.controller;
 
-import cern.molr.commons.domain.Service;
+import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.entry.EntryListenerFactory;
 import com.sun.jdi.ThreadReference;
@@ -94,22 +94,22 @@ public class JdiControllerImpl implements JdiController, Closeable {
         private static final String CLASSPATH_PREFIX = "-cp ";
 
         private String classPath;
-        private Service service;
+        private Mission mission;
         private EntryListenerFactory<?> factory;
 
         public JdiControllerImpl build() throws IOException, IllegalConnectorArgumentsException, VMStartException {
             Objects.requireNonNull(classPath, "Classpath must be set");
             Objects.requireNonNull(factory, "Listener factory must be set");
-            Objects.requireNonNull(service, "Service to inspect must be set");
+            Objects.requireNonNull(mission, "Mission to inspect must be set");
 
-            final String launchArguments = AGENT_RUNNER_CLASS + " " + service.getMoleClassName() + " " + service.getServiceClassName();
+            final String launchArguments = AGENT_RUNNER_CLASS + " " + mission.getMoleClassName() + " " + mission.getMissionContentClassName();
             final VMLauncher launcher = new VMLauncher(CLASSPATH_PREFIX + classPath, launchArguments);
 
             JdiEntryRegistry<EntryListener> entryRegistry = new JdiEntryRegistry<>();
 
             JDIScript jdi = new JdiInstanceBuilder()
                     .setLauncher(launcher)
-                    .setService(service)
+                    .setMission(mission)
                     .setEntryRegistry(entryRegistry)
                     .setListenerFactory(factory)
                     .build();
@@ -127,8 +127,8 @@ public class JdiControllerImpl implements JdiController, Closeable {
             return this;
         }
 
-        public Builder setService(Service method) {
-            this.service = method;
+        public Builder setMission(Mission method) {
+            this.mission = method;
             return this;
         }
 

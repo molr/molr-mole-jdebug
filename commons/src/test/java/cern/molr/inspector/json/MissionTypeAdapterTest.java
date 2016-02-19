@@ -6,7 +6,8 @@
 
 package cern.molr.inspector.json;
 
-import cern.molr.commons.domain.Service;
+import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.impl.MissionImpl;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.google.gson.stream.MalformedJsonException;
@@ -20,11 +21,11 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class ServiceTypeAdapterTest {
+public class MissionTypeAdapterTest {
 
     private static final List<String> ENTRY_POINTS = Arrays.asList("one", "two");
-    private static final Service SERVICE_IMPL = new Service("testAgent", "testClass", ENTRY_POINTS);
-    private static final ServiceTypeAdapter TYPE_ADAPTER = new ServiceTypeAdapter();
+    private static final Mission SERVICE_IMPL = new MissionImpl("testAgent", "testClass", ENTRY_POINTS);
+    private static final MissionTypeAdapter TYPE_ADAPTER = new MissionTypeAdapter();
 
     @Test
     public void serialisesAService() throws IOException {
@@ -34,21 +35,21 @@ public class ServiceTypeAdapterTest {
 
     @Test(expected = NullPointerException.class)
     public void failsToSerialiseServiceWithNullAgent() throws IOException {
-        write(new Service(null, "notNull", ENTRY_POINTS));
+        write(new MissionImpl(null, "notNull", ENTRY_POINTS));
     }
 
     @Test(expected = NullPointerException.class)
     public void failsToSerialiseServiceWithNullClass() throws IOException {
-        write(new Service("notNull", null, ENTRY_POINTS));
+        write(new MissionImpl("notNull", null, ENTRY_POINTS));
     }
 
     @Test(expected = NullPointerException.class)
     public void failsToSerialiseServiceWithNullEntries() throws IOException {
-        write(new Service("notNull", "notNull", null));
+        write(new MissionImpl("notNull", "notNull", null));
     }
 
     @Test
-    public void deserialisesAService() throws IOException {
+    public void deserializesAService() throws IOException {
         final String json = "{\"agentName\":\"testAgent\",\"className\":\"testClass\",\"entryPoints\":\"one,two\"}";
         assertEquals(SERVICE_IMPL, read(json));
     }
@@ -59,11 +60,11 @@ public class ServiceTypeAdapterTest {
         read(json);
     }
 
-    private Service read(String json) throws IOException {
+    private Mission read(String json) throws IOException {
         return TYPE_ADAPTER.read(new JsonReader(new StringReader(json)));
     }
 
-    private String write(Service service) throws IOException {
+    private String write(Mission service) throws IOException {
         final StringWriter writer = new StringWriter();
         TYPE_ADAPTER.write(new JsonWriter(writer), service);
         return writer.toString();

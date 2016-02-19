@@ -6,11 +6,11 @@
 
 package cern.molr.inspector;
 
-import cern.molr.commons.domain.Service;
-import cern.molr.inspector.remote.SystemMain;
+import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.domain.InstantiationRequest;
 import cern.molr.inspector.domain.InstantiationRequestImpl;
-import cern.molr.inspector.json.ServiceTypeAdapter;
+import cern.molr.inspector.json.MissionTypeAdapter;
+import cern.molr.inspector.remote.SystemMain;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.junit.Before;
@@ -25,14 +25,14 @@ import static org.mockito.Mockito.when;
 public class SystemMainTest {
 
     private static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(Service.class, new ServiceTypeAdapter().nullSafe())
+            .registerTypeAdapter(Mission.class, new MissionTypeAdapter().nullSafe())
             .create();
 
-    private Service mockedService;
+    private Mission mockedMission;
 
     @Before
     public void setup() {
-        mockedService = mock(Service.class);
+        mockedMission = mock(Mission.class);
     }
 
     @Test
@@ -41,10 +41,10 @@ public class SystemMainTest {
         final String inspectionClass = "cern.jarrace.inspector.remote.CliMain";
         final String mainClass = "cern.jarrace.inspector.remote.CliMain";
         final List<String> entryPoints = Collections.singletonList("main");
-        when(mockedService.getMoleClassName()).thenReturn(mainClass);
-        when(mockedService.getServiceClassName()).thenReturn(inspectionClass);
-        when(mockedService.getTasksNames()).thenReturn(entryPoints);
-        final InstantiationRequest request = new InstantiationRequestImpl(classPath, mockedService);
+        when(mockedMission.getMoleClassName()).thenReturn(mainClass);
+        when(mockedMission.getMissionContentClassName()).thenReturn(inspectionClass);
+        when(mockedMission.getTasksNames()).thenReturn(entryPoints);
+        final InstantiationRequest request = new InstantiationRequestImpl(classPath, mockedMission);
         SystemMain.main(new String[]{GSON.toJson(request)});
     }
 

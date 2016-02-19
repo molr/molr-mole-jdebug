@@ -6,7 +6,7 @@
 
 package cern.molr.inspector.controller;
 
-import cern.molr.commons.domain.Service;
+import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.entry.EntryListenerFactory;
 import cern.molr.inspector.jdi.ClassInstantiationListener;
@@ -27,21 +27,21 @@ import java.util.concurrent.Executors;
 public class JdiInstanceBuilder {
 
     private VMLauncher launcher;
-    private Service service;
+    private Mission mission;
     private EntryListenerFactory<?> listenerFactory;
     private JdiEntryRegistry<EntryListener> registry;
 
     /**
      * Builds a new {@link JDIScript} by 1) asking the {@link VMLauncher} to launch a new process,
-     * 2) creates a listener to listen for the new instantiations of the {@link Service} classes given in the
-     * builder and 3) asks the running VM to break whenever such a service is met.
+     * 2) creates a listener to listen for the new instantiations of the {@link Mission} classes given in the
+     * builder and 3) asks the running VM to break whenever such a mission is met.
      *
      * @return An instantiation of a {@link JDIScript}.
      * @throws IOException If the {@link VMLauncher} fails to launch the process.
      */
     public JDIScript build() throws IOException {
         Objects.requireNonNull(launcher, "Launcher must not be null");
-        Objects.requireNonNull(service, "Service must not be null");
+        Objects.requireNonNull(mission, "Service must not be null");
         Objects.requireNonNull(registry, "Entry registry must be set");
         Objects.requireNonNull(listenerFactory, "Listener factory must not be null");
 
@@ -51,8 +51,8 @@ public class JdiInstanceBuilder {
             SteppingJdiEventHandler eventHandler = new SteppingJdiEventHandler(jdi, listenerFactory, registry);
 
             ClassInstantiationListener instantiationListener =
-                    new ClassInstantiationListener(service.getServiceClassName(),
-                            classType -> service.getTasksNames().forEach(methodName ->
+                    new ClassInstantiationListener(mission.getMissionContentClassName(),
+                            classType -> mission.getTasksNames().forEach(methodName ->
                                     eventHandler.registerClassInstantiation(classType, methodName)));
 
             ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -82,8 +82,8 @@ public class JdiInstanceBuilder {
         return this;
     }
 
-    public JdiInstanceBuilder setService(Service service) {
-        this.service = service;
+    public JdiInstanceBuilder setMission(Mission mission) {
+        this.mission = mission;
         return this;
     }
 

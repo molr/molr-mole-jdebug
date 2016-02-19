@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Import;
  */
 
 @SpringBootApplication
-@Import({ManagementConfiguration.class, RestConfiguration.class, JvmConfiguration.class, IOConfiguration.class, ServerConfiguration.class})
+@Import({ManagementConfiguration.class, RestConfiguration.class, IOConfiguration.class, ServerConfiguration.class})
 public class JarRaceServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(JarRaceServer.class);
 

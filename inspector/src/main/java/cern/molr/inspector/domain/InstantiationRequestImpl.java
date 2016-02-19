@@ -6,7 +6,7 @@
 
 package cern.molr.inspector.domain;
 
-import cern.molr.commons.domain.Service;
+import cern.molr.commons.domain.Mission;
 
 /**
  * An immutable implementation of an {@link InstantiationRequest}.
@@ -14,17 +14,17 @@ import cern.molr.commons.domain.Service;
 public class InstantiationRequestImpl implements InstantiationRequest {
 
     private final String classPath;
-    private final Service service;
+    private final Mission mission;
 
     /**
-     * Creates a {@link InstantiationRequestImpl} using the given class path and {@link Service}.
+     * Creates a {@link InstantiationRequestImpl} using the given class path and {@link Mission}.
      *
      * @param classPath The class path containing zero or more paths separated by the {@link java.io.File#pathSeparator}.
-     * @param service   The service to execute.
+     * @param mission   The mission to execute.
      */
-    public InstantiationRequestImpl(String classPath, Service service) {
+    public InstantiationRequestImpl(String classPath, Mission mission) {
         this.classPath = classPath;
-        this.service = service;
+        this.mission = mission;
     }
 
     @Override
@@ -32,9 +32,8 @@ public class InstantiationRequestImpl implements InstantiationRequest {
         return classPath;
     }
 
-    @Override
-    public Service getService() {
-        return service;
+    public Mission getMission() {
+        return mission;
     }
 
 }

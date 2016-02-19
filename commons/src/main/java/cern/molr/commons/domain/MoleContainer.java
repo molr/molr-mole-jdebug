@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * Responsible for the representation of a deployment to the controller. It couples all necessary information to
- * identify a single deployment and all the {@link Service}s provided by it and later execute them.
+ * identify a single deployment and all the {@link Mission}s provided by it and later execute them.
  *
  * @author tiagomr
  */
@@ -27,18 +27,18 @@ public class MoleContainer {
     private String containerPath;
 
     /**
-     * A list of services that is provided by this {@link MoleContainer}, and can be executed
+     * A {@link List} of {@link Mission}s that is provided by this {@link MoleContainer}, and can be executed
      */
-    private final List<Service> services = new ArrayList();
+    private final List<Mission> missions = new ArrayList();
 
     public MoleContainer() {
 
     }
 
-    public MoleContainer(String containerName, String containerPath, List<Service> services) {
+    public MoleContainer(String containerName, String containerPath, List<Mission> missions) {
         this.containerName = containerName;
         this.containerPath = containerPath;
-        this.services.addAll(services);
+        this.missions.addAll(missions);
     }
 
     public String getContainerName() {
@@ -49,8 +49,8 @@ public class MoleContainer {
         return containerPath;
     }
 
-    public List<Service> getServices() {
-        return services;
+    public List<Mission> getMissions() {
+        return missions;
     }
 
     @Override

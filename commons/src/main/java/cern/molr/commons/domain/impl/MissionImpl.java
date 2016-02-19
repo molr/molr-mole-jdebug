@@ -5,40 +5,40 @@
  */
 package cern.molr.commons.domain.impl;
 
-import cern.molr.commons.domain.Service;
+import cern.molr.commons.domain.Mission;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceImpl implements Service {
+public class MissionImpl implements Mission {
 
     /**
-     * Name of the mole that can execute the service
+     * Name of the mole that can execute the {@link Mission}
      */
     private String moleClassName;
 
     /**
-     * Class used by the exposed {@link Service}
+     * Class used by the exposed {@link Mission}
      */
     private String serviceClassName;
 
     /**
-     * {@link List} of entry points exposed by this service in the specific class
+     * {@link List} of tasks exposed by this service in the specific class
      */
-    private final List<String> entryPoints = new ArrayList<>();
+    private final List<String> tasks = new ArrayList<>();
 
-    public ServiceImpl() {
+    public MissionImpl() {
     }
 
-    public ServiceImpl(String moleClassName, String serviceClassName) {
+    public MissionImpl(String moleClassName, String serviceClassName) {
         this.moleClassName = moleClassName;
         this.serviceClassName = serviceClassName;
     }
 
-    public ServiceImpl(String moleClassName, String serviceClassName, List<String> entryPoints) {
+    public MissionImpl(String moleClassName, String serviceClassName, List<String> tasks) {
         this.moleClassName = moleClassName;
         this.serviceClassName = serviceClassName;
-        this.entryPoints.addAll(entryPoints);
+        this.tasks.addAll(tasks);
     }
 
     @Override
@@ -47,20 +47,20 @@ public class ServiceImpl implements Service {
     }
 
     @Override
-    public String getServiceClassName() {
+    public String getMissionContentClassName() {
         return serviceClassName;
     }
 
     @Override
     public List<String> getTasksNames() {
-        return new ArrayList<>(entryPoints);
+        return new ArrayList<>(tasks);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ServiceImpl service = (ServiceImpl) o;
+        MissionImpl service = (MissionImpl) o;
         if (moleClassName != null ? !moleClassName.equals(service.moleClassName) : service.moleClassName != null) return false;
         return !(serviceClassName != null ? !serviceClassName.equals(service.serviceClassName) : service.serviceClassName != null);
 
@@ -75,7 +75,7 @@ public class ServiceImpl implements Service {
 
     @Override
     public String toString() {
-        return getMoleClassName() + ": " + getServiceClassName();
+        return getMoleClassName() + ": " + getMissionContentClassName();
     }
 
 }

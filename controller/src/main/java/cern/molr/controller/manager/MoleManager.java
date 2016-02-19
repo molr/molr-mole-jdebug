@@ -5,8 +5,8 @@
  */
 package cern.molr.controller.manager;
 
+import cern.molr.commons.domain.Mission;
 import cern.molr.commons.domain.MoleContainer;
-import cern.molr.commons.domain.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +35,7 @@ public interface MoleManager {
     Set<MoleContainer> getAllMoles();
 
     /**
-     * Registers a {@link MoleContainer} that will be expose its {@link Service}s
+     * Registers a {@link MoleContainer} that will be expose its {@link Mission}s
      *
      * @param moleContainer The {@link MoleContainer} to be registered
      */

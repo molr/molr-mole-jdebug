@@ -1,7 +1,7 @@
 package cern.molr.gradle;
 
-import cern.molr.commons.domain.Service;
-import cern.molr.commons.mole.impl.ClasspathAnnotatedServiceDiscoverer;
+import cern.molr.commons.domain.Mission;
+import cern.molr.commons.mole.impl.ClasspathAnnotatedMissionDiscoverer;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ import java.util.List;
 public class ClasspathDiscovererTry {
 
     public static void main(String[] args) {
-        ClasspathAnnotatedServiceDiscoverer discoverer = new ClasspathAnnotatedServiceDiscoverer();
-        List<Service> services = discoverer.availableServices();
+        ClasspathAnnotatedMissionDiscoverer discoverer = new ClasspathAnnotatedMissionDiscoverer();
+        List<Mission> services = discoverer.availableMissions();
         System.out.println(services);
     }
 }

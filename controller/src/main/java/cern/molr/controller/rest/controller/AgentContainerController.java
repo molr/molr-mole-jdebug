@@ -5,8 +5,8 @@
  */
 package cern.molr.controller.rest.controller;
 
+import cern.molr.commons.domain.Mission;
 import cern.molr.commons.domain.MoleContainer;
-import cern.molr.commons.domain.Service;
 import cern.molr.controller.server.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,21 +56,21 @@ public class AgentContainerController {
                              @RequestParam(value = "service") String serviceName,
                              @RequestParam(value = "entryPoints", defaultValue = "") String entryPoints) throws Exception {
         final MoleContainer moleContainer = controller.getContainer(containerName).orElseThrow(() -> new IllegalArgumentException("Provided container name not found"));
-        final Service service = moleContainer.getServices().stream()
-                .filter(serviceToFilter -> serviceName.equals(serviceToFilter.getServiceClassName()))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("Provided service name not found"));
+        final Mission mission = moleContainer.getMissions().stream()
+                .filter(serviceToFilter -> serviceName.equals(serviceToFilter.getMissionContentClassName()))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("Provided mission name not found"));
 
         final List<String> parsedEntryPoints = (List<String>) Arrays.asList(entryPoints.split(",")).stream()
                 .filter(((Predicate<String>) String::isEmpty).negate())
                 .collect(Collectors.toList());
 
         parsedEntryPoints.forEach(entryPoint -> {
-            if (!service.getTasksNames().contains(entryPoint)) {
+            if (!mission.getTasksNames().contains(entryPoint)) {
                 throw new IllegalArgumentException("All entry points must exist");
             }
         });
 
-        return controller.runMole(moleContainer.getContainerPath(), service, parsedEntryPoints);
+        return controller.runMole(moleContainer.getContainerPath(), mission, parsedEntryPoints);
     }
 
     @RequestMapping(value = "/{" + CONTAINER_NAME_VARIABLE_NAME + "}/read", method = RequestMethod.GET)

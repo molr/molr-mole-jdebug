@@ -6,8 +6,9 @@
 
 package cern.molr.inspector.gui;
 
+import cern.molr.commons.domain.Mission;
 import cern.molr.commons.domain.MoleContainer;
-import cern.molr.commons.domain.Service;
+import cern.molr.commons.domain.impl.MissionImpl;
 import cern.molr.inspector.gui.rest.PeriodicObservableBuilder;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -31,8 +32,8 @@ public class ContainerListTest extends ApplicationTest {
     private static final Duration TEN_MILLISECONDS = Duration.ofMillis(10);
 
     private static final List<String> ENTRY_POINTS = Arrays.asList("method1", "method2");
-    private static final List<Service> SERVICE_IMPLs = Collections.singletonList(new Service("testAgent", "testClass", ENTRY_POINTS));
-    private static final List<MoleContainer> CONTAINERS = Collections.singletonList(new MoleContainer("testName", "testPath", SERVICE_IMPLs));
+    private static final List<Mission> MISSION_IMPLs = Collections.singletonList(new MissionImpl("testAgent", "testClass", ENTRY_POINTS));
+    private static final List<MoleContainer> CONTAINERS = Collections.singletonList(new MoleContainer("testName", "testPath", MISSION_IMPLs));
 
     private Supplier<List<MoleContainer>> mockedSupplier;
     private Observable<List<MoleContainer>> containerObservable;
@@ -65,5 +66,4 @@ public class ContainerListTest extends ApplicationTest {
         Thread.sleep(10);
         verifyThat(containerList, ListViewMatchers.hasItems(0));
     }
-
 }

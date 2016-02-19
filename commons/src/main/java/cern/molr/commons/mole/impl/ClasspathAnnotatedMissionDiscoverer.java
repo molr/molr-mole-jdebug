@@ -5,11 +5,11 @@
  */
 package cern.molr.commons.mole.impl;
 
-import cern.molr.commons.domain.Service;
-import cern.molr.commons.domain.impl.ServiceImpl;
+import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.impl.MissionImpl;
+import cern.molr.commons.mole.MissionsDiscoverer;
 import cern.molr.commons.mole.Mole;
 import cern.molr.commons.mole.RunWithMole;
-import cern.molr.commons.mole.ServiceDiscoverer;
 import com.impetus.annovention.ClasspathDiscoverer;
 import com.impetus.annovention.Discoverer;
 import com.impetus.annovention.listener.ClassAnnotationObjectDiscoveryListener;
@@ -26,28 +26,28 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of {@link ServiceDiscoverer} which makes use of the {@link RunWithMole} annotation to discover
- * {@link Service}s using classpath scans
+ * Implementation of {@link MissionsDiscoverer} which makes use of the {@link RunWithMole} annotation to discover
+ * {@link Mission}s using classpath scans
  *
  * @author jepeders
  * @author tiagomr
  * @author mgalilee
  */
-public class ClasspathAnnotatedServiceDiscoverer implements ServiceDiscoverer {
+public class ClasspathAnnotatedMissionDiscoverer implements MissionsDiscoverer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathAnnotatedServiceDiscoverer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathAnnotatedMissionDiscoverer.class);
     private static final String[] SUPPORTED_ANNOTATIONS = new String[]{RunWithMole.class.getTypeName()};
 
     @Override
-    public List<Service> availableServices() {
-        final Set<Class<?>> moleRunnables = new HashSet<>();
+    public List<Mission> availableMissions() {
+        final Set<Class<?>> missionClasses = new HashSet<>();
         final Discoverer discoverer = new ClasspathDiscoverer();
         discoverer.addAnnotationListener(
                 new ClassAnnotationObjectDiscoveryListener() {
                     @Override
                     public void discovered(ClassFile classFile, Annotation annotation) {
                         try {
-                            moleRunnables.add(Class.forName(classFile.getName()));
+                            missionClasses.add(Class.forName(classFile.getName()));
                         } catch (ClassNotFoundException classNotFoundException) {
                             LOGGER.error("Could not get class from classFile", classFile, classNotFoundException);
                         }
@@ -60,12 +60,12 @@ public class ClasspathAnnotatedServiceDiscoverer implements ServiceDiscoverer {
                 }
         );
         discoverer.discover(true, false, false, false, true, true);
-        return moleRunnables.stream()
-                .map(this::toService)
+        return missionClasses.stream()
+                .map(this::toMission)
                 .collect(Collectors.toList());
     }
 
-    private Service toService(Class<?> moleAnnotatedClass) {
+    private Mission toMission(Class<?> moleAnnotatedClass) {
         RunWithMole moleAnnotation = moleAnnotatedClass.getAnnotation(RunWithMole.class);
         Class<? extends Mole> moleClass = moleAnnotation.value();
         Mole mole = instantiateMole(moleClass);
@@ -73,7 +73,7 @@ public class ClasspathAnnotatedServiceDiscoverer implements ServiceDiscoverer {
         List<String> methodsNames = mole.discover(moleAnnotatedClass).stream()
                 .map(Method::getName)
                 .collect(Collectors.toList());
-        return new ServiceImpl(moleClassName, moleAnnotatedClass.getName(), methodsNames);
+        return new MissionImpl(moleClassName, moleAnnotatedClass.getName(), methodsNames);
     }
 
     private static Mole instantiateMole(final Class<? extends Mole> moleClass) {

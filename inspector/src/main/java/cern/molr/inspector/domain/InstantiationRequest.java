@@ -6,10 +6,10 @@
 
 package cern.molr.inspector.domain;
 
-import cern.molr.commons.domain.Service;
+import cern.molr.commons.domain.Mission;
 
 /**
- * A request to instantiate an inspector with a given classpath and a {@link Service} to run.
+ * A request to instantiate an inspector with a given classpath and a {@link Mission} to run.
  */
 public interface InstantiationRequest {
 
@@ -21,10 +21,10 @@ public interface InstantiationRequest {
     String getClassPath();
 
     /**
-     * The {@link Service} that should be run with this request.
+     * The {@link Mission} that should be run with this request.
      *
-     * @return A {@link Service} containing information about what main class to run with what arguments.
+     * @return A {@link Mission} containing information about what main class to run with what arguments.
      */
-    Service getService();
+    Mission getMission();
 
 }

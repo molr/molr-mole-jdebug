@@ -5,7 +5,7 @@
  */
 package cern.molr.jvm.impl;
 
-import cern.molr.commons.domain.Service;
+import cern.molr.commons.domain.Mission;
 import cern.molr.jvm.JvmSpawnHelper;
 import cern.molr.jvm.MoleSpawner;
 import org.slf4j.Logger;
@@ -29,13 +29,13 @@ public class SimpleMoleRunnerSpawner implements MoleSpawner<String> {
     private static final String INSPECTOR_MAIN_CLASS = "cern.molr.inspector.CliMain";
 
     @Override
-    public String spawnMoleRunner(Service service, String... args) throws Exception {
+    public String spawnMoleRunner(Mission mission, String... args) throws Exception {
         // TODO
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String spawnMoleRunner(Service service, String classpath, String... args) throws Exception {
+    public String spawnMoleRunner(Mission mission, String classpath, String... args) throws Exception {
         if (args == null) {
             throw new IllegalArgumentException("Arguments cannot be null");
         }

@@ -1,12 +1,12 @@
 package cern.molr.inspector;
 
-import cern.molr.commons.domain.Service;
+import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.controller.JdiController;
 import cern.molr.inspector.domain.InstantiationRequest;
 import cern.molr.inspector.domain.InstantiationRequestImpl;
 import cern.molr.inspector.domain.SourceFetcher;
 import cern.molr.inspector.entry.EntryListener;
-import cern.molr.inspector.json.ServiceTypeAdapter;
+import cern.molr.inspector.json.MissionTypeAdapter;
 import cern.molr.inspector.remote.EntryListenerReader;
 import cern.molr.inspector.remote.JdiControllerWriter;
 import cern.molr.inspector.remote.SystemMain;
@@ -31,7 +31,7 @@ public class DebugMoleSpawner implements MoleSpawner<JdiController>, SourceFetch
     private static final String INSPECTOR_MAIN_CLASS = SystemMain.class.getName();
 
     private static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(Service.class, new ServiceTypeAdapter().nullSafe())
+            .registerTypeAdapter(Mission.class, new MissionTypeAdapter().nullSafe())
             .create();
 
     private BufferedReader readerForClasspathFile(String filepath) {
@@ -51,8 +51,8 @@ public class DebugMoleSpawner implements MoleSpawner<JdiController>, SourceFetch
     }
 
     @Override
-    public JdiController spawnMoleRunner(Service service, String... args) throws Exception {
-        InstantiationRequest request = new InstantiationRequestImpl(CURRENT_CLASSPATH_VALUE, service);
+    public JdiController spawnMoleRunner(Mission mission, String... args) throws Exception {
+        InstantiationRequest request = new InstantiationRequestImpl(CURRENT_CLASSPATH_VALUE, mission);
         String[] completedArgs = new String[args.length + 1];
         completedArgs[0] = GSON.toJson(request);
         int i = 1;
@@ -85,7 +85,7 @@ public class DebugMoleSpawner implements MoleSpawner<JdiController>, SourceFetch
     }
 
     @Override
-    public JdiController spawnMoleRunner(Service service, String classpath, String... args) throws Exception {
+    public JdiController spawnMoleRunner(Mission mission, String classpath, String... args) throws Exception {
         return null;
     }
 

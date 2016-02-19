@@ -6,13 +6,13 @@
 
 package cern.molr.inspector.remote;
 
-import cern.molr.commons.domain.Service;
+import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.controller.JdiController;
 import cern.molr.inspector.controller.JdiControllerImpl;
-import cern.molr.inspector.entry.EntryListenerFactory;
 import cern.molr.inspector.domain.InstantiationRequest;
 import cern.molr.inspector.domain.InstantiationRequestImpl;
-import cern.molr.inspector.json.ServiceTypeAdapter;
+import cern.molr.inspector.entry.EntryListenerFactory;
+import cern.molr.inspector.json.MissionTypeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 public class SystemMain implements Closeable {
 
     private static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(Service.class, new ServiceTypeAdapter().nullSafe())
+            .registerTypeAdapter(Mission.class, new MissionTypeAdapter().nullSafe())
             .create();
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -82,7 +82,7 @@ public class SystemMain implements Closeable {
             return JdiControllerImpl.builder()
                     .setClassPath(request.getClassPath())
                     .setListenerFactory(factory)
-                    .setService(request.getService())
+                    .setMission(request.getMission())
                     .build();
         } catch (IllegalConnectorArgumentsException e) {
             System.err.println("Bad connection parameters " + request + " when starting JDIY:" + e);
