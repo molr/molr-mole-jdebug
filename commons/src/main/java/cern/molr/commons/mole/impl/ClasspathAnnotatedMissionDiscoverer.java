@@ -39,7 +39,7 @@ public class ClasspathAnnotatedMissionDiscoverer implements MissionsDiscoverer {
     private static final String[] SUPPORTED_ANNOTATIONS = new String[]{RunWithMole.class.getTypeName()};
 
     @Override
-    public List<Mission> availableMissions() {
+    public Set<Mission> availableMissions() {
         final Set<Class<?>> missionClasses = new HashSet<>();
         final Discoverer discoverer = new ClasspathDiscoverer();
         discoverer.addAnnotationListener(
@@ -62,7 +62,7 @@ public class ClasspathAnnotatedMissionDiscoverer implements MissionsDiscoverer {
         discoverer.discover(true, false, false, false, true, true);
         return missionClasses.stream()
                 .map(this::toMission)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     private Mission toMission(Class<?> moleAnnotatedClass) {

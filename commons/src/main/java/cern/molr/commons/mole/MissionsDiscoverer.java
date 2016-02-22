@@ -3,6 +3,7 @@ package cern.molr.commons.mole;
 import cern.molr.commons.domain.Mission;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Interface to be implemented to provide different {@link Mission}s.
@@ -10,5 +11,5 @@ import java.util.List;
  * @author mgalilee
  */
 public interface MissionsDiscoverer {
-    List<Mission> availableMissions();
+    Set<Mission> availableMissions();
 }
