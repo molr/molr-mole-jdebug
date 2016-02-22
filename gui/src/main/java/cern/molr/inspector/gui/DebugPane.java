@@ -6,8 +6,10 @@ import cern.molr.inspector.controller.JdiController;
 import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.entry.EntryState;
 import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
@@ -19,6 +21,7 @@ import javafx.scene.text.TextFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -72,6 +75,30 @@ public class DebugPane extends BorderPane {
             }
         });
         initData(mission.getMissionContentClassName());
+    }
+
+    /**
+     * Swing compatibility builder for DebugPane.
+     * Embeds a DebugPane in a JFrame
+     * @param mission a {@link Mission} from a {@link cern.molr.commons.mole.MissionsDiscoverer}
+     * @return a {@link JFrame}
+     * @throws Exception
+     */
+    public static JFrame openDebugPaneInJFrame(Mission mission) throws Exception {
+        JFrame frame = new JFrame(mission.getMissionContentClassName());
+        frame.setSize(500, 900);
+
+        JFXPanel fxPanel = new JFXPanel();
+        frame.add(fxPanel);
+
+        DebugPane debugPane = new DebugPane(mission);
+
+        Platform.runLater( () -> {
+            Scene scene = new Scene(debugPane);
+            fxPanel.setScene(scene);
+        });
+
+        return frame;
     }
 
     /**
