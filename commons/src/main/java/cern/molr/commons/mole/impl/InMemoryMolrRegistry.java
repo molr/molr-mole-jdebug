@@ -3,8 +3,6 @@ package cern.molr.commons.mole.impl;
 import cern.molr.commons.domain.Mission;
 import cern.molr.commons.mole.MissionsDiscoverer;
 import cern.molr.commons.mole.MolrRegistry;
-import cern.molr.commons.mole.impl.AbstractMolrRegistry;
-import cern.molr.commons.mole.impl.ClasspathAnnotatedMissionDiscoverer;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,11 +40,11 @@ public class InMemoryMolrRegistry extends AbstractMolrRegistry {
 
     @Override
     public void registerMission(Mission mission) {
-        missions.add(mission);
+        this.missions.add(mission);
     }
 
     @Override
     public void registerMissions(Set<Mission> missions) {
-        missions.addAll(missions);
+        this.missions.addAll(missions);
     }
 }
