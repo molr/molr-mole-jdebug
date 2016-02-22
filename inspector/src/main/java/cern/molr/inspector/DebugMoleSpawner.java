@@ -1,5 +1,6 @@
 package cern.molr.inspector;
 
+import cern.molr.commons.annotations.Source;
 import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.controller.JdiController;
 import cern.molr.inspector.domain.InstantiationRequest;
@@ -18,8 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.Base64;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 /**
  * @author timartin
@@ -34,18 +35,13 @@ public class DebugMoleSpawner implements MoleSpawner<JdiController>, SourceFetch
             .registerTypeAdapter(Mission.class, new MissionTypeAdapter().nullSafe())
             .create();
 
-    private BufferedReader readerForClasspathFile(String filepath) {
-        return new BufferedReader(new InputStreamReader(getClass()
-                .getClassLoader()
-                .getResourceAsStream(filepath)));
-    }
-
     public String getSource(String classname) {
-        try(BufferedReader reader = readerForClasspathFile(classname.replaceAll("\\.", "/") + ".java")) {
-            return reader.lines()
-                    .collect(Collectors.joining("\n"));
-        } catch (IOException exception) {
-            LOGGER.error("Could not load source code for class", classname);
+        try {
+            Source classSource = (Source) Class.forName(classname + "Source").newInstance();
+            String base64Source = classSource.base64Value();
+            return new String(Base64.getDecoder().decode(base64Source));
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | ClassCastException exception) {
+            LOGGER.error("Could not load source code for class", classname, exception);
             return "";
         }
     }
