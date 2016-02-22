@@ -24,11 +24,11 @@ public interface MoleSpawner<T> {
 
     /**
      * Spawns a mole in a new JVM
-     * @param mission
+     * @param service
      * @param classpath
      * @param args
      * @return
      * @throws Exception
      */
-    public T spawnMoleRunner(Mission mission, String classpath, String... args) throws Exception;
+    public T spawnMoleRunner(Mission service, String classpath, String... args) throws Exception;
 }

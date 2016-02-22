@@ -1,6 +1,10 @@
 package cern.molr.inspector.gui;
 
+import cern.molr.commons.domain.Mission;
+import cern.molr.inspector.DebugMoleSpawner;
 import cern.molr.inspector.controller.JdiController;
+import cern.molr.inspector.entry.EntryListener;
+import cern.molr.inspector.entry.EntryState;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,6 +16,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -26,22 +32,46 @@ import java.util.function.Consumer;
  */
 public class DebugPane extends BorderPane {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DebugPane.class);
+    private final static DebugMoleSpawner DEBUG_MOLE_SPAWNER = new DebugMoleSpawner();
+
+    private final JdiController jdiController;
+    private int currentLine = 0;
+    private Optional<Consumer<DebugPane>> onTerminateListener = Optional.empty();
+
+    /* UI Components */
     private final ScrollPane scrollPane = new ScrollPane();
     private final TextFlow textFlow = new TextFlow();
     private final Button stepOverButton = new Button("Step Over");
     private final Button terminateButton = new Button("Terminate");
     private final CheckBox scrollCheckBox = new CheckBox("Automatic Scroll");
-    private JdiController jdiController;
-    private int currentLine = 0;
-    private Optional<Consumer<DebugPane>> onTerminateListener = Optional.empty();
 
-    public DebugPane(String sourceCodeText) {
+    public DebugPane(Mission mission) throws Exception {
         super();
-        if (sourceCodeText == null) {
-            throw new IllegalArgumentException("Source code text must not be null");
+
+        if (mission == null) {
+            throw new IllegalArgumentException("The mission must not be null");
         }
         initUI();
-        initData(sourceCodeText);
+        jdiController = DEBUG_MOLE_SPAWNER.spawnMoleRunner(mission);
+        jdiController.setEntryListener(new EntryListener() {
+            @Override
+            public void onLocationChange(EntryState state) {
+                LOGGER.info("onLocationChange {}", state);
+                setCurrentLine(state.getLine());
+            }
+
+            @Override
+            public void onInspectionEnd(EntryState state) {
+                LOGGER.info("onInspectionEnd {}", state);
+            }
+
+            @Override
+            public void onVmDeath() {
+                LOGGER.info("onVmDeath received");
+            }
+        });
+        initData(mission.getMissionContentClassName());
     }
 
     /**
@@ -80,14 +110,13 @@ public class DebugPane extends BorderPane {
         scrollPane.setVvalue(valueToScroll / maximumScroll);
     }
 
-    private void initData(String sourceCodeText) {
-        if (!sourceCodeText.isEmpty()) {
-            Arrays.asList(sourceCodeText.split("\n")).forEach(line -> {
-                Text text = new Text(line + "\n");
-                text.setOnMouseClicked(event -> setCurrentLine(textFlow.getChildren().indexOf(text) + 1));
-                textFlow.getChildren().add(text);
-            });
-        }
+    private void initData(String className) {
+        String sourceCodeText = DEBUG_MOLE_SPAWNER.getSource(className);
+        Arrays.asList(sourceCodeText.split("\n")).forEach(line -> {
+            Text text = new Text(line + "\n");
+            text.setOnMouseClicked(event -> setCurrentLine(textFlow.getChildren().indexOf(text) + 1));
+            textFlow.getChildren().add(text);
+        });
     }
 
     private void initUI() {
@@ -112,18 +141,6 @@ public class DebugPane extends BorderPane {
     /* For testing */
     TextFlow getTextFlow() {
         return textFlow;
-    }
-
-    public Button getStepOverButton() {
-        return stepOverButton;
-    }
-
-    public Button getTerminateButton() {
-        return terminateButton;
-    }
-
-    public void setJdiController(JdiController jdiController) {
-        this.jdiController = jdiController;
     }
 
     public void setOnTerminate(Consumer<DebugPane> consumer) {
