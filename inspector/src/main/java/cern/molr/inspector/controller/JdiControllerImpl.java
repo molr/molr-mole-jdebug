@@ -10,7 +10,6 @@ import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.entry.EntryListenerFactory;
 import com.sun.jdi.ThreadReference;
-import com.sun.jdi.VMDisconnectedException;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.VMStartException;
 import org.jdiscript.JDIScript;
@@ -39,6 +38,7 @@ public class JdiControllerImpl implements JdiController, Closeable {
     private JdiControllerImpl(JDIScript jdi, JdiEntryRegistry<EntryListener> registry) {
         this.jdi = jdi;
         entryRegistry = registry;
+        jdi.vmDeathRequest(event -> entryRegistry.getEntryListener().ifPresent(EntryListener::onVmDeath));
     }
 
     public static Builder builder() {
@@ -47,12 +47,8 @@ public class JdiControllerImpl implements JdiController, Closeable {
 
     @Override
     public void close() {
-        try {
-            jdi.vmDeathRequest(event -> entryRegistry.getEntryListener().ifPresent(EntryListener::onVmDeath));
-        } catch (VMDisconnectedException e) {
-            /* Already disconnected */
-        }
         onClose.run();
+        jdi.vm().exit(0);
     }
 
     public InputStream getProcessError() {

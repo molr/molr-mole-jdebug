@@ -65,6 +65,7 @@ public class JdiControllerReader extends RemoteReader {
         try {
             int code = Character.getNumericValue(reader.read());
             if (code != -1) {
+                System.err.println("received code " + code);
                 JdiControllerCommand[] values = JdiControllerCommand.values();
                 if (code >= 0 && code < values.length) {
                     forwardCommand(values[code]);

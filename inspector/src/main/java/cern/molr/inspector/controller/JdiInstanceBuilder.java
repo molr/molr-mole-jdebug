@@ -56,10 +56,11 @@ public class JdiInstanceBuilder {
                                     eventHandler.registerClassInstantiation(classType, methodName)));
 
             ExecutorService executorService = Executors.newFixedThreadPool(1);
-            executorService.execute(() -> {
+            executorService.submit(() -> {
                 jdi.onClassPrep(instantiationListener);
                 jdi.run(eventHandler);
             });
+            executorService.shutdown();
             return jdi;
         } catch (VMStartException | IllegalConnectorArgumentsException e) {
             throw new IOException("Failed to start VM: ", e);
