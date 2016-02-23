@@ -133,7 +133,10 @@ public class DebugPane extends BorderPane {
         hBox.getChildren().add(stepOverButton);
         terminateButton.setOnMouseClicked(event -> {
             session.getController().terminate();
-            onTerminateListener.ifPresent(listener -> listener.accept(this));
+            onTerminateListener.ifPresent(listener -> {
+                sessionRegistry.removeEntry(session);
+                listener.accept(this);
+            });
         });
         hBox.getChildren().add(terminateButton);
         hBox.getChildren().add(scrollCheckBox);
