@@ -8,6 +8,7 @@ package cern.molr.inspector.gui;
 
 import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.impl.MissionImpl;
+import cern.molr.commons.mole.Registry;
 import cern.molr.commons.mole.impl.ObservableInMemoryEntriesRegistry;
 import cern.molr.inspector.controller.JdiController;
 import cern.molr.inspector.domain.Session;
@@ -59,6 +60,16 @@ public class Stepper extends Application {
         primaryStage.show();
         primaryStage.setTitle("Stepper");
     }
+
+/*    @Override
+    public void start(Stage primaryStage) {
+        ObservableInMemoryEntriesRegistry registry = new ObservableInMemoryEntriesRegistry();
+        Scene scene = new Scene();
+        primaryStage.setScene(scene);
+        primaryStage.setOnCloseRequest(event -> Stepper.close());
+        primaryStage.show();
+        primaryStage.setTitle("Stepper");
+    }*/
 
     private class CustomController implements JdiController {
 

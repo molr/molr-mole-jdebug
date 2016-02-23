@@ -46,10 +46,13 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_LEFT);
         debugButton.setOnMouseClicked(event -> createDebugPane(listView.getSelectionModel().getSelectedItem()));
+        debugButton.setDisable(true);
         hBox.getChildren().add(debugButton);
         terminateButton.setOnMouseClicked(event -> terminateSession(listView.getSelectionModel().getSelectedItem()));
+        terminateButton.setDisable(true);
         hBox.getChildren().add(terminateButton);
         terminateAllButton.setOnMouseClicked(event -> terminateAllSessions());
+        terminateAllButton.setDisable(true);
         hBox.getChildren().add(terminateAllButton);
         hBox.setSpacing(10);
         hBox.setPadding(new Insets(15, 12, 15, 12));
@@ -58,6 +61,15 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
         setPrefSize(500, 900);
         listView.setItems(sessions);
         listView.setCellFactory(param -> new SessionCell());
+        listView.setOnMouseClicked(event -> {
+            if(listView.getSelectionModel().getSelectedItem() != null) {
+                debugButton.setDisable(false);
+                terminateButton.setDisable(false);
+            }else{
+                debugButton.setDisable(true);
+                terminateButton.setDisable(true);
+            }
+        });
     }
 
     private void createDebugPane(Session session) {
@@ -69,12 +81,20 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
     private void initData() {
         sessions.addAll(sessionsRegistry.getEntries());
         sessionsRegistry.addListener(this);
+        if(!sessions.isEmpty()) {
+            terminateAllButton.setDisable(false);
+        }
     }
 
     @Override
     public void onCollectionChanged(Collection collection) {
         sessions.clear();
         sessions.addAll(collection);
+        if(sessions.isEmpty()) {
+            terminateAllButton.setDisable(true);
+        }else{
+            terminateAllButton.setDisable(false);
+        }
     }
 
     static class SessionCell extends ListCell<Session> {
