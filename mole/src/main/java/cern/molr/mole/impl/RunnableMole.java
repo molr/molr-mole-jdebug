@@ -1,8 +1,9 @@
-/**
+/*
  * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
  * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
+
 package cern.molr.mole.impl;
 
 import cern.molr.commons.mole.Mole;
@@ -19,6 +20,7 @@ import java.util.List;
  * <h3>Execution:</h3> Allows for the execution of the {@link Runnable#run()} entry point.
  *
  * @author tiagomr
+ * @see Mole
  */
 public class RunnableMole implements Mole {
 
@@ -36,10 +38,9 @@ public class RunnableMole implements Mole {
     }
 
     @Override
-    public void run(Object... args) throws IOException {
-        String entry = (String) args[0];
+    public void run(String missionName, Object... args) throws IOException {
         try {
-            Class<?> c = Class.forName(entry);
+            Class<?> c = Class.forName(missionName);
             Runnable runnable = (Runnable) c.getConstructor().newInstance();
             runnable.run();
         } catch (Exception e) {

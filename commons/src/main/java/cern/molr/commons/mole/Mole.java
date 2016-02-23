@@ -1,17 +1,19 @@
-/**
+/*
  * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
  * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
+
 package cern.molr.commons.mole;
 
-import java.io.IOException;
+import cern.molr.commons.domain.Mission;
+
 import java.lang.reflect.Method;
 import java.util.List;
 
 /**
  * Interface that allows for the dynamic creation of {@link Mole}s. {@link Mole}s are responsible for the discovery and
- * execution behaviour of tasks.
+ * execution of {@link Mission}s
  *
  * @author tiagomr
  */
@@ -26,7 +28,12 @@ public interface Mole {
     List<Method> discover(Class<?> clazz);
 
     /**
-     * Executes a
+     * Executes a {@link Mission}
+     *
+     * @param missionName A {@link String} with the fully qualified domain name of the {@link Mission}s content class
+     * @param args        An array of {@link Object}s to be passed as arguments to the {@link Mission}
+     * @throws Exception Allows for any exception to be returned by the Mission execution behaviour, this is specific to
+     *                   the execution implementation
      */
-    void run(Object... args) throws IOException;
+    void run(String missionName, Object... args) throws Exception;
 }
