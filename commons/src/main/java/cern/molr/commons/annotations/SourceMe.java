@@ -7,8 +7,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * annotation to mark classes so their source code is embedded in a companion class.
- * {@link SourceMeProcessor}
+ * Annotation to mark classes so their source code is embedded in a companion class.
+ * Use it to annotate classes run by a Mole (ie annotated with {@link cern.molr.commons.mole.RunWithMole}) so that their
+ * source code is available at runtime. This is especially needed for step by step / debugging execution in a GUI.
  *
  * @author mgalilee
  */
