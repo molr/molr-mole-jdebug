@@ -43,8 +43,16 @@ public class Stepper extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         ObservableInMemoryEntriesRegistry registry = new ObservableInMemoryEntriesRegistry();
-        Session session = new SessionImpl(new MissionImpl("MoleClass", "MissionContentClass"), new CustomController());
-        registry.registerEntry(session);
+        Session session1 = new SessionImpl(new MissionImpl("MoleClass1", "MissionContentClass1"), new CustomController());
+        registry.registerEntry(session1);
+        Session session2 = new SessionImpl(new MissionImpl("MoleClass2", "MissionContentClass2"), new CustomController());
+        registry.registerEntry(session2);
+        Session session3 = new SessionImpl(new MissionImpl("MoleClass3", "MissionContentClass3"), new CustomController());
+        registry.registerEntry(session3);
+        Session session4 = new SessionImpl(new MissionImpl("MoleClass4", "MissionContentClass4"), new CustomController());
+        registry.registerEntry(session4);
+        Session session5 = new SessionImpl(new MissionImpl("MoleClass5", "MissionContentClass5"), new CustomController());
+        registry.registerEntry(session5);
         Scene scene = new Scene(new SessionsListPane(registry));
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(event -> Stepper.close());

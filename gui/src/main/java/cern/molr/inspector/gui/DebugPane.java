@@ -132,9 +132,9 @@ public class DebugPane extends BorderPane {
         stepOverButton.setOnMouseClicked(event -> session.getController().stepForward());
         hBox.getChildren().add(stepOverButton);
         terminateButton.setOnMouseClicked(event -> {
+            sessionRegistry.removeEntry(session);
             session.getController().terminate();
             onTerminateListener.ifPresent(listener -> {
-                sessionRegistry.removeEntry(session);
                 listener.accept(this);
             });
         });

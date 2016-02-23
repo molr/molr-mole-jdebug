@@ -45,27 +45,27 @@ public class InMemoryEntriesRegistry<T> implements Registry<T> {
             throw new IllegalArgumentException("entries cannot be null");
         }
         if (entries.stream().anyMatch(entry -> null == entry)) {
-            throw new IllegalArgumentException("entries values cannot be null");
+            throw new IllegalArgumentException("no entries value can be null");
         }
         this.entries.addAll(entries);
     }
 
     @Override
-    public void removeEntry(T entry) {
-        if(entry == null) {
-            throw new IllegalArgumentException("entries cannot be null");
+    public void removeEntry(T entryToRemove) {
+        if(entryToRemove == null) {
+            throw new IllegalArgumentException("entryToRemove cannot be null");
         }
-        entries.remove(entry);
+        entries.remove(entryToRemove);
     }
 
     @Override
-    public void removeEntries(Set<T> entries) {
-        if (null == entries) {
-            throw new IllegalArgumentException("entries cannot be null");
+    public void removeEntries(Set<T> entriesToRemove) {
+        if (null == entriesToRemove) {
+            throw new IllegalArgumentException("entriesToRemove cannot be null");
         }
-        if (entries.stream().anyMatch(entry -> null == entry)) {
-            throw new IllegalArgumentException("entries values cannot be null");
+        if (entriesToRemove.stream().anyMatch(entry -> null == entry)) {
+            throw new IllegalArgumentException("no entriesToRemove value can be null");
         }
-        entries.removeAll(entries);
+        this.entries.removeAll(entriesToRemove);
     }
 }
