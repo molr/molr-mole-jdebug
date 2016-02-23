@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -117,7 +118,7 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
             Method runMethod = classType.methodsByName(inspectableMethod).get(0);
             try {
                 List<Location> lineList = new ArrayList<>(runMethod.allLineLocations());
-                lineList.sort((line1, line2) -> Integer.compare(line1.lineNumber(), line2.lineNumber()));
+                lineList.sort(Comparator.comparing(Location::lineNumber));
                 jdi.breakpointRequest(lineList.get(0), this).enable();
             } catch (AbsentInformationException e) {
                 throw new RuntimeException(e);
