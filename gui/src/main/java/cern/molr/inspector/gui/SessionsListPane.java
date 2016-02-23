@@ -35,7 +35,7 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
     private final Button terminateButton = new Button("Terminate");
     private final Button terminateAllButton = new Button("Terminate all");
 
-    public SessionsListPane(ObservableRegistry<Session> sessionsRegistry) throws Exception {
+    public SessionsListPane(ObservableRegistry<Session> sessionsRegistry) {
         super();
         this.sessionsRegistry = sessionsRegistry;
         initUI();
@@ -55,7 +55,7 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
         hBox.setPadding(new Insets(15, 12, 15, 12));
         setCenter(listView);
         setBottom(hBox);
-        setPrefSize(700, 400);
+        setPrefSize(500, 900);
         listView.setItems(sessions);
         listView.setCellFactory(param -> new SessionCell());
     }
@@ -89,7 +89,9 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
     }
 
     private void terminateAllSessions() {
-        sessions.stream().collect(Collectors.toList()).forEach(this::terminateSession);
+        sessions.stream()
+                .collect(Collectors.toList())
+                .forEach(this::terminateSession);
     }
 
     private void terminateSession(Session session) {
