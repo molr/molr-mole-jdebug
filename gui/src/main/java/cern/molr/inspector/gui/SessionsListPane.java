@@ -1,9 +1,7 @@
 package cern.molr.inspector.gui;
 
-import cern.molr.commons.domain.impl.MissionImpl;
 import cern.molr.commons.mole.ObservableRegistry;
 import cern.molr.inspector.domain.Session;
-import cern.molr.inspector.domain.impl.SessionImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -63,7 +61,7 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
 
     private void createDebugPane(Session session) {
         Stage stage = new Stage();
-        stage.setScene(new Scene(new DebugPane(session)));
+        stage.setScene(new Scene(new DebugPane(session, sessionsRegistry)));
         stage.showAndWait();
     }
 

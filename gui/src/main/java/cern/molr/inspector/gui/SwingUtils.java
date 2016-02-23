@@ -1,6 +1,5 @@
 package cern.molr.inspector.gui;
 
-import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -26,10 +25,8 @@ public class SwingUtils {
         frame.setSize(500, 900);
         JFXPanel fxPanel = new JFXPanel();
         frame.add(fxPanel);
-        Platform.runLater(() -> {
-            Scene scene = new Scene(root);
-            fxPanel.setScene(scene);
-        });
+        Scene scene = new Scene(root);
+        fxPanel.setScene(scene);
         return frame;
     }
 }

@@ -1,15 +1,14 @@
 package cern.molr.inspector.gui;
 
 import cern.molr.commons.domain.Mission;
+import cern.molr.commons.mole.Registry;
 import cern.molr.inspector.DebugMoleSpawner;
 import cern.molr.inspector.domain.Session;
 import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.entry.EntryState;
 import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
@@ -21,7 +20,6 @@ import javafx.scene.text.TextFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -38,9 +36,10 @@ public class DebugPane extends BorderPane {
     //TODO Tests have to be redone
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugPane.class);
-    private final static DebugMoleSpawner DEBUG_MOLE_SPAWNER = new DebugMoleSpawner();
+    private static final DebugMoleSpawner DEBUG_MOLE_SPAWNER = new DebugMoleSpawner();
 
     private final Session session;
+    private final Registry<Session> sessionRegistry;
     private int currentLine = 0;
     private Optional<Consumer<DebugPane>> onTerminateListener = Optional.empty();
 
@@ -51,9 +50,11 @@ public class DebugPane extends BorderPane {
     private final Button terminateButton = new Button("Terminate");
     private final CheckBox scrollCheckBox = new CheckBox("Automatic Scroll");
 
-    public DebugPane(Session session) {
+    public DebugPane(Session session, Registry<Session> sessionRegistry) {
         super();
+        this.sessionRegistry = sessionRegistry;
         this.session = session;
+        sessionRegistry.registerEntry(session);
         initUI();
         initData(session.getMission().getMissionContentClassName());
         session.getController().setEntryListener(new EntryListener() {
@@ -75,8 +76,8 @@ public class DebugPane extends BorderPane {
         });
     }
 
-    public DebugPane(Mission mission) throws Exception {
-        this(DEBUG_MOLE_SPAWNER.spawnMoleRunner(mission));
+    public DebugPane(Mission mission, Registry<Session> sessionRegistry) throws Exception {
+        this(DEBUG_MOLE_SPAWNER.spawnMoleRunner(mission), sessionRegistry);
     }
 
     /**
