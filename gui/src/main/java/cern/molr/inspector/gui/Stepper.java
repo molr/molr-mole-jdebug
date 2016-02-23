@@ -9,35 +9,20 @@ package cern.molr.inspector.gui;
 import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.impl.MissionImpl;
 import cern.molr.commons.mole.impl.ObservableInMemoryEntriesRegistry;
+import cern.molr.inspector.controller.JdiController;
 import cern.molr.inspector.domain.Session;
 import cern.molr.inspector.domain.impl.SessionImpl;
-import cern.molr.inspector.gui.rest.ContainerService;
-import cern.molr.inspector.gui.rest.ContainerServices;
+import cern.molr.inspector.entry.EntryListener;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
-import java.io.IOException;
-import java.util.Optional;
 
 /**
  * A user interface that can list and run {@link MoleContainer}s. The containers are known from a remote HTTP REST
  * endpoint.
  */
 public class Stepper extends Application {
-/*
-    public static final String STEPPER_CSS = "stepper.css";
-
-    //    private static Inspector inspector;
-    private static final ContainerServices containers = ContainerServices.ofBaseUrl("http://localhost:8080/jarrace/");
 
     /**
      * Closes the JavaFX platform.
@@ -58,9 +43,8 @@ public class Stepper extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         ObservableInMemoryEntriesRegistry registry = new ObservableInMemoryEntriesRegistry();
-        Session session = new SessionImpl(new MissionImpl("MoleClass", "MissionContentClass"), null);
+        Session session = new SessionImpl(new MissionImpl("MoleClass", "MissionContentClass"), new CustomController());
         registry.registerEntry(session);
-
         Scene scene = new Scene(new SessionsListPane(registry));
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(event -> Stepper.close());
@@ -68,5 +52,21 @@ public class Stepper extends Application {
         primaryStage.setTitle("Stepper");
     }
 
+    private class CustomController implements JdiController {
 
+        @Override
+        public void setEntryListener(EntryListener entryListener) {
+            System.out.println("Listener Setted");
+        }
+
+        @Override
+        public void stepForward() {
+            System.out.println("Stepped");
+        }
+
+        @Override
+        public void terminate() {
+            System.out.println("I have been terminated");
+        }
+    }
 }

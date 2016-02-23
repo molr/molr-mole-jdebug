@@ -2,7 +2,7 @@ package cern.molr.inspector.gui;
 
 import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.DebugMoleSpawner;
-import cern.molr.inspector.controller.JdiController;
+import cern.molr.inspector.domain.Session;
 import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.entry.EntryState;
 import javafx.application.Platform;
@@ -35,10 +35,12 @@ import java.util.function.Consumer;
  */
 public class DebugPane extends BorderPane {
 
+    //TODO Tests have to be redone
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugPane.class);
     private final static DebugMoleSpawner DEBUG_MOLE_SPAWNER = new DebugMoleSpawner();
 
-    private final JdiController jdiController;
+    private final Session session;
     private int currentLine = 0;
     private Optional<Consumer<DebugPane>> onTerminateListener = Optional.empty();
 
@@ -49,15 +51,12 @@ public class DebugPane extends BorderPane {
     private final Button terminateButton = new Button("Terminate");
     private final CheckBox scrollCheckBox = new CheckBox("Automatic Scroll");
 
-    public DebugPane(Mission mission) throws Exception {
+    public DebugPane(Session session) {
         super();
-
-        if (mission == null) {
-            throw new IllegalArgumentException("The mission must not be null");
-        }
+        this.session = session;
         initUI();
-        jdiController = DEBUG_MOLE_SPAWNER.spawnMoleRunner(mission);
-        jdiController.setEntryListener(new EntryListener() {
+        initData(session.getMission().getMissionContentClassName());
+        session.getController().setEntryListener(new EntryListener() {
             @Override
             public void onLocationChange(EntryState state) {
                 LOGGER.info("onLocationChange {}", state);
@@ -74,31 +73,10 @@ public class DebugPane extends BorderPane {
                 LOGGER.info("onVmDeath received");
             }
         });
-        initData(mission.getMissionContentClassName());
     }
 
-    /**
-     * Swing compatibility builder for DebugPane.
-     * Embeds a DebugPane in a JFrame
-     * @param mission a {@link Mission} from a {@link cern.molr.commons.mole.MissionsDiscoverer}
-     * @return a {@link JFrame}
-     * @throws Exception
-     */
-    public static JFrame openDebugPaneInJFrame(Mission mission) throws Exception {
-        JFrame frame = new JFrame(mission.getMissionContentClassName());
-        frame.setSize(500, 900);
-
-        JFXPanel fxPanel = new JFXPanel();
-        frame.add(fxPanel);
-
-        DebugPane debugPane = new DebugPane(mission);
-
-        Platform.runLater( () -> {
-            Scene scene = new Scene(debugPane);
-            fxPanel.setScene(scene);
-        });
-
-        return frame;
+    public DebugPane(Mission mission) throws Exception {
+        this(DEBUG_MOLE_SPAWNER.spawnMoleRunner(mission));
     }
 
     /**
@@ -149,10 +127,10 @@ public class DebugPane extends BorderPane {
     private void initUI() {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_LEFT);
-        stepOverButton.setOnMouseClicked(event -> jdiController.stepForward());
+        stepOverButton.setOnMouseClicked(event -> session.getController().stepForward());
         hBox.getChildren().add(stepOverButton);
         terminateButton.setOnMouseClicked(event -> {
-            jdiController.terminate();
+            session.getController().terminate();
             onTerminateListener.ifPresent(listener -> listener.accept(this));
         });
         hBox.getChildren().add(terminateButton);

@@ -1,7 +1,5 @@
 package cern.molr.commons.mole;
 
-import cern.molr.commons.domain.Mission;
-
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -13,9 +11,9 @@ import java.util.function.Predicate;
 public interface Registry<T> {
 
     /**
-     * Fetches all the registered {@link Mission}s
+     * Fetches all the registered {@link T}s
      *
-     * @return a {@link Set} with all the registered {@link Mission}s
+     * @return a {@link Set} with all the registered {@link T}s
      */
     public Set<T> getEntries();
 
@@ -23,21 +21,35 @@ public interface Registry<T> {
      * Fetches all the registered {@link T}s filtered by a {@link Predicate}
      *
      * @param predicate {@link Predicate} used to filter the returned {@link T}s
-     * @return A {@link Set} of filtered {@link Mission}s
+     * @return A {@link Set} of filtered {@link T}s
      */
     public Set<T> getEntries(Predicate<T> predicate);
 
     /**
      * Registers a {@link T}
      *
-     * @param object {@link T} to be registered
+     * @param entry {@link T} to be registered
      */
-    public void registerEntry(T object);
+    public void registerEntry(T entry);
 
     /**
      * Registers a {@link Set} of {@link T}s
      *
-     * @param objects {@link Set} of {@link T}s to be registered
+     * @param entries {@link Set} of {@link T}s to be registered
      */
-    public void registerEntries(Set<T> objects);
+    public void registerEntries(Set<T> entries);
+
+    /**
+     * Removes a {@link T} from the registry
+     *
+     * @param entry {@link T} to be removed
+     */
+    void removeEntry(T entry);
+
+    /**
+     * Removes a {@link Set} of {@link T}s from the registry
+     *
+     * @param entries {@link Set} of {@link T}s to be removed
+     */
+    void removeEntries(Set<T> entries);
 }

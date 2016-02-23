@@ -50,6 +50,9 @@ public class DebugMoleSpawner implements MoleSpawner<Session>, SourceFetcher {
 
     @Override
     public Session spawnMoleRunner(Mission mission, String... args) throws Exception {
+        if(mission == null) {
+            throw new IllegalArgumentException("The mission must not be null");
+        }
         InstantiationRequest request = new InstantiationRequestImpl(CURRENT_CLASSPATH_VALUE, mission);
         String[] completedArgs = new String[args.length + 1];
         completedArgs[0] = GSON.toJson(request);
