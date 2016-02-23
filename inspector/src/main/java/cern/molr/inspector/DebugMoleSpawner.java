@@ -4,8 +4,10 @@ import cern.molr.commons.annotations.Source;
 import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.controller.JdiController;
 import cern.molr.inspector.domain.InstantiationRequest;
+import cern.molr.inspector.domain.Session;
 import cern.molr.inspector.domain.impl.InstantiationRequestImpl;
 import cern.molr.inspector.domain.SourceFetcher;
+import cern.molr.inspector.domain.impl.SessionImpl;
 import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.json.MissionTypeAdapter;
 import cern.molr.inspector.remote.EntryListenerReader;
@@ -25,7 +27,7 @@ import java.util.concurrent.Executors;
 /**
  * @author timartin
  */
-public class DebugMoleSpawner implements MoleSpawner<JdiController>, SourceFetcher {
+public class DebugMoleSpawner implements MoleSpawner<Session>, SourceFetcher {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugMoleSpawner.class);
     private static final String CURRENT_CLASSPATH_VALUE = System.getProperty("java.class.path");
@@ -47,7 +49,7 @@ public class DebugMoleSpawner implements MoleSpawner<JdiController>, SourceFetch
     }
 
     @Override
-    public JdiController spawnMoleRunner(Mission mission, String... args) throws Exception {
+    public Session spawnMoleRunner(Mission mission, String... args) throws Exception {
         InstantiationRequest request = new InstantiationRequestImpl(CURRENT_CLASSPATH_VALUE, mission);
         String[] completedArgs = new String[args.length + 1];
         completedArgs[0] = GSON.toJson(request);
@@ -61,7 +63,7 @@ public class DebugMoleSpawner implements MoleSpawner<JdiController>, SourceFetch
                 completedArgs).start();
         redirectStream(process.getErrorStream(), System.err);
         Runtime.getRuntime().addShutdownHook(new Thread(process::destroy));
-        return new MyJdiControllerWriter(process);
+        return new SessionImpl(mission, new MyJdiControllerWriter(process));
     }
 
     private static class MyJdiControllerWriter extends JdiControllerWriter {
@@ -81,7 +83,7 @@ public class DebugMoleSpawner implements MoleSpawner<JdiController>, SourceFetch
     }
 
     @Override
-    public JdiController spawnMoleRunner(Mission mission, String classpath, String... args) throws Exception {
+    public Session spawnMoleRunner(Mission mission, String classpath, String... args) throws Exception {
         return null;
     }
 
