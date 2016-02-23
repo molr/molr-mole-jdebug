@@ -81,7 +81,9 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
         @Override
         public void updateItem(Session session, boolean empty) {
             super.updateItem(session, empty);
-            if (!empty) {
+            if (empty) {
+                setGraphic(null);
+            } else {
                 Label label = new Label(session.getMission().getMissionContentClassName());
                 setGraphic(label);
             }
