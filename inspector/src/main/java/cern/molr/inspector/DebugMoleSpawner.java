@@ -49,7 +49,7 @@ public class DebugMoleSpawner implements MoleSpawner<Session>, SourceFetcher {
     }
 
     @Override
-    public Session spawnMoleRunner(Mission mission, String... args) throws Exception {
+    public Session spawnMoleRunner(Mission mission, String... args) throws IOException {
         if(mission == null) {
             throw new IllegalArgumentException("The mission must not be null");
         }

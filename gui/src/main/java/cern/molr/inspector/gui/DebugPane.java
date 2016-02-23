@@ -20,6 +20,7 @@ import javafx.scene.text.TextFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -76,7 +77,7 @@ public class DebugPane extends BorderPane {
         });
     }
 
-    public DebugPane(Mission mission, Registry<Session> sessionRegistry) throws Exception {
+    public DebugPane(Mission mission, Registry<Session> sessionRegistry) throws IOException {
         this(DEBUG_MOLE_SPAWNER.spawnMoleRunner(mission), sessionRegistry);
     }
 
