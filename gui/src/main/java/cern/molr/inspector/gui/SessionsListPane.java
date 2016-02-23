@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Implementation {@link BorderPane} that allows the user to view and manipulate all the currently active
@@ -88,7 +89,7 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
     }
 
     private void terminateAllSessions() {
-        sessions.stream().forEach(this::terminateSession);
+        sessions.stream().collect(Collectors.toList()).forEach(this::terminateSession);
     }
 
     private void terminateSession(Session session) {
