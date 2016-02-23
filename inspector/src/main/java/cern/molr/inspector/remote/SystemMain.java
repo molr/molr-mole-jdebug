@@ -10,7 +10,7 @@ import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.controller.JdiController;
 import cern.molr.inspector.controller.JdiControllerImpl;
 import cern.molr.inspector.domain.InstantiationRequest;
-import cern.molr.inspector.domain.InstantiationRequestImpl;
+import cern.molr.inspector.domain.impl.InstantiationRequestImpl;
 import cern.molr.inspector.entry.EntryListenerFactory;
 import cern.molr.inspector.json.MissionTypeAdapter;
 import com.google.gson.Gson;

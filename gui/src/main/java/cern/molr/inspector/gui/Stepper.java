@@ -7,6 +7,10 @@
 package cern.molr.inspector.gui;
 
 import cern.molr.commons.domain.MoleContainer;
+import cern.molr.commons.domain.impl.MissionImpl;
+import cern.molr.commons.mole.impl.ObservableInMemoryEntriesRegistry;
+import cern.molr.inspector.domain.Session;
+import cern.molr.inspector.domain.impl.SessionImpl;
 import cern.molr.inspector.gui.rest.ContainerService;
 import cern.molr.inspector.gui.rest.ContainerServices;
 import javafx.application.Application;
@@ -29,7 +33,7 @@ import java.util.Optional;
  * endpoint.
  */
 public class Stepper extends Application {
-
+/*
     public static final String STEPPER_CSS = "stepper.css";
 
     //    private static Inspector inspector;
@@ -53,70 +57,16 @@ public class Stepper extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        ContainerList containerList = new ContainerList(containers.createObservable(ContainerService::getContainers));
+        ObservableInMemoryEntriesRegistry registry = new ObservableInMemoryEntriesRegistry();
+        Session session = new SessionImpl(new MissionImpl("MoleClass", "MissionContentClass"), null);
+        registry.registerEntry(session);
 
-        containerList.setPrefSize(700, 400);
-
-        Button startButton = new Button("Start Service");
-        startButton.setOnMouseClicked(eventHandler -> {
-            Optional<ContainerList.EntryPoint> selectedEntryPoint = containerList.getSelectedEntryPoint();
-            if (selectedEntryPoint.isPresent()) {
-                startService(selectedEntryPoint.get());
-            }
-        });
-
-        Button debugButton = new Button("Debug Service");
-        debugButton.setOnMouseClicked(eventHandler -> {
-            Optional<ContainerList.EntryPoint> selectedEntryPoint = containerList.getSelectedEntryPoint();
-
-            if (selectedEntryPoint.isPresent()) {
-                try {
-                    String response = containers.getTextService().readClass(selectedEntryPoint.get().getName(),
-                            selectedEntryPoint.get().getClazz()).execute().body();
-                    Stage stage = new Stage();
-                    stage.initModality(Modality.WINDOW_MODAL);
-                    stage.initStyle(StageStyle.DECORATED);
-                    stage.setTitle("Debug");
-                    //DebugPane debugPane = new DebugPane(response);
-                    //debugPane.setPrefSize(700, 400);
-                    //stage.setScene(new Scene(debugPane, 700, 400));
-                    stage.show();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        Button exitButton = new Button("Exit");
-        exitButton.setOnMouseClicked(event -> Stepper.close());
-
-        FlowPane rootPane = new FlowPane();
-        rootPane.getChildren().add(containerList);
-        HBox hBox = new HBox();
-        hBox.setAlignment(Pos.CENTER_LEFT);
-        hBox.setSpacing(10);
-        hBox.setPadding(new Insets(15, 12, 15, 12));
-        hBox.getChildren().add(startButton);
-        hBox.getChildren().add(debugButton);
-        hBox.getChildren().add(exitButton);
-        rootPane.getChildren().add(hBox);
-        Scene scene = new Scene(rootPane);
+        Scene scene = new Scene(new SessionsListPane(registry));
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(event -> Stepper.close());
         primaryStage.show();
         primaryStage.setTitle("Stepper");
     }
 
-    private void startService(ContainerList.EntryPoint entryPoint) {
-        System.out.println("Running " + entryPoint);
-        try {
-            final String response = containers.getTextService()
-                    .startEntry(entryPoint.getName(), entryPoint.getClazz())
-                    .execute().body();
-            System.out.println("Received response: " + response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
 }

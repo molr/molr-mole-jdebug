@@ -45,7 +45,7 @@ public class DebugPaneTest extends ApplicationTest {
     public void start(Stage stage) throws Exception {
         stage.setScene(new Scene(rootPane));
     }
-
+/*
     @Test
     public void testCreateDebugPaneWithNullString() {
         expectedException.expect(IllegalArgumentException.class);
@@ -126,5 +126,5 @@ public class DebugPaneTest extends ApplicationTest {
         Thread.sleep(100);
         assertEquals(Color.BLACK, ((Text) debugPane.getTextFlow().getChildren().get(0)).getFill());
         assertEquals(Color.RED, ((Text) debugPane.getTextFlow().getChildren().get(1)).getFill());
-    }
+    }*/
 }

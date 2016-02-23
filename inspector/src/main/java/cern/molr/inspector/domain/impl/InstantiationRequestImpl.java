@@ -4,9 +4,10 @@
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
-package cern.molr.inspector.domain;
+package cern.molr.inspector.domain.impl;
 
 import cern.molr.commons.domain.Mission;
+import cern.molr.inspector.domain.InstantiationRequest;
 
 /**
  * An immutable implementation of an {@link InstantiationRequest}.

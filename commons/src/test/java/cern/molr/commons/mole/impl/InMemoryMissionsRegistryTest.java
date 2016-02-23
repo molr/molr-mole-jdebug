@@ -17,11 +17,11 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests the behaviour of {@link InMemoryMolrRegistry} class.
+ * Tests the behaviour of {@link InMemoryEntriesRegistry} class.
  * @author tiagomr
  */
 @RunWith(MockitoJUnitRunner.class)
-public class InMemoryMolrRegistryTest {
+public class InMemoryMissionsRegistryTest {
 
     public static final String MISSION_CONTENT_CLASS_NAME = "MissionContentClassName";
     @Mock
@@ -31,14 +31,14 @@ public class InMemoryMolrRegistryTest {
     @Mock
     private Mission mission3;
     private Set<Mission> allMissions;
-    private InMemoryMolrRegistry inMemoryMolrRegistry;
+    private InMemoryMissionsRegistry inMemoryMissionsRegistry;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() {
-        inMemoryMolrRegistry = new InMemoryMolrRegistry();
+        inMemoryMissionsRegistry = new InMemoryMissionsRegistry();
         mockMission(mission1, 1);
         mockMission(mission2, 2);
         mockMission(mission3, 3);
@@ -52,26 +52,26 @@ public class InMemoryMolrRegistryTest {
     @Test
     public void testContructWithNullDiscoverer() {
         expectedException.expect(IllegalArgumentException.class);
-        new InMemoryMolrRegistry(null);
+        new InMemoryMissionsRegistry(null);
     }
 
     @Test
     public void testRegisterMissionWithNullValue() {
         expectedException.expect(IllegalArgumentException.class);
-        inMemoryMolrRegistry.registerMission(null);
+        inMemoryMissionsRegistry.registerEntry(null);
     }
 
     @Test
     public void testRegisterMission() {
-        inMemoryMolrRegistry.registerMission(mission1);
-        Set<Mission> missions = inMemoryMolrRegistry.getMissions();
+        inMemoryMissionsRegistry.registerEntry(mission1);
+        Set<Mission> missions = inMemoryMissionsRegistry.getEntries();
         assertEquals(1, missions.size());
     }
 
     @Test
     public void testRegisterMissionsWithNullValue() {
         expectedException.expect(IllegalArgumentException.class);
-        inMemoryMolrRegistry.registerMissions(null);
+        inMemoryMissionsRegistry.registerEntries(null);
     }
 
     @Test
@@ -79,51 +79,51 @@ public class InMemoryMolrRegistryTest {
         expectedException.expect(IllegalArgumentException.class);
         HashSet<Mission> missions = new HashSet<>();
         missions.add(null);
-        inMemoryMolrRegistry.registerMissions(missions);
+        inMemoryMissionsRegistry.registerEntries(missions);
     }
 
     @Test
     public void testRegisterMissions() {
-        inMemoryMolrRegistry.registerMissions(allMissions);
-        assertEquals(3, inMemoryMolrRegistry.getMissions().size());
+        inMemoryMissionsRegistry.registerEntries(allMissions);
+        assertEquals(3, inMemoryMissionsRegistry.getEntries().size());
     }
 
     @Test
     public void testGetMissionsWithZeroMissions() throws Exception {
-        assertEquals(0, inMemoryMolrRegistry.getMissions().size());
+        assertEquals(0, inMemoryMissionsRegistry.getEntries().size());
     }
 
     @Test
     public void testGetMissionsWithOneMission() throws Exception {
-        inMemoryMolrRegistry.registerMission(mission1);
-        assertEquals(1, inMemoryMolrRegistry.getMissions().size());
+        inMemoryMissionsRegistry.registerEntry(mission1);
+        assertEquals(1, inMemoryMissionsRegistry.getEntries().size());
     }
 
     @Test
     public void testGetMissionsWithManyMissions() throws Exception {
-        inMemoryMolrRegistry.registerMissions(allMissions);
-        assertEquals(3, inMemoryMolrRegistry.getMissions().size());
+        inMemoryMissionsRegistry.registerEntries(allMissions);
+        assertEquals(3, inMemoryMissionsRegistry.getEntries().size());
     }
 
     @Test
     public void testGetFilteredMissionsWithZeroMissions() throws Exception {
-        Set<Mission> missions = inMemoryMolrRegistry.getMissions(
+        Set<Mission> missions = inMemoryMissionsRegistry.getEntries(
                 mission -> MISSION_CONTENT_CLASS_NAME.equals(mission.getMissionContentClassName()));
         assertEquals(0, missions.size());
     }
 
     @Test
     public void testGetFilteredMissionsWithOneMission() throws Exception {
-        inMemoryMolrRegistry.registerMission(mission1);
-        Set<Mission> missions = inMemoryMolrRegistry.getMissions(
+        inMemoryMissionsRegistry.registerEntry(mission1);
+        Set<Mission> missions = inMemoryMissionsRegistry.getEntries(
                 mission -> mission.getMissionContentClassName().equals(MISSION_CONTENT_CLASS_NAME + 1));
         assertEquals(1, missions.size());
     }
 
     @Test
     public void testGetFilteredMissionsWithManyMissions() throws Exception {
-        inMemoryMolrRegistry.registerMissions(allMissions);
-        Set<Mission> missions = inMemoryMolrRegistry.getMissions(
+        inMemoryMissionsRegistry.registerEntries(allMissions);
+        Set<Mission> missions = inMemoryMissionsRegistry.getEntries(
                 mission -> mission.getMissionContentClassName().equals(MISSION_CONTENT_CLASS_NAME + 1));
         assertEquals(1, missions.size());
     }

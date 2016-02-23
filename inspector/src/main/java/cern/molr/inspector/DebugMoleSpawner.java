@@ -4,7 +4,7 @@ import cern.molr.commons.annotations.Source;
 import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.controller.JdiController;
 import cern.molr.inspector.domain.InstantiationRequest;
-import cern.molr.inspector.domain.InstantiationRequestImpl;
+import cern.molr.inspector.domain.impl.InstantiationRequestImpl;
 import cern.molr.inspector.domain.SourceFetcher;
 import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.json.MissionTypeAdapter;

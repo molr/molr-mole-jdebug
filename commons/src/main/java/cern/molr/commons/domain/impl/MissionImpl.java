@@ -20,7 +20,7 @@ public class MissionImpl implements Mission {
     /**
      * Class used by the exposed {@link Mission}
      */
-    private String serviceClassName;
+    private String missionContentClassName;
 
     /**
      * {@link List} of tasks exposed by this service in the specific class
@@ -30,14 +30,14 @@ public class MissionImpl implements Mission {
     public MissionImpl() {
     }
 
-    public MissionImpl(String moleClassName, String serviceClassName) {
+    public MissionImpl(String moleClassName, String missionContentClassName) {
         this.moleClassName = moleClassName;
-        this.serviceClassName = serviceClassName;
+        this.missionContentClassName = missionContentClassName;
     }
 
-    public MissionImpl(String moleClassName, String serviceClassName, List<String> tasks) {
+    public MissionImpl(String moleClassName, String missionContentClassName, List<String> tasks) {
         this.moleClassName = moleClassName;
-        this.serviceClassName = serviceClassName;
+        this.missionContentClassName = missionContentClassName;
         this.tasks.addAll(tasks);
     }
 
@@ -48,7 +48,7 @@ public class MissionImpl implements Mission {
 
     @Override
     public String getMissionContentClassName() {
-        return serviceClassName;
+        return missionContentClassName;
     }
 
     @Override
@@ -62,14 +62,14 @@ public class MissionImpl implements Mission {
         if (o == null || getClass() != o.getClass()) return false;
         MissionImpl service = (MissionImpl) o;
         if (moleClassName != null ? !moleClassName.equals(service.moleClassName) : service.moleClassName != null) return false;
-        return !(serviceClassName != null ? !serviceClassName.equals(service.serviceClassName) : service.serviceClassName != null);
+        return !(missionContentClassName != null ? !missionContentClassName.equals(service.missionContentClassName) : service.missionContentClassName != null);
 
     }
 
     @Override
     public int hashCode() {
         int result = moleClassName != null ? moleClassName.hashCode() : 0;
-        result = 31 * result + (serviceClassName != null ? serviceClassName.hashCode() : 0);
+        result = 31 * result + (missionContentClassName != null ? missionContentClassName.hashCode() : 0);
         return result;
     }
 

@@ -8,7 +8,7 @@ package cern.molr.inspector;
 
 import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.domain.InstantiationRequest;
-import cern.molr.inspector.domain.InstantiationRequestImpl;
+import cern.molr.inspector.domain.impl.InstantiationRequestImpl;
 import cern.molr.inspector.json.MissionTypeAdapter;
 import cern.molr.inspector.remote.SystemMain;
 import com.google.gson.Gson;
