@@ -48,6 +48,7 @@ public class DebugPane extends BorderPane {
     private final ScrollPane scrollPane = new ScrollPane();
     private final TextFlow textFlow = new TextFlow();
     private final Button stepOverButton = new Button("Step Over");
+    private final Button resumeButton = new Button("Resume");
     private final Button terminateButton = new Button("Terminate");
     private final CheckBox scrollCheckBox = new CheckBox("Automatic Scroll");
 
@@ -55,30 +56,65 @@ public class DebugPane extends BorderPane {
         super();
         this.sessionRegistry = sessionRegistry;
         this.session = session;
+
+        stepOverButton.setDisable(true);
+        resumeButton.setDisable(true);
+
         sessionRegistry.registerEntry(session);
         initUI();
-        initData(session.getMission().getMissionContentClassName());
-        session.getController().setEntryListener(new EntryListener() {
-            @Override
-            public void onLocationChange(EntryState state) {
-                LOGGER.info("onLocationChange {}", state);
-                setCurrentLine(state.getLine());
-            }
-
-            @Override
-            public void onInspectionEnd(EntryState state) {
-                LOGGER.info("onInspectionEnd {}", state);
-            }
-
-            @Override
-            public void onVmDeath() {
-                LOGGER.info("onVmDeath received");
-            }
-        });
+        String missionContentClassName = session.getMission().getMissionContentClassName();
+        initData(missionContentClassName);
+        session.getController().setEntryListener(new DebugEntryListener(missionContentClassName));
     }
 
     public DebugPane(Mission mission, Registry<Session> sessionRegistry) throws IOException {
         this(DEBUG_MOLE_SPAWNER.spawnMoleRunner(mission), sessionRegistry);
+    }
+
+    private class DebugEntryListener implements EntryListener {
+
+        private final String missionContentClassName;
+
+        DebugEntryListener(String missionContentClassName) {
+            this.missionContentClassName = missionContentClassName;
+        }
+
+        private boolean isMissionContentClass(String className) {
+            String properClassName = className.replaceFirst("\\.java", "").replaceAll("/", ".");
+            return missionContentClassName.equals(properClassName);
+        }
+
+        @Override
+        public void onLocationChange(EntryState state) {
+            LOGGER.info("onLocationChange {}", state);
+            if (isMissionContentClass(state.getClassName())) {
+                LOGGER.info("in class {}, stepping available", missionContentClassName);
+                Platform.runLater(() -> {
+                    setCurrentLine(state.getLine());
+                    stepOverButton.setDisable(false);
+                    resumeButton.setDisable(false);
+                });
+            } else {
+                LOGGER.info("out of class {}, resuming", missionContentClassName);
+                session.getController().resume();
+                Platform.runLater(() -> {
+                    stepOverButton.setDisable(true);
+                    resumeButton.setDisable(true);
+                });
+            }
+        }
+
+        @Override
+        public void onInspectionEnd(EntryState state) {
+            LOGGER.info("onInspectionEnd {}", state);
+//            terminateAction();
+        }
+
+        @Override
+        public void onVmDeath() {
+            LOGGER.info("onVmDeath received");
+            terminateAction();
+        }
     }
 
     /**
@@ -129,15 +165,19 @@ public class DebugPane extends BorderPane {
     private void initUI() {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_LEFT);
-        stepOverButton.setOnMouseClicked(event -> session.getController().stepForward());
-        hBox.getChildren().add(stepOverButton);
-        terminateButton.setOnMouseClicked(event -> {
-            sessionRegistry.removeEntry(session);
-            session.getController().terminate();
-            onTerminateListener.ifPresent(listener -> {
-                listener.accept(this);
-            });
+        stepOverButton.setOnMouseClicked(event -> {
+            session.getController().stepForward();
+            stepOverButton.setDisable(true);
+            resumeButton.setDisable(true);
         });
+        hBox.getChildren().add(stepOverButton);
+        resumeButton.setOnMouseClicked(event -> {
+            session.getController().resume();
+            stepOverButton.setDisable(true);
+            resumeButton.setDisable(true);
+        });
+        hBox.getChildren().add(resumeButton);
+        terminateButton.setOnMouseClicked(event -> terminateAction());
         hBox.getChildren().add(terminateButton);
         hBox.getChildren().add(scrollCheckBox);
         hBox.setSpacing(10);
@@ -146,6 +186,13 @@ public class DebugPane extends BorderPane {
         setCenter(scrollPane);
         setBottom(hBox);
         setPrefSize(700, 400);
+    }
+
+    private void terminateAction() {
+        sessionRegistry.removeEntry(session);
+        session.getController().terminate();
+        onTerminateListener.ifPresent(listener -> listener.accept(this));
+        Platform.runLater(() -> terminateButton.setDisable(true));
     }
 
     /* For testing */

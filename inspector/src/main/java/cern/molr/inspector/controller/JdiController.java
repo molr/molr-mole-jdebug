@@ -21,6 +21,11 @@ public interface JdiController {
     void stepForward();
 
     /**
+     * Resume the running JVM session, not stepping nor stopping anymore
+     */
+    void resume();
+
+    /**
      * Terminates the running JVM session.
      */
     void terminate();

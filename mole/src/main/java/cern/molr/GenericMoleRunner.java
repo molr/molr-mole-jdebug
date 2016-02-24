@@ -35,7 +35,10 @@ public class GenericMoleRunner {
             mole.run(missionName);
         } catch (Exception e) {
             e.printStackTrace();
+            System.exit(-1);
         }
+
+        System.exit(0);
     }
 
     private static Mole createMoleInstance(String moleName) throws Exception {

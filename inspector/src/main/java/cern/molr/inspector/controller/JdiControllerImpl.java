@@ -6,6 +6,7 @@
 
 package cern.molr.inspector.controller;
 
+import cern.molr.GenericMoleRunner;
 import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.entry.EntryListenerFactory;
@@ -29,16 +30,21 @@ import java.util.Optional;
 public class JdiControllerImpl implements JdiController, Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdiControllerImpl.class);
-    private static final String AGENT_RUNNER_CLASS = "cern.molr.GenericMoleRunner";
+    private static final String AGENT_RUNNER_CLASS = GenericMoleRunner.class.getName();
 
     private final JdiEntryRegistry<EntryListener> entryRegistry;
     private final JDIScript jdi;
+    private final InhibitionWrapper flowInhibitionWrapper;
     private Runnable onClose;
 
-    private JdiControllerImpl(JDIScript jdi, JdiEntryRegistry<EntryListener> registry) {
+    private JdiControllerImpl(JDIScript jdi, JdiEntryRegistry<EntryListener> registry, InhibitionWrapper flowInhibitionWrapper) {
         this.jdi = jdi;
+        this.flowInhibitionWrapper = flowInhibitionWrapper;
         entryRegistry = registry;
-        jdi.vmDeathRequest(event -> entryRegistry.getEntryListener().ifPresent(EntryListener::onVmDeath));
+        jdi.vmDeathRequest(event -> {
+            entryRegistry.getEntryListener().ifPresent(EntryListener::onVmDeath);
+            entryRegistry.unregister();
+        });
     }
 
     public static Builder builder() {
@@ -68,6 +74,12 @@ public class JdiControllerImpl implements JdiController, Closeable {
     }
 
     @Override
+    public void resume() {
+        flowInhibitionWrapper.stopInhibiting();
+        stepForward();
+    }
+
+    @Override
     public void terminate() {
         Optional<EntryListener> entryListener = entryRegistry.getEntryListener();
         Optional<ThreadReference> threadReference = entryRegistry.getThreadReference();
@@ -83,6 +95,18 @@ public class JdiControllerImpl implements JdiController, Closeable {
 
     public void setOnClose(Runnable onClose) {
         this.onClose = onClose;
+    }
+
+    private static class InhibitionWrapper {
+        private boolean inhibiting = true;
+
+        public boolean isInhibiting() {
+            return inhibiting;
+        }
+
+        public void stopInhibiting() {
+            inhibiting = false;
+        }
     }
 
     public static class Builder {
@@ -101,16 +125,20 @@ public class JdiControllerImpl implements JdiController, Closeable {
             final String launchArguments = AGENT_RUNNER_CLASS + " " + mission.getMoleClassName() + " " + mission.getMissionContentClassName();
             final VMLauncher launcher = new VMLauncher(CLASSPATH_PREFIX + classPath, launchArguments);
 
+
             JdiEntryRegistry<EntryListener> entryRegistry = new JdiEntryRegistry<>();
+
+            InhibitionWrapper flowInhibitionWrapper = new InhibitionWrapper();
 
             JDIScript jdi = new JdiInstanceBuilder()
                     .setLauncher(launcher)
                     .setMission(mission)
                     .setEntryRegistry(entryRegistry)
                     .setListenerFactory(factory)
+                    .setFlowInhibitor(whatever -> flowInhibitionWrapper.isInhibiting())
                     .build();
 
-            return new JdiControllerImpl(jdi, entryRegistry);
+            return new JdiControllerImpl(jdi, entryRegistry, flowInhibitionWrapper);
         }
 
         public Builder setListenerFactory(EntryListenerFactory<?> factory) {

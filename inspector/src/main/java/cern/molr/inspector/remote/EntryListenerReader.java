@@ -92,6 +92,8 @@ public class EntryListenerReader extends RemoteReader {
                     }
                 }
             }
+        } else {
+            close();
         }
         return Optional.empty();
     }

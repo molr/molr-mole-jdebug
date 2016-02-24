@@ -28,7 +28,7 @@ public interface ObservableRegistry<T> extends Registry<T> {
      * Interface to be implemented by the {@link Object}s which pretend to receive notifications from an
      * {@link ObservableRegistry}
      */
-    interface OnCollectionChangedListener {
+    interface OnCollectionChangedListener<T> {
 
         /**
          * Method called by an {@link ObservableRegistry} implementation every time a change is done on the registered
@@ -36,6 +36,6 @@ public interface ObservableRegistry<T> extends Registry<T> {
          *
          * @param collection
          */
-        void onCollectionChanged(Collection collection);
+        void onCollectionChanged(Collection<T> collection);
     }
 }

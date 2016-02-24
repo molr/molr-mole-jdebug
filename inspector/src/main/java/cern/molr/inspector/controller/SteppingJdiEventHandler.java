@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * An event handler receiving events from the running JDI instance. This handler attempts to hide
@@ -33,6 +34,7 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
     private final JDIScript jdi;
     private final EntryListenerFactory<?> callbackHandler;
     private final JdiEntryRegistry<EntryListener> registry;
+    private final Predicate<StepEvent> flowInhibitor;
 
     /**
      * Creates a new event handler that is
@@ -41,11 +43,13 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
      * @param callbackFactory A factory that can create new {@link EntryListener}s when a new instance that should be
      *                        listened to is spawned in the JVM.
      */
-    public SteppingJdiEventHandler(JDIScript jdi, EntryListenerFactory<?> callbackFactory, JdiEntryRegistry<EntryListener> registry) {
+    public SteppingJdiEventHandler(JDIScript jdi, EntryListenerFactory<?> callbackFactory, JdiEntryRegistry<EntryListener> registry,
+                                   Predicate<StepEvent> flowInhibitor) {
         super(jdi.vm());
         this.jdi = jdi;
         this.callbackHandler = callbackFactory;
         this.registry = registry;
+        this.flowInhibitor = flowInhibitor;
     }
 
     @Override
@@ -75,16 +79,17 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
     }
 
     @Override
-    public synchronized void step(StepEvent e) {
-        try {
-            e.thread().suspend();
-            if (LocationRange.ofMethod(e.location().method()).isWithin(e.location())) {
-                EntryStateBuilder.ofLocation(e.location()).ifPresent(registry.getEntryListener().get()::onLocationChange);
-            } else {
-                registry.unregister();
+    public synchronized void step(StepEvent event) {
+        if (flowInhibitor.test(event)) {
+            event.thread().suspend();
+            Location location = event.location();
+            try {
+                if (LocationRange.ofMethod(location.method()).isWithin(location)) {
+                    EntryStateBuilder.ofLocation(location).ifPresent(registry.getEntryListener().get()::onLocationChange);
+                }
+            } catch (AbsentInformationException e1) {
+                e1.printStackTrace();
             }
-        } catch (AbsentInformationException e1) {
-            e1.printStackTrace();
         }
     }
 

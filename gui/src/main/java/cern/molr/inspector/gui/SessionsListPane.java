@@ -2,6 +2,7 @@ package cern.molr.inspector.gui;
 
 import cern.molr.commons.registry.ObservableRegistry;
 import cern.molr.inspector.domain.Session;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -24,11 +25,11 @@ import java.util.stream.Collectors;
  *
  * @author tiagomr
  */
-public class SessionsListPane extends BorderPane implements ObservableRegistry.OnCollectionChangedListener {
+public class SessionsListPane extends BorderPane implements ObservableRegistry.OnCollectionChangedListener<Session> {
 
     //TODO tests have to be done
 
-    private final ListView<Session> listView = new ListView();
+    private final ListView<Session> listView = new ListView<>();
     private final ObservableList<Session> sessions = FXCollections.observableArrayList();
     private final ObservableRegistry<Session> sessionsRegistry;
     private final Button debugButton = new Button("Debug");
@@ -62,10 +63,10 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
         listView.setItems(sessions);
         listView.setCellFactory(param -> new SessionCell());
         listView.setOnMouseClicked(event -> {
-            if(listView.getSelectionModel().getSelectedItem() != null) {
+            if (listView.getSelectionModel().getSelectedItem() != null) {
                 debugButton.setDisable(false);
                 terminateButton.setDisable(false);
-            }else{
+            } else {
                 debugButton.setDisable(true);
                 terminateButton.setDisable(true);
             }
@@ -81,20 +82,22 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
     private void initData() {
         sessions.addAll(sessionsRegistry.getEntries());
         sessionsRegistry.addListener(this);
-        if(!sessions.isEmpty()) {
+        if (!sessions.isEmpty()) {
             terminateAllButton.setDisable(false);
         }
     }
 
     @Override
-    public void onCollectionChanged(Collection collection) {
-        sessions.clear();
-        sessions.addAll(collection);
-        if(sessions.isEmpty()) {
-            terminateAllButton.setDisable(true);
-        }else{
-            terminateAllButton.setDisable(false);
-        }
+    public void onCollectionChanged(Collection<Session> collection) {
+        Platform.runLater(() -> {
+            sessions.clear();
+            sessions.addAll(collection);
+            if (sessions.isEmpty()) {
+                terminateAllButton.setDisable(true);
+            } else {
+                terminateAllButton.setDisable(false);
+            }
+        });
     }
 
     static class SessionCell extends ListCell<Session> {

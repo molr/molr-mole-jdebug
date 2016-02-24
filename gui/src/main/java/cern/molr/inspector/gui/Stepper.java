@@ -82,6 +82,11 @@ public class Stepper extends Application {
         }
 
         @Override
+        public void resume() {
+            System.out.println("Resumed");
+        }
+
+        @Override
         public void terminate() {
             System.out.println("I have been terminated");
         }

@@ -27,6 +27,12 @@ public abstract class JdiControllerWriter implements JdiController {
     }
 
     @Override
+    public void resume() {
+        printWriter.print(JdiControllerCommand.RESUME.ordinal());
+        printWriter.flush();
+    }
+
+    @Override
     public void terminate() {
         printWriter.print(JdiControllerCommand.TERMINATE.ordinal());
         printWriter.flush();

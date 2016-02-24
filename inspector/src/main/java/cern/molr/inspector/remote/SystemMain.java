@@ -96,11 +96,9 @@ public class SystemMain implements Closeable {
 
     @Override
     public void close() {
-        System.err.println("in systemmain.close");
         commandReader.close();
         entryWriter.close();
         loggerTask.cancel(true);
         executor.shutdown();
-        System.exit(0);
     }
 }
