@@ -15,6 +15,7 @@ import org.junit.rules.ExpectedException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertEquals;
@@ -33,11 +34,14 @@ public class JunitMoleTest {
 
     @Test
     public void testDiscoverJunitMission() throws NoSuchMethodException {
-        List<Method> actualMethods = junitMole.discover(TestDefinitions.JunitMission.class);
-        List<Method> expectedMethods = new ArrayList<>();
-        expectedMethods.add(TestDefinitions.JunitMission.class.getMethod("mission1"));
-        expectedMethods.add(TestDefinitions.JunitMission.class.getMethod("mission2"));
-        assertEquals(expectedMethods, actualMethods);
+        List<String> actualMethodsNames = junitMole.discover(TestDefinitions.JunitMission.class)
+                .stream()
+                .map(method -> method.getName())
+                .collect(Collectors.toList());
+        List<String> expectedMethodNames = new ArrayList<>();
+        expectedMethodNames.add("mission1");
+        expectedMethodNames.add("mission2");
+        assertTrue(expectedMethodNames.stream().allMatch(actualMethodsNames::contains));
     }
 
     @Test
