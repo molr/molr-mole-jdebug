@@ -1,3 +1,9 @@
+/*
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING“. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
+
 package cern.molr.inspector.gui;
 
 import javafx.application.Platform;
@@ -16,6 +22,8 @@ import java.util.function.Supplier;
  * @author mgalilee
  */
 public final class SwingUtils {
+
+    // TODO tests have to be done
 
     /**
      * Swing compatibility builder embedding a {@link Parent} inside a {@link JFrame}.

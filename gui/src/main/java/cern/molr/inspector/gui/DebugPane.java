@@ -1,3 +1,9 @@
+/*
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING“. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
+
 package cern.molr.inspector.gui;
 
 import cern.molr.commons.domain.Mission;
@@ -34,7 +40,7 @@ import java.util.function.Consumer;
  */
 public class DebugPane extends BorderPane {
 
-    //TODO Tests have to be redone
+    //TODO Tests have to be done
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugPane.class);
     private static final DebugMoleSpawner DEBUG_MOLE_SPAWNER = new DebugMoleSpawner();
@@ -193,11 +199,6 @@ public class DebugPane extends BorderPane {
         session.getController().terminate();
         onTerminateListener.ifPresent(listener -> listener.accept(this));
         Platform.runLater(() -> terminateButton.setDisable(true));
-    }
-
-    /* For testing */
-    TextFlow getTextFlow() {
-        return textFlow;
     }
 
     public void setOnTerminate(Consumer<DebugPane> consumer) {
