@@ -7,6 +7,7 @@
 package cern.molr.commons.mole;
 
 import cern.molr.commons.domain.Mission;
+import cern.molr.commons.exception.MissionExecutionException;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -30,10 +31,10 @@ public interface Mole {
     /**
      * Executes a {@link Mission}
      *
-     * @param missionName A {@link String} with the fully qualified domain name of the {@link Mission}s content class
+     * @param missionContentClassName A {@link String} with the fully qualified domain name of the {@link Mission}s content class
      * @param args        An array of {@link Object}s to be passed as arguments to the {@link Mission}
      * @throws Exception Allows for any exception to be returned by the Mission execution behaviour, this is specific to
      *                   the execution implementation
      */
-    void run(String missionName, Object... args) throws Exception;
+    void run(String missionContentClassName, Object... args) throws MissionExecutionException;
 }

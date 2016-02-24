@@ -6,6 +6,7 @@
 
 package cern.molr;
 
+import cern.molr.commons.exception.MissionExecutionException;
 import cern.molr.commons.mole.Mole;
 import cern.molr.commons.mole.RunWithMole;
 
@@ -35,8 +36,8 @@ public class TestDefinitions {
         }
 
         @Override
-        public void run(String missionName, Object... args) throws Exception {
-            throw new OperationNotSupportedException();
+        public void run(String missionContentClassName, Object... args) throws MissionExecutionException {
+            throw new MissionExecutionException(new OperationNotSupportedException());
         }
     }
 
@@ -51,8 +52,8 @@ public class TestDefinitions {
         }
 
         @Override
-        public void run(String missionName, Object... args) throws Exception {
-            throw new OperationNotSupportedException();
+        public void run(String missionContentClassName, Object... args) throws MissionExecutionException {
+            throw new MissionExecutionException(new OperationNotSupportedException());
         }
     }
 

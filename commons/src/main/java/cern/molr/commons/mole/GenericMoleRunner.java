@@ -4,9 +4,8 @@
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
-package cern.molr;
+package cern.molr.commons.mole;
 
-import cern.molr.commons.mole.Mole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

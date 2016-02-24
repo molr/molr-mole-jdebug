@@ -6,7 +6,7 @@
 
 package cern.molr.inspector.controller;
 
-import cern.molr.GenericMoleRunner;
+import cern.molr.commons.mole.GenericMoleRunner;
 import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.entry.EntryListenerFactory;

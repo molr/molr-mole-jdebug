@@ -1,17 +1,17 @@
 /*
  * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
- * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * verbatim in the file “COPYING“. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
 package cern.molr.mole.impl;
 
+import cern.molr.commons.exception.MissionExecutionException;
 import cern.molr.commons.mole.Mole;
 import cern.molr.commons.mole.RunWithMole;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +30,12 @@ import java.util.List;
 public class JunitMole implements Mole {
 
     @Override
-    public List<Method> discover(Class<?> clazz) {
+    public List<Method> discover(Class<?> classType) {
+        if (null == classType) {
+            throw new IllegalArgumentException("Class type cannot be null");
+        }
         List<Method> annotatedMethods = new ArrayList<>();
-        Method[] methods = clazz.getMethods();
+        Method[] methods = classType.getMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(Test.class)) {
                 annotatedMethods.add(method);
@@ -42,12 +45,15 @@ public class JunitMole implements Mole {
     }
 
     @Override
-    public void run(String missionName, Object... args) throws IOException {
+    public void run(String missionContentClassName, Object... args) throws MissionExecutionException {
+        if (null == missionContentClassName) {
+            throw new MissionExecutionException(new IllegalArgumentException("Mission content class name cannot be null"));
+        }
         try {
-            Class<?> c = Class.forName(missionName);
+            Class<?> c = Class.forName(missionContentClassName);
             JUnitCore.runClasses(c);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            throw new MissionExecutionException(exception);
         }
     }
 }
