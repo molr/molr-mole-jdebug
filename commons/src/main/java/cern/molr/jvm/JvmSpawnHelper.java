@@ -1,3 +1,9 @@
+/*
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING“.ing this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
+
 package cern.molr.jvm;
 
 import org.slf4j.Logger;
@@ -15,12 +21,14 @@ import java.util.List;
  */
 public final class JvmSpawnHelper {
 
+    // TODO Test this class
+
     private static final Logger LOGGER = LoggerFactory.getLogger(JvmSpawnHelper.class);
 
     private static final String CLASSPATH_ARGUMENT_INDICATOR = "-cp";
     public static final String JAVA_HOME = System.getProperty("java.home");
 
-    private JvmSpawnHelper(){
+    private JvmSpawnHelper() {
     }
 
     public static final ProcessBuilder getProcessBuilder(String classpath, String mainClass, String... arguments) throws IOException {
@@ -29,7 +37,7 @@ public final class JvmSpawnHelper {
         command.add(CLASSPATH_ARGUMENT_INDICATOR);
         command.add(classpath);
         command.add(mainClass);
-        if(arguments != null) {
+        if (arguments != null) {
             command.addAll(Arrays.asList(arguments));
         }
         ProcessBuilder processBuilder = new ProcessBuilder(command);
@@ -38,7 +46,7 @@ public final class JvmSpawnHelper {
     }
 
     public static final String appendToolsJarToClasspath(String classpath) {
-        if(classpath.contains("tools.jar")) {
+        if (classpath.contains("tools.jar")) {
             return classpath;
         }
         return String.format("%s:%s/../lib/tools.jar", classpath, JAVA_HOME);

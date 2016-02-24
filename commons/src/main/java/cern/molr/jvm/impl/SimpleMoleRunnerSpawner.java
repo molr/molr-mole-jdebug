@@ -3,6 +3,7 @@
  * verbatim in the file “COPYING“.ing this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
+
 package cern.molr.jvm.impl;
 
 import cern.molr.commons.domain.Mission;
@@ -11,9 +12,7 @@ import cern.molr.jvm.MoleSpawner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -39,7 +38,7 @@ public class SimpleMoleRunnerSpawner implements MoleSpawner<Void> {
 
     @Override
     public Void spawnMoleRunner(Mission mission, String classpath, String... args) throws IOException {
-        if(mission == null) {
+        if (mission == null) {
             throw new IllegalArgumentException("The mission must not be null");
         }
 

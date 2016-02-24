@@ -1,3 +1,9 @@
+/*
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING“. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
+
 package cern.molr.commons.registry;
 
 import java.util.Collection;
@@ -22,7 +28,7 @@ public interface ObservableRegistry<T> extends Registry<T> {
      * Interface to be implemented by the {@link Object}s which pretend to receive notifications from an
      * {@link ObservableRegistry}
      */
-    public interface OnCollectionChangedListener {
+    interface OnCollectionChangedListener {
 
         /**
          * Method called by an {@link ObservableRegistry} implementation every time a change is done on the registered
@@ -30,6 +36,6 @@ public interface ObservableRegistry<T> extends Registry<T> {
          *
          * @param collection
          */
-        public void onCollectionChanged(Collection collection);
+        void onCollectionChanged(Collection collection);
     }
 }

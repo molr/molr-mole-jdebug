@@ -1,3 +1,9 @@
+/*
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING“. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
+
 package cern.molr.commons.registry.impl;
 
 import cern.molr.commons.registry.ObservableRegistry;
@@ -19,27 +25,39 @@ public class ObservableInMemoryEntriesRegistry<T> extends InMemoryEntriesRegistr
     private final LinkedList<OnCollectionChangedListener> listeners = new LinkedList<>();
 
     @Override
-    public void registerEntry(T entry) {
-        super.registerEntry(entry);
-        notifyListeners();
+    public boolean registerEntry(T entry) {
+        if (super.registerEntry(entry)) {
+            notifyListeners();
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void registerEntries(Set<T> entries) {
-        super.registerEntries(entries);
-        notifyListeners();
+    public boolean registerEntries(Set<T> entries) {
+        if (super.registerEntries(entries)) {
+            notifyListeners();
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void removeEntry(T entry) {
-        super.removeEntry(entry);
-        notifyListeners();
+    public boolean removeEntry(T entry) {
+        if (super.removeEntry(entry)) {
+            notifyListeners();
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void removeEntries(Set<T> entries) {
-        super.removeEntries(entries);
-        notifyListeners();
+    public boolean removeEntries(Set<T> entries) {
+        if (super.removeEntries(entries)) {
+            notifyListeners();
+            return true;
+        }
+        return false;
     }
 
     @Override

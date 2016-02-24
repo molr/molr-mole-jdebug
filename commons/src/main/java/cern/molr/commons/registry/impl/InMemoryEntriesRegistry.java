@@ -1,3 +1,9 @@
+/*
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING“. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
+
 package cern.molr.commons.registry.impl;
 
 import cern.molr.commons.registry.Registry;
@@ -32,40 +38,40 @@ public class InMemoryEntriesRegistry<T> implements Registry<T> {
     }
 
     @Override
-    public void registerEntry(T entry) {
+    public boolean registerEntry(T entry) {
         if (null == entry) {
             throw new IllegalArgumentException("entry cannot be null");
         }
-        this.entries.add(entry);
+        return this.entries.add(entry);
     }
 
     @Override
-    public void registerEntries(Set<T> entries) {
+    public boolean registerEntries(Set<T> entries) {
         if (null == entries) {
             throw new IllegalArgumentException("entries cannot be null");
         }
         if (entries.stream().anyMatch(entry -> null == entry)) {
             throw new IllegalArgumentException("no entries value can be null");
         }
-        this.entries.addAll(entries);
+        return this.entries.addAll(entries);
     }
 
     @Override
-    public void removeEntry(T entryToRemove) {
-        if(entryToRemove == null) {
+    public boolean removeEntry(T entryToRemove) {
+        if (entryToRemove == null) {
             throw new IllegalArgumentException("entryToRemove cannot be null");
         }
-        entries.remove(entryToRemove);
+        return entries.remove(entryToRemove);
     }
 
     @Override
-    public void removeEntries(Set<T> entriesToRemove) {
+    public boolean removeEntries(Set<T> entriesToRemove) {
         if (null == entriesToRemove) {
             throw new IllegalArgumentException("entriesToRemove cannot be null");
         }
         if (entriesToRemove.stream().anyMatch(entry -> null == entry)) {
             throw new IllegalArgumentException("no entriesToRemove value can be null");
         }
-        this.entries.removeAll(entriesToRemove);
+        return this.entries.removeAll(entriesToRemove);
     }
 }
