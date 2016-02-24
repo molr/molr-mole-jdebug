@@ -1,12 +1,14 @@
 /*
- * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
- * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * ï¿½ Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file ï¿½COPYINGï¿½. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
 package cern.molr;
 
 import cern.molr.commons.mole.Mole;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main entry point for the JVM's to execute {@link cern.molr.commons.domain.Mission}s
@@ -15,6 +17,8 @@ import cern.molr.commons.mole.Mole;
  * @author tiagomr
  */
 public class GenericMoleRunner {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GenericMoleRunner.class);
 
     public static void main(String[] args) {
         if (args.length < 1) {

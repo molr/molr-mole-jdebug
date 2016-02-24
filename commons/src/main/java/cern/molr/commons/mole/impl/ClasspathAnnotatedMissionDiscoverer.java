@@ -63,6 +63,4 @@ public class ClasspathAnnotatedMissionDiscoverer implements MissionsDiscoverer {
                 .map(optional -> optional.get())
                 .collect(Collectors.toSet());
     }
-
-
 }
