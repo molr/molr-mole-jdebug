@@ -2,7 +2,6 @@ package cern.molr.commons.mole;
 
 import cern.molr.commons.domain.Mission;
 
-import java.util.List;
 import java.util.Set;
 
 /**

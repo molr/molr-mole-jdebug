@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ public class ClasspathAnnotatedMissionDiscoverer implements MissionsDiscoverer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathAnnotatedMissionDiscoverer.class);
     private static final String[] SUPPORTED_ANNOTATIONS = new String[]{RunWithMole.class.getTypeName()};
-    private final MissionMaterializer materialier = new AnnotatedMissionMaterializer();
+    private final MissionMaterializer materializer = new AnnotatedMissionMaterializer();
 
     @Override
     public Set<Mission> availableMissions() {
@@ -58,9 +59,9 @@ public class ClasspathAnnotatedMissionDiscoverer implements MissionsDiscoverer {
         );
         discoverer.discover(true, false, false, false, true, true);
         return missionClasses.stream()
-                .map(materialier::materialize)
-                .filter(optional -> optional.isPresent())
-                .map(optional -> optional.get())
+                .map(materializer::materialize)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toSet());
     }
 }
