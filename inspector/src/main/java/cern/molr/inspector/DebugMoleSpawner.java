@@ -2,7 +2,6 @@ package cern.molr.inspector;
 
 import cern.molr.commons.annotations.Source;
 import cern.molr.commons.domain.Mission;
-import cern.molr.inspector.controller.JdiController;
 import cern.molr.inspector.domain.InstantiationRequest;
 import cern.molr.inspector.domain.Session;
 import cern.molr.inspector.domain.impl.InstantiationRequestImpl;
@@ -60,12 +59,14 @@ public class DebugMoleSpawner implements MoleSpawner<Session>, SourceFetcher {
         for(String arg : args) {
             completedArgs[i++] = arg;
         }
+
         Process process = JvmSpawnHelper.getProcessBuilder(
                 JvmSpawnHelper.appendToolsJarToClasspath(request.getClassPath()),
                 INSPECTOR_MAIN_CLASS,
                 completedArgs).start();
         redirectStream(process.getErrorStream(), System.err);
         Runtime.getRuntime().addShutdownHook(new Thread(process::destroy));
+
         return new SessionImpl(mission, new MyJdiControllerWriter(process));
     }
 

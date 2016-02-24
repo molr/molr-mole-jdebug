@@ -13,6 +13,7 @@ import cern.molr.inspector.jdi.ClassInstantiationListener;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.VMStartException;
+import com.sun.jdi.event.StepEvent;
 import org.jdiscript.JDIScript;
 import org.jdiscript.util.VMLauncher;
 
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 
 /**
  * A builder to help create and spawn running VM's {@link JdiInstanceBuilder}.
@@ -28,6 +30,7 @@ public class JdiInstanceBuilder {
 
     private VMLauncher launcher;
     private Mission mission;
+    private Predicate<StepEvent> flowInhibitor;
     private EntryListenerFactory<?> listenerFactory;
     private JdiEntryRegistry<EntryListener> registry;
 
@@ -44,11 +47,14 @@ public class JdiInstanceBuilder {
         Objects.requireNonNull(mission, "Service must not be null");
         Objects.requireNonNull(registry, "Entry registry must be set");
         Objects.requireNonNull(listenerFactory, "Listener factory must not be null");
+        Objects.requireNonNull(flowInhibitor, "Flow inhibitor must not be null");
 
         try {
             VirtualMachine virtualMachine = launcher.safeStart();
             JDIScript jdi = new JDIScript(virtualMachine);
-            SteppingJdiEventHandler eventHandler = new SteppingJdiEventHandler(jdi, listenerFactory, registry);
+            SteppingJdiEventHandler eventHandler = new SteppingJdiEventHandler(jdi, listenerFactory, registry, flowInhibitor);
+
+            Runtime.getRuntime().addShutdownHook(new Thread(launcher.getProcess()::destroy));
 
             ClassInstantiationListener instantiationListener =
                     new ClassInstantiationListener(mission.getMissionContentClassName(),
@@ -85,6 +91,11 @@ public class JdiInstanceBuilder {
 
     public JdiInstanceBuilder setMission(Mission mission) {
         this.mission = mission;
+        return this;
+    }
+
+    public JdiInstanceBuilder setFlowInhibitor(Predicate<StepEvent> flowInhibitor) {
+        this.flowInhibitor = flowInhibitor;
         return this;
     }
 

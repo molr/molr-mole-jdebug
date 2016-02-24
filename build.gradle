@@ -20,7 +20,6 @@ project(":demo") {
 project(":mole") {
     dependencies {
         compile project(":commons")
-        compile project(":inspector")
     }
 }
 
@@ -41,6 +40,7 @@ project(":gui") {
 project(":inspector") {
     dependencies {
         compile project(":commons")
+        compile project(":mole")
         compile project(":jdiscript")
     }
 }

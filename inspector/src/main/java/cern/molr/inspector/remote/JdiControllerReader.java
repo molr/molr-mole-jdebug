@@ -58,6 +58,9 @@ public class JdiControllerReader extends RemoteReader {
             case TERMINATE:
                 controller.terminate();
                 break;
+            case RESUME:
+                controller.resume();
+                break;
         }
     }
 
@@ -65,7 +68,6 @@ public class JdiControllerReader extends RemoteReader {
         try {
             int code = Character.getNumericValue(reader.read());
             if (code != -1) {
-                System.err.println("received code " + code);
                 JdiControllerCommand[] values = JdiControllerCommand.values();
                 if (code >= 0 && code < values.length) {
                     forwardCommand(values[code]);
