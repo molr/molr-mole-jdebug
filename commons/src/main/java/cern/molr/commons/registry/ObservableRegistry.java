@@ -22,7 +22,7 @@ public interface ObservableRegistry<T> extends Registry<T> {
      * @param listener the {@link ObservableRegistry.OnCollectionChangedListener} to be
      *                 registered
      */
-    void addListener(OnCollectionChangedListener listener);
+    void addListener(OnCollectionChangedListener<T> listener);
 
     /**
      * Interface to be implemented by the {@link Object}s which pretend to receive notifications from an

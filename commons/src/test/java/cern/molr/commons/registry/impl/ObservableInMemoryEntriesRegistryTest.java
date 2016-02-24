@@ -42,7 +42,7 @@ public class ObservableInMemoryEntriesRegistryTest {
     private Object testObject4;
     private final Set<Object> entries = new HashSet<>();
     @Mock
-    private ObservableRegistry.OnCollectionChangedListener onCollectionChangedListener;
+    private ObservableRegistry.OnCollectionChangedListener<Object> onCollectionChangedListener;
     private final ObservableInMemoryEntriesRegistry<Object> objectObservableInMemoryEntriesRegistry = new ObservableInMemoryEntriesRegistry<>();
 
     @Before

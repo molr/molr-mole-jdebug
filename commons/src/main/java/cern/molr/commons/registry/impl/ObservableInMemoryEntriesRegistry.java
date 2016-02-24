@@ -22,7 +22,7 @@ import java.util.Set;
  */
 public class ObservableInMemoryEntriesRegistry<T> extends InMemoryEntriesRegistry<T> implements ObservableRegistry<T> {
 
-    private final LinkedList<OnCollectionChangedListener> listeners = new LinkedList<>();
+    private final LinkedList<OnCollectionChangedListener<T>> listeners = new LinkedList<>();
 
     @Override
     public boolean registerEntry(T entry) {
@@ -61,7 +61,7 @@ public class ObservableInMemoryEntriesRegistry<T> extends InMemoryEntriesRegistr
     }
 
     @Override
-    public void addListener(OnCollectionChangedListener listener) {
+    public void addListener(OnCollectionChangedListener<T> listener) {
         listeners.addLast(listener);
     }
 

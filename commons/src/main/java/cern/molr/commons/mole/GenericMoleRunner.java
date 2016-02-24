@@ -41,6 +41,7 @@ public class GenericMoleRunner {
     }
 
     private static Mole createMoleInstance(String moleName) throws Exception {
+        @SuppressWarnings("unchecked")
         Class<Mole> clazz = (Class<Mole>) Class.forName(moleName);
         return clazz.getConstructor().newInstance();
     }

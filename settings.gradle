@@ -1,8 +1,5 @@
 include 'mole'
 include 'commons'
-include 'controller'
-include 'demo'
-include 'gradle'
 include 'gui'
 include 'inspector'
 include 'jdiscript'

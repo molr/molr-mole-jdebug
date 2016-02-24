@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class TestDefinitions {
 
-    public static final List<Method> METHODS_LIST = Collections.EMPTY_LIST;
+    public static final List<Method> METHODS_LIST = Collections.emptyList();
     public static final int NUMBER_OF_TEST_MISSION_DEFINITIONS = 3;
 
     public static class TestMoleWithNoEmptyConstructor implements Mole {

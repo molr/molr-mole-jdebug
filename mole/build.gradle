@@ -1,12 +1,10 @@
-apply plugin: 'java'
-apply plugin: 'maven'
+/*
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING“. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
 
-group = "cern.molr"
 version = "0.1"
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
@@ -15,18 +13,4 @@ dependencies {
 
     compile files("${System.properties['java.home']}/../lib/tools.jar")
     compile  group: 'junit', name: 'junit', version: '4.11'
-}
-
-task fatJar2(type : Jar) {
-    from configurations.compile.collect { it.isDirectory() ? it : project.zipTree(it) } with jar
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            String tmpDir = System.getProperty("java.io.tmpdir") + File.separator + "localMaven"
-            new File(tmpDir).mkdir()
-            repository(url: "file://" + tmpDir)
-        }
-    }
 }
