@@ -4,16 +4,24 @@
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
-package cern.molr.commons.annotations;
+package cern.molr.commons.mission;
+
+import cern.molr.commons.domain.Mission;
+
+import java.util.Set;
 
 /**
- * Interface use when generating source classes. {@link SourceMeProcessor}
+ * Interface that provides a way to discover {@link Mission}s
  *
+ * @author timartin
  * @author mgalilee
  */
-public interface Source {
+public interface MissionsDiscoverer {
+
     /**
-     * @return the source representation of a class encoded in base64
+     * Searches for available {@link Mission}s
+     *
+     * @return A {@link Set} of {@link Mission}s
      */
-    String base64Value();
+    Set<Mission> availableMissions();
 }

@@ -1,13 +1,12 @@
+/*
+ * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file “COPYING“. In applying this licence, CERN does not waive the privileges and immunities granted
+ * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
+ */
+
 package cern.molr.commons.annotations;
 
 import com.sun.tools.javac.code.Symbol;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.Base64;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -18,6 +17,12 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A processor annotation, which is automatically plugged into javac
@@ -39,14 +44,14 @@ public class SourceMeProcessor extends AbstractProcessor {
                 if (classElement instanceof Symbol.ClassSymbol) {
                     Symbol.ClassSymbol classSymbol = (Symbol.ClassSymbol) classElement;
                     JavaFileObject javaFileObject;
-                    try (BufferedReader reader = new BufferedReader(classSymbol.sourcefile.openReader(true))){
+                    try (BufferedReader reader = new BufferedReader(classSymbol.sourcefile.openReader(true))) {
                         String content = reader.lines().collect(Collectors.joining("\n"));
                         String base64Content = Base64.getEncoder().encodeToString(content.getBytes());
 
                         javaFileObject = processingEnv.getFiler()
                                 .createSourceFile(classElement.getQualifiedName() + "Source");
                         BufferedWriter bufferedWriter = new BufferedWriter(javaFileObject.openWriter());
-                        if(!classSymbol.packge().isUnnamed()) {
+                        if (!classSymbol.packge().isUnnamed()) {
                             bufferedWriter.append("package ");
                             bufferedWriter.append(classSymbol.packge().fullname);
                             bufferedWriter.append(";\n");

@@ -1,7 +1,7 @@
-package cern.molr.commons.mole.impl;
+package cern.molr.commons.registry.impl;
 
 import cern.molr.commons.domain.Mission;
-import cern.molr.commons.mole.MissionsDiscoverer;
+import cern.molr.commons.mission.MissionsDiscoverer;
 
 /**
  * In memory {@link Mission} registry that searches for {@link Mission}s on the construction phase using a

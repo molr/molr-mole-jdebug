@@ -1,4 +1,4 @@
-package cern.molr.commons.mole.impl;
+package cern.molr.commons.registry.impl;
 
 import cern.molr.commons.domain.Mission;
 import org.junit.Before;

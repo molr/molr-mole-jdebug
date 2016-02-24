@@ -1,6 +1,5 @@
 package cern.molr.controller.server.impl;
 
-import cern.molr.commons.domain.MoleContainer;
 import cern.molr.commons.domain.Service;
 import cern.molr.controller.io.JarReader;
 import cern.molr.controller.io.JarWriter;

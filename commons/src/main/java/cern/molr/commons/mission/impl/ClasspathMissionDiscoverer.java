@@ -1,13 +1,13 @@
 /*
  * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
- * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * verbatim in the file “COPYING“. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
-package cern.molr.commons.mole.impl;
+package cern.molr.commons.mission.impl;
 
 import cern.molr.commons.domain.Mission;
-import cern.molr.commons.mole.MissionMaterializer;
-import cern.molr.commons.mole.MissionsDiscoverer;
+import cern.molr.commons.mission.MissionMaterializer;
+import cern.molr.commons.mission.MissionsDiscoverer;
 import cern.molr.commons.mole.RunWithMole;
 import com.impetus.annovention.ClasspathDiscoverer;
 import com.impetus.annovention.Discoverer;
@@ -29,11 +29,15 @@ import java.util.stream.Collectors;
  * @author tiagomr
  * @author mgalilee
  */
-public class ClasspathAnnotatedMissionDiscoverer implements MissionsDiscoverer {
+public class ClasspathMissionDiscoverer implements MissionsDiscoverer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathAnnotatedMissionDiscoverer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathMissionDiscoverer.class);
     private static final String[] SUPPORTED_ANNOTATIONS = new String[]{RunWithMole.class.getTypeName()};
-    private final MissionMaterializer materialier = new AnnotatedMissionMaterializer();
+    private final MissionMaterializer materializer;
+
+    public ClasspathMissionDiscoverer(MissionMaterializer materializer) {
+        this.materializer = materializer;
+    }
 
     @Override
     public Set<Mission> availableMissions() {
@@ -58,9 +62,7 @@ public class ClasspathAnnotatedMissionDiscoverer implements MissionsDiscoverer {
         );
         discoverer.discover(true, false, false, false, true, true);
         return missionClasses.stream()
-                .map(materialier::materialize)
-                .filter(optional -> optional.isPresent())
-                .map(optional -> optional.get())
+                .map(materializer::materialize)
                 .collect(Collectors.toSet());
     }
 }

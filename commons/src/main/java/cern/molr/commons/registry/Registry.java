@@ -1,4 +1,4 @@
-package cern.molr.commons.mole;
+package cern.molr.commons.registry;
 
 import java.util.Set;
 import java.util.function.Predicate;

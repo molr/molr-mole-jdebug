@@ -1,6 +1,6 @@
-package cern.molr.commons.mole.impl;
+package cern.molr.commons.registry.impl;
 
-import cern.molr.commons.mole.Registry;
+import cern.molr.commons.registry.Registry;
 
 import java.util.HashSet;
 import java.util.Set;

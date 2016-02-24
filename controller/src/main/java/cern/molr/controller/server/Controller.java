@@ -1,7 +1,6 @@
 package cern.molr.controller.server;
 
 import cern.molr.commons.domain.Mission;
-import cern.molr.commons.domain.MoleContainer;
 import cern.molr.inspector.controller.JdiController;
 import cern.molr.inspector.entry.EntryListener;
 import org.springframework.web.bind.annotation.RequestBody;

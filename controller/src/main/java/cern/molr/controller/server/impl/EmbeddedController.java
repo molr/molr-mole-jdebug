@@ -1,7 +1,7 @@
 package cern.molr.controller.server.impl;
 
 import cern.molr.commons.domain.Mission;
-import cern.molr.commons.mole.MissionsDiscoverer;
+import cern.molr.commons.mission.MissionsDiscoverer;
 import cern.molr.inspector.controller.JdiController;
 import cern.molr.inspector.entry.EntryListener;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package cern.molr.inspector.gui;
 
-import cern.molr.commons.mole.ObservableRegistry;
+import cern.molr.commons.registry.ObservableRegistry;
 import cern.molr.inspector.domain.Session;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

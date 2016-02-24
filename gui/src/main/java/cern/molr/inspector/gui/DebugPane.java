@@ -1,7 +1,7 @@
 package cern.molr.inspector.gui;
 
 import cern.molr.commons.domain.Mission;
-import cern.molr.commons.mole.Registry;
+import cern.molr.commons.registry.Registry;
 import cern.molr.inspector.DebugMoleSpawner;
 import cern.molr.inspector.domain.Session;
 import cern.molr.inspector.entry.EntryListener;

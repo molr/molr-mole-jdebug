@@ -1,9 +1,9 @@
-package cern.molr.commons.mole;
+package cern.molr.commons.registry;
 
 import java.util.Collection;
 
 /**
- * Extension of {@link Registry} that notifies registered {@link cern.molr.commons.mole.ObservableRegistry.OnCollectionChangedListener}s
+ * Extension of {@link Registry} that notifies registered {@link ObservableRegistry.OnCollectionChangedListener}s
  * every time a change is done on the {@link Registry}
  *
  * @author tiagomr
@@ -11,9 +11,9 @@ import java.util.Collection;
 public interface ObservableRegistry<T> extends Registry<T> {
 
     /**
-     * Registers a {@link cern.molr.commons.mole.ObservableRegistry.OnCollectionChangedListener} to be notified
+     * Registers a {@link ObservableRegistry.OnCollectionChangedListener} to be notified
      *
-     * @param listener the {@link cern.molr.commons.mole.ObservableRegistry.OnCollectionChangedListener} to be
+     * @param listener the {@link ObservableRegistry.OnCollectionChangedListener} to be
      *                 registered
      */
     void addListener(OnCollectionChangedListener listener);

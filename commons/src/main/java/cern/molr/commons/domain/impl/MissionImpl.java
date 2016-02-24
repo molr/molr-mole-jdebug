@@ -1,6 +1,6 @@
-/**
+/*
  * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
- * verbatim in the file “COPYING”. In applying this licence, CERN does not waive the privileges and immunities granted
+ * verbatim in the file “COPYING“. In applying this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 package cern.molr.commons.domain.impl;
@@ -10,6 +10,12 @@ import cern.molr.commons.domain.Mission;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Simple implementation of {@link Mission}
+ *
+ * @author tiagomr
+ * @author mgalilee
+ */
 public class MissionImpl implements Mission {
 
     /**
@@ -61,7 +67,8 @@ public class MissionImpl implements Mission {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MissionImpl service = (MissionImpl) o;
-        if (moleClassName != null ? !moleClassName.equals(service.moleClassName) : service.moleClassName != null) return false;
+        if (moleClassName != null ? !moleClassName.equals(service.moleClassName) : service.moleClassName != null)
+            return false;
         return !(missionContentClassName != null ? !missionContentClassName.equals(service.missionContentClassName) : service.missionContentClassName != null);
 
     }
@@ -77,5 +84,4 @@ public class MissionImpl implements Mission {
     public String toString() {
         return getMoleClassName() + ": " + getMissionContentClassName();
     }
-
 }

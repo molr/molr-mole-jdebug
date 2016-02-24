@@ -1,16 +1,17 @@
-package cern.molr.commons.mole.impl;
+package cern.molr.commons.registry.impl;
 
-import cern.molr.commons.mole.ObservableRegistry;
+import cern.molr.commons.registry.ObservableRegistry;
+import cern.molr.commons.registry.Registry;
 
 import java.util.LinkedList;
 import java.util.Set;
 
 /**
  * Extension of {@link InMemoryEntriesRegistry} that implements {@link ObservableRegistry} and allows for
- * {@link cern.molr.commons.mole.ObservableRegistry.OnCollectionChangedListener} to be notified of changes to the
+ * {@link ObservableRegistry.OnCollectionChangedListener} to be notified of changes to the
  * entries
  *
- * @param <T> the type of entries being handled by this {@link cern.molr.commons.mole.Registry}
+ * @param <T> the type of entries being handled by this {@link Registry}
  * @author tiagomr
  */
 public class ObservableInMemoryEntriesRegistry<T> extends InMemoryEntriesRegistry<T> implements ObservableRegistry<T> {
