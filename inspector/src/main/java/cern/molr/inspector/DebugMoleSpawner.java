@@ -81,8 +81,7 @@ public class DebugMoleSpawner implements MoleSpawner<Session>, SourceFetcher {
 
         @Override
         public void setEntryListener(EntryListener entryListener) {
-            EntryListenerReader listenerReader = new EntryListenerReader(new BufferedReader(new InputStreamReader(process.getInputStream())), entryListener);
-            listenerReader.setOnClose(process::destroy);
+            new EntryListenerReader(new BufferedReader(new InputStreamReader(process.getInputStream())), entryListener);
         }
     }
 

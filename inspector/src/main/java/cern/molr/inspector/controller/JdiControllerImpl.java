@@ -9,7 +9,6 @@ package cern.molr.inspector.controller;
 import cern.molr.commons.mole.GenericMoleRunner;
 import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.entry.EntryListener;
-import cern.molr.inspector.entry.EntryListenerFactory;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.VMStartException;
@@ -22,7 +21,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * A controller for a JDI instance that can
@@ -43,7 +41,7 @@ public class JdiControllerImpl implements JdiController, Closeable {
         entryRegistry = registry;
         jdi.vmDeathRequest(event -> {
             entryRegistry.getEntryListener().ifPresent(EntryListener::onVmDeath);
-            entryRegistry.unregister();
+            close();
         });
     }
 
@@ -53,8 +51,8 @@ public class JdiControllerImpl implements JdiController, Closeable {
 
     @Override
     public void close() {
+        entryRegistry.unregister();
         onClose.run();
-        jdi.vm().exit(0);
     }
 
     public InputStream getProcessError() {
@@ -81,6 +79,8 @@ public class JdiControllerImpl implements JdiController, Closeable {
 
     @Override
     public void terminate() {
+        jdi.vm().exit(0);
+        entryRegistry.getEntryListener().ifPresent(EntryListener::onVmDeath);
         close();
     }
 
@@ -106,11 +106,11 @@ public class JdiControllerImpl implements JdiController, Closeable {
 
         private String classPath;
         private Mission mission;
-        private EntryListenerFactory<?> factory;
+        private EntryListener entryListener;
 
         public JdiControllerImpl build() throws IOException, IllegalConnectorArgumentsException, VMStartException {
             Objects.requireNonNull(classPath, "Classpath must be set");
-            Objects.requireNonNull(factory, "Listener factory must be set");
+            Objects.requireNonNull(entryListener, "Listener must be set");
             Objects.requireNonNull(mission, "Mission to inspect must be set");
 
             final String launchArguments = AGENT_RUNNER_CLASS + " " + mission.getMoleClassName() + " " + mission.getMissionContentClassName();
@@ -118,6 +118,8 @@ public class JdiControllerImpl implements JdiController, Closeable {
 
 
             JdiEntryRegistry<EntryListener> entryRegistry = new JdiEntryRegistry<>();
+            // early registration, to be notified if VM dies before reaching the first breakpoint
+            entryRegistry.register(null, entryListener);
 
             InhibitionWrapper flowInhibitionWrapper = new InhibitionWrapper();
 
@@ -125,15 +127,15 @@ public class JdiControllerImpl implements JdiController, Closeable {
                     .setLauncher(launcher)
                     .setMission(mission)
                     .setEntryRegistry(entryRegistry)
-                    .setListenerFactory(factory)
+                    .setListener(entryListener)
                     .setFlowInhibitor(whatever -> flowInhibitionWrapper.isInhibiting())
                     .build();
 
             return new JdiControllerImpl(jdi, entryRegistry, flowInhibitionWrapper);
         }
 
-        public Builder setListenerFactory(EntryListenerFactory<?> factory) {
-            this.factory = factory;
+        public Builder setEntryListener(EntryListener entryListener) {
+            this.entryListener = entryListener;
             return this;
         }
 

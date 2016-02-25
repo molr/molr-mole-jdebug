@@ -7,7 +7,6 @@
 package cern.molr.inspector.controller;
 
 import cern.molr.inspector.entry.EntryListener;
-import cern.molr.inspector.entry.EntryListenerFactory;
 import cern.molr.inspector.entry.EntryStateBuilder;
 import cern.molr.inspector.jdi.LocationRange;
 import com.sun.jdi.*;
@@ -32,7 +31,7 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(SteppingJdiEventHandler.class);
 
     private final JDIScript jdi;
-    private final EntryListenerFactory<?> callbackHandler;
+    private final EntryListener entryListener;
     private final JdiEntryRegistry<EntryListener> registry;
     private final Predicate<StepEvent> flowInhibitor;
 
@@ -40,14 +39,12 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
      * Creates a new event handler that is
      *
      * @param jdi             The {@link JDIScript} instance that interfaces Java Debug Interface (JDI).
-     * @param callbackFactory A factory that can create new {@link EntryListener}s when a new instance that should be
-     *                        listened to is spawned in the JVM.
      */
-    public SteppingJdiEventHandler(JDIScript jdi, EntryListenerFactory<?> callbackFactory, JdiEntryRegistry<EntryListener> registry,
+    public SteppingJdiEventHandler(JDIScript jdi, EntryListener entryListener, JdiEntryRegistry<EntryListener> registry,
                                    Predicate<StepEvent> flowInhibitor) {
         super(jdi.vm());
         this.jdi = jdi;
-        this.callbackHandler = callbackFactory;
+        this.entryListener = entryListener;
         this.registry = registry;
         this.flowInhibitor = flowInhibitor;
     }
@@ -62,10 +59,8 @@ public class SteppingJdiEventHandler extends JdiEventHandler {
         request.enable();
 
         EntryStateBuilder.ofLocation(event.location()).ifPresent(entryState -> {
-            final EntryListener callbackListener = callbackHandler.createListenerOn(
-                    event.thread(), entryState);
-            registry.register(event.thread(), callbackListener);
-            callbackListener.onLocationChange(entryState);
+            registry.register(event.thread(), entryListener);
+            entryListener.onLocationChange(entryState);
         });
     }
 

@@ -11,7 +11,7 @@ import cern.molr.inspector.controller.JdiController;
 import cern.molr.inspector.controller.JdiControllerImpl;
 import cern.molr.inspector.domain.InstantiationRequest;
 import cern.molr.inspector.domain.impl.InstantiationRequestImpl;
-import cern.molr.inspector.entry.EntryListenerFactory;
+import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.json.MissionTypeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -34,13 +34,11 @@ public class SystemMain implements Closeable {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    private JdiControllerReader commandReader;
     private EntryListenerWriter entryWriter;
 
     private final Future<?> loggerTask;
 
-    public SystemMain(JdiControllerImpl controller, JdiControllerReader commandReader, EntryListenerWriter entryWriter) {
-        this.commandReader = commandReader;
+    public SystemMain(JdiControllerImpl controller, EntryListenerWriter entryWriter) {
         this.entryWriter = entryWriter;
         this.loggerTask = executor.submit(() -> {
             InputStream processError = controller.getProcessError();
@@ -52,6 +50,8 @@ public class SystemMain implements Closeable {
                 e.printStackTrace(System.err);
             }
         });
+
+        controller.setOnClose(this::close);
     }
 
     private static void logLine(BufferedReader reader) throws IOException {
@@ -65,28 +65,25 @@ public class SystemMain implements Closeable {
         if (args.length != 1) {
             System.err.println("Expected 1 argument, but received " + args.length);
         } else {
-            final InstantiationRequest request = GSON.fromJson(args[0], InstantiationRequestImpl.class);
-            final PrintWriter outputWriter = new PrintWriter(System.out);
-            final EntryListenerWriter writer = new EntryListenerWriter(outputWriter);
+            InstantiationRequest request = GSON.fromJson(args[0], InstantiationRequestImpl.class);
+            PrintWriter outputWriter = new PrintWriter(System.out);
+            EntryListenerWriter writer = new EntryListenerWriter(outputWriter);
 
-            final JdiControllerImpl controller = startJdi(request, (thread, state) -> writer);
-
-            final BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
-            final JdiControllerReader reader = new JdiControllerReader(inputReader, controller);
-            final SystemMain main = new SystemMain(controller, reader, writer);
-            controller.setOnClose(main::close);
+            JdiControllerImpl controller = startJdi(request, writer);
+            new JdiControllerReader(new BufferedReader(new InputStreamReader(System.in)), controller);
+            new SystemMain(controller, writer);
         }
     }
 
-    private static JdiControllerImpl startJdi(InstantiationRequest request, EntryListenerFactory<?> factory) throws Exception {
+    private static JdiControllerImpl startJdi(InstantiationRequest request, EntryListener entryListener) throws Exception {
         try {
             return JdiControllerImpl.builder()
                     .setClassPath(request.getClassPath())
-                    .setListenerFactory(factory)
+                    .setEntryListener(entryListener)
                     .setMission(request.getMission())
                     .build();
         } catch (IllegalConnectorArgumentsException e) {
-            System.err.println("Bad connection parameters " + request + " when starting JDIY:" + e);
+            System.err.println("Bad connection parameters " + request + " when starting JDI:" + e);
             throw e;
         } catch (Exception e) {
             System.err.println("Failure when starting JDI instance:" + e);
@@ -96,9 +93,9 @@ public class SystemMain implements Closeable {
 
     @Override
     public void close() {
-        commandReader.close();
         entryWriter.close();
         loggerTask.cancel(true);
         executor.shutdown();
+        System.exit(0);
     }
 }

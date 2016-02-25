@@ -8,7 +8,6 @@ package cern.molr.inspector.controller;
 
 import cern.molr.commons.domain.Mission;
 import cern.molr.inspector.entry.EntryListener;
-import cern.molr.inspector.entry.EntryListenerFactory;
 import cern.molr.inspector.jdi.ClassInstantiationListener;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
@@ -31,7 +30,7 @@ public class JdiInstanceBuilder {
     private VMLauncher launcher;
     private Mission mission;
     private Predicate<StepEvent> flowInhibitor;
-    private EntryListenerFactory<?> listenerFactory;
+    private EntryListener entryListener;
     private JdiEntryRegistry<EntryListener> registry;
 
     /**
@@ -46,13 +45,13 @@ public class JdiInstanceBuilder {
         Objects.requireNonNull(launcher, "Launcher must not be null");
         Objects.requireNonNull(mission, "Service must not be null");
         Objects.requireNonNull(registry, "Entry registry must be set");
-        Objects.requireNonNull(listenerFactory, "Listener factory must not be null");
+        Objects.requireNonNull(entryListener, "Listener must not be null");
         Objects.requireNonNull(flowInhibitor, "Flow inhibitor must not be null");
 
         try {
             VirtualMachine virtualMachine = launcher.safeStart();
             JDIScript jdi = new JDIScript(virtualMachine);
-            SteppingJdiEventHandler eventHandler = new SteppingJdiEventHandler(jdi, listenerFactory, registry, flowInhibitor);
+            SteppingJdiEventHandler eventHandler = new SteppingJdiEventHandler(jdi, entryListener, registry, flowInhibitor);
 
             Runtime.getRuntime().addShutdownHook(new Thread(launcher.getProcess()::destroy));
 
@@ -79,8 +78,8 @@ public class JdiInstanceBuilder {
         return this;
     }
 
-    public JdiInstanceBuilder setListenerFactory(EntryListenerFactory<?> listenerFactory) {
-        this.listenerFactory = listenerFactory;
+    public JdiInstanceBuilder setListener(EntryListener entryListener) {
+        this.entryListener = entryListener;
         return this;
     }
 
