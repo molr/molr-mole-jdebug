@@ -81,16 +81,7 @@ public class JdiControllerImpl implements JdiController, Closeable {
 
     @Override
     public void terminate() {
-        Optional<EntryListener> entryListener = entryRegistry.getEntryListener();
-        Optional<ThreadReference> threadReference = entryRegistry.getThreadReference();
-        if (entryListener.isPresent() && threadReference.isPresent()) {
-            closeThread(threadReference.get(), entryListener.get());
-        }
         close();
-    }
-
-    private void closeThread(ThreadReference thread, EntryListener listener) {
-
     }
 
     public void setOnClose(Runnable onClose) {
