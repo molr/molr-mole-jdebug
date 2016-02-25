@@ -28,8 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * Implementation {@link BorderPane} that shows the source code in a {@link TextFlow} node and allows for the stepping
@@ -48,7 +46,6 @@ public class DebugPane extends BorderPane {
     private final Session session;
     private final Registry<Session> sessionRegistry;
     private int currentLine = 0;
-    private Optional<Consumer<DebugPane>> onTerminateListener = Optional.empty();
 
     /* UI Components */
     private final ScrollPane scrollPane = new ScrollPane();
@@ -113,13 +110,17 @@ public class DebugPane extends BorderPane {
         @Override
         public void onInspectionEnd(EntryState state) {
             LOGGER.info("onInspectionEnd {}", state);
-//            terminateAction();
         }
 
         @Override
         public void onVmDeath() {
             LOGGER.info("onVmDeath received");
-            terminateAction();
+            sessionRegistry.removeEntry(session);
+            Platform.runLater(() -> {
+                stepOverButton.setDisable(true);
+                resumeButton.setDisable(true);
+                terminateButton.setDisable(true);
+            });
         }
     }
 
@@ -195,13 +196,8 @@ public class DebugPane extends BorderPane {
     }
 
     private void terminateAction() {
-        sessionRegistry.removeEntry(session);
         session.getController().terminate();
-        onTerminateListener.ifPresent(listener -> listener.accept(this));
-        Platform.runLater(() -> terminateButton.setDisable(true));
-    }
-
-    public void setOnTerminate(Consumer<DebugPane> consumer) {
-        onTerminateListener = Optional.ofNullable(consumer);
+        stepOverButton.setDisable(true);
+        resumeButton.setDisable(true);
     }
 }

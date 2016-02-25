@@ -13,14 +13,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -38,7 +36,6 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
     private final ListView<Session> listView = new ListView<>();
     private final ObservableList<Session> sessions = FXCollections.observableArrayList();
     private final ObservableRegistry<Session> sessionsRegistry;
-    private final Button debugButton = new Button("Debug");
     private final Button terminateButton = new Button("Terminate");
     private final Button terminateAllButton = new Button("Terminate all");
 
@@ -52,9 +49,6 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
     private void initUI() {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_LEFT);
-        debugButton.setOnMouseClicked(event -> createDebugPane(listView.getSelectionModel().getSelectedItem()));
-        debugButton.setDisable(true);
-        hBox.getChildren().add(debugButton);
         terminateButton.setOnMouseClicked(event -> terminateSession(listView.getSelectionModel().getSelectedItem()));
         terminateButton.setDisable(true);
         hBox.getChildren().add(terminateButton);
@@ -70,19 +64,11 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
         listView.setCellFactory(param -> new SessionCell());
         listView.setOnMouseClicked(event -> {
             if (listView.getSelectionModel().getSelectedItem() != null) {
-                debugButton.setDisable(false);
                 terminateButton.setDisable(false);
             } else {
-                debugButton.setDisable(true);
                 terminateButton.setDisable(true);
             }
         });
-    }
-
-    private void createDebugPane(Session session) {
-        Stage stage = new Stage();
-        stage.setScene(new Scene(new DebugPane(session, sessionsRegistry)));
-        stage.showAndWait();
     }
 
     private void initData() {
@@ -100,6 +86,7 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
             sessions.addAll(collection);
             if (sessions.isEmpty()) {
                 terminateAllButton.setDisable(true);
+                terminateButton.setDisable(true);
             } else {
                 terminateAllButton.setDisable(false);
             }
