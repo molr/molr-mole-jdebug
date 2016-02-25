@@ -19,7 +19,6 @@ public class EntryListenerReaderWriterTest {
 
     private EntryListener mockedListener = mock(EntryListener.class);
     private EntryListenerWriter writer;
-    private EntryListenerReader reader;
 
     @Before
     public void setup() throws IOException {
@@ -29,7 +28,7 @@ public class EntryListenerReaderWriterTest {
         PrintWriter printWriter = new PrintWriter(outputStream);
 
         writer = new EntryListenerWriter(printWriter);
-        reader = new EntryListenerReader(bufferedReader, mockedListener, ONE_MILLISECOND);
+        new EntryListenerReader(bufferedReader, mockedListener, ONE_MILLISECOND);
     }
 
     @Test
