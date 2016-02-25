@@ -49,7 +49,10 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
     private void initUI() {
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_LEFT);
-        terminateButton.setOnMouseClicked(event -> terminateSession(listView.getSelectionModel().getSelectedItem()));
+        terminateButton.setOnMouseClicked(event -> {
+            terminateSession(listView.getSelectionModel().getSelectedItem());
+            terminateButton.setDisable(true);
+        });
         terminateButton.setDisable(true);
         hBox.getChildren().add(terminateButton);
         terminateAllButton.setOnMouseClicked(event -> terminateAllSessions());
