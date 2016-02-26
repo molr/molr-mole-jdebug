@@ -1,7 +1,7 @@
 package cern.molr.inspector.domain.impl;
 
 import cern.molr.commons.domain.Mission;
-import cern.molr.inspector.controller.JdiController;
+import cern.molr.inspector.controller.StatefulJdiController;
 import cern.molr.inspector.domain.Session;
 
 import java.time.ZonedDateTime;
@@ -13,9 +13,9 @@ public class SessionImpl implements Session {
 
     private final ZonedDateTime timestamp = ZonedDateTime.now();
     private final Mission mission;
-    private final JdiController controller;
+    private final StatefulJdiController controller;
 
-    public SessionImpl(Mission mission, JdiController controller) {
+    public SessionImpl(Mission mission, StatefulJdiController controller) {
         this.mission = mission;
         this.controller = controller;
     }
@@ -26,7 +26,7 @@ public class SessionImpl implements Session {
     }
 
     @Override
-    public JdiController getController() {
+    public StatefulJdiController getController() {
         return controller;
     }
 

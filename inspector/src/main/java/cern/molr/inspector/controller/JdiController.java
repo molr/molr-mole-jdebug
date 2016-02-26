@@ -6,14 +6,10 @@
 
 package cern.molr.inspector.controller;
 
-import cern.molr.inspector.entry.EntryListener;
-
 /**
  * A controller for a JDI instance that can control any running JVM instances by stepping through or terminating them.
  */
 public interface JdiController {
-
-    void setEntryListener(EntryListener entryListener);
 
     /**
      * Takes one <i>step</i> in an entry by executing one line / instruction in the running JVM.

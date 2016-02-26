@@ -2,15 +2,13 @@ package cern.molr.inspector;
 
 import cern.molr.commons.annotations.Source;
 import cern.molr.commons.domain.Mission;
+import cern.molr.inspector.controller.StatefulJdiControllerImpl;
 import cern.molr.inspector.domain.InstantiationRequest;
 import cern.molr.inspector.domain.Session;
-import cern.molr.inspector.domain.impl.InstantiationRequestImpl;
 import cern.molr.inspector.domain.SourceFetcher;
+import cern.molr.inspector.domain.impl.InstantiationRequestImpl;
 import cern.molr.inspector.domain.impl.SessionImpl;
-import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.json.MissionTypeAdapter;
-import cern.molr.inspector.remote.EntryListenerReader;
-import cern.molr.inspector.remote.JdiControllerWriter;
 import cern.molr.inspector.remote.SystemMain;
 import cern.molr.jvm.JvmSpawnHelper;
 import cern.molr.jvm.MoleSpawner;
@@ -67,29 +65,7 @@ public class DebugMoleSpawner implements MoleSpawner<Session>, SourceFetcher {
         redirectStream(process.getErrorStream(), System.err);
         Runtime.getRuntime().addShutdownHook(new Thread(process::destroy));
 
-        return new SessionImpl(mission, new MyJdiControllerWriter(process));
-    }
-
-    private static class MyJdiControllerWriter extends JdiControllerWriter {
-
-        private final Process process;
-
-        public MyJdiControllerWriter(Process process) {
-            super(new PrintWriter(process.getOutputStream()));
-            this.process = process;
-        }
-
-        @Override
-        public void setEntryListener(EntryListener entryListener) {
-            EntryListenerReader reader = new EntryListenerReader(new BufferedReader(new InputStreamReader(process.getInputStream())), entryListener);
-            reader.setOnReadingAttempt(() -> {
-                if(!process.isAlive()) {
-                    LOGGER.error("Spawned debug process is dead!");
-                    reader.close();
-                    entryListener.onVmDeath();
-                }
-            });
-        }
+        return new SessionImpl(mission, new StatefulJdiControllerImpl(process));
     }
 
     @Override

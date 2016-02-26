@@ -60,11 +60,6 @@ public class JdiControllerImpl implements JdiController, Closeable {
     }
 
     @Override
-    public void setEntryListener(EntryListener entryListener) {
-        // currently doing nothing, as handled through the entryRegistry
-    }
-
-    @Override
     public void stepForward() {
         ThreadReference threadReference = entryRegistry.getThreadReference()
                 .orElseThrow(() -> new IllegalStateException("No active entry"));
@@ -148,7 +143,5 @@ public class JdiControllerImpl implements JdiController, Closeable {
             this.mission = method;
             return this;
         }
-
     }
-
 }

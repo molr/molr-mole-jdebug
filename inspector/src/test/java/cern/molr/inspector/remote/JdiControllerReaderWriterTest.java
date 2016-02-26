@@ -1,7 +1,6 @@
 package cern.molr.inspector.remote;
 
 import cern.molr.inspector.controller.JdiController;
-import cern.molr.inspector.entry.EntryListener;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,13 +24,7 @@ public class JdiControllerReaderWriterTest {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         PrintWriter printWriter = new PrintWriter(outputStream);
 
-        writer = new JdiControllerWriter(printWriter){
-
-            @Override
-            public void setEntryListener(EntryListener entryListener) {
-
-            }
-        };
+        writer = new JdiControllerWriter(printWriter){};
         new JdiControllerReader(bufferedReader, mockedController, ONE_MILLISECOND);
     }
 

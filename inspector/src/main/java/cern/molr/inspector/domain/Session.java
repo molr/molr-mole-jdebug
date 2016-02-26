@@ -1,7 +1,7 @@
 package cern.molr.inspector.domain;
 
 import cern.molr.commons.domain.Mission;
-import cern.molr.inspector.controller.JdiController;
+import cern.molr.inspector.controller.StatefulJdiController;
 
 import java.time.ZonedDateTime;
 
@@ -18,9 +18,9 @@ public interface Session {
     Mission getMission();
 
     /**
-     * @return the {@link JdiController} used to control the execution flow for this specific execution
+     * @return the {@link StatefulJdiController} used to control the execution flow for this specific execution
      */
-    JdiController getController();
+    StatefulJdiController getController();
 
     /**
      * @return a {@link ZonedDateTime} to timestamp the creation of the {@link Session}
