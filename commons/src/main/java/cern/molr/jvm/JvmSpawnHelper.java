@@ -21,14 +21,14 @@ import java.util.List;
  */
 public final class JvmSpawnHelper {
 
-    // TODO Test this class
-
     private static final Logger LOGGER = LoggerFactory.getLogger(JvmSpawnHelper.class);
 
     private static final String CLASSPATH_ARGUMENT_INDICATOR = "-cp";
     public static final String JAVA_HOME = System.getProperty("java.home");
+    public static final String TOOLS_PATH = String.format("%s/../lib/tools.jar", JAVA_HOME);
 
     private JvmSpawnHelper() {
+        // This class should not be instantiated
     }
 
     public static final ProcessBuilder getProcessBuilder(String classpath, String mainClass, String... arguments) throws IOException {
@@ -46,9 +46,12 @@ public final class JvmSpawnHelper {
     }
 
     public static final String appendToolsJarToClasspath(String classpath) {
+        if(null == classpath) {
+            throw new IllegalArgumentException("Classpath cannot be null");
+        }
         if (classpath.contains("tools.jar")) {
             return classpath;
         }
-        return String.format("%s:%s/../lib/tools.jar", classpath, JAVA_HOME);
+        return String.format("%s:%s", classpath, TOOLS_PATH);
     }
 }

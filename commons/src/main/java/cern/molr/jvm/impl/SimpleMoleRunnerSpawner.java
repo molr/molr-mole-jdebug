@@ -25,8 +25,6 @@ import java.util.Arrays;
  */
 public class SimpleMoleRunnerSpawner implements MoleSpawner<Void> {
 
-    //TODO test this class
-
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMoleRunnerSpawner.class);
     private static final String AGENT_RUNNER_MAIN_CLASS = "cern.molr.GenericMoleRunner";
     private static final String CURRENT_CLASSPATH_VALUE = System.getProperty("java.class.path");
@@ -38,11 +36,22 @@ public class SimpleMoleRunnerSpawner implements MoleSpawner<Void> {
 
     @Override
     public Void spawnMoleRunner(Mission mission, String classpath, String... args) throws IOException {
-        if (mission == null) {
+        if (null == mission) {
             throw new IllegalArgumentException("The mission must not be null");
         }
+        if(null == classpath) {
+            throw new IllegalArgumentException("The classpath cannot be null");
+        }
 
-        ArrayList<String> argsList = new ArrayList<>(Arrays.asList(args));
+        if(args != null && Arrays.asList(args).stream().anyMatch(arg -> null == arg)) {
+            throw new IllegalArgumentException("Arguments elements cannot be null");
+        }
+
+
+        ArrayList<String> argsList = new ArrayList<>();
+        if(args != null) {
+            argsList.addAll(Arrays.asList(args));
+        }
         argsList.add(mission.getMoleClassName());
         argsList.add(mission.getMissionContentClassName());
 

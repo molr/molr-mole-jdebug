@@ -49,7 +49,9 @@ public abstract class RemoteReader implements AutoCloseable {
         service = Executors.newSingleThreadScheduledExecutor();
         Runnable read = () -> {
             try {
-                readCommand(reader);
+                if(reader.ready()) {
+                    readCommand(reader);
+                }
             } catch(Exception exception) {
                 LOGGER.warn("Exception trying to read command", exception);
                 System.err.println("Exception trying to read command");
