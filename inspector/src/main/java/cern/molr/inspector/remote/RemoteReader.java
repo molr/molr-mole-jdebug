@@ -25,6 +25,7 @@ public abstract class RemoteReader implements AutoCloseable {
     private final ScheduledExecutorService service;
     private final BufferedReader reader;
     private Optional<Runnable> onClose = Optional.empty();
+    private Optional<Runnable> onReadingAttempt = Optional.empty();
 
     /**
      * Creates a reader which reads commands from the given reader and forwards them to the controller.
@@ -49,13 +50,12 @@ public abstract class RemoteReader implements AutoCloseable {
         service = Executors.newSingleThreadScheduledExecutor();
         Runnable read = () -> {
             try {
+                onReadingAttempt.ifPresent(Runnable::run);
                 if(reader.ready()) {
                     readCommand(reader);
                 }
             } catch(Exception exception) {
                 LOGGER.warn("Exception trying to read command", exception);
-                System.err.println("Exception trying to read command");
-                exception.printStackTrace(System.err);
             }
         };
         service.scheduleAtFixedRate(read, readingInterval.toMillis(),
@@ -82,6 +82,10 @@ public abstract class RemoteReader implements AutoCloseable {
         } catch (Exception e) {
             onError.accept(e);
         }
+    }
+
+    public void setOnReadingAttempt(Runnable onReadingAttempt) {
+        this.onReadingAttempt = Optional.ofNullable(onReadingAttempt);
     }
 
     public void setOnClose(Runnable onClose) {

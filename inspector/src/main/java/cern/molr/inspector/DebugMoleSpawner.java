@@ -81,7 +81,14 @@ public class DebugMoleSpawner implements MoleSpawner<Session>, SourceFetcher {
 
         @Override
         public void setEntryListener(EntryListener entryListener) {
-            new EntryListenerReader(new BufferedReader(new InputStreamReader(process.getInputStream())), entryListener);
+            EntryListenerReader reader = new EntryListenerReader(new BufferedReader(new InputStreamReader(process.getInputStream())), entryListener);
+            reader.setOnReadingAttempt(() -> {
+                if(!process.isAlive()) {
+                    LOGGER.error("Spawned debug process is dead!");
+                    reader.close();
+                    entryListener.onVmDeath();
+                }
+            });
         }
     }
 
