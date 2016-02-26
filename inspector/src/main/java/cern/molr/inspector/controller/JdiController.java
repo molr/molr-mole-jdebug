@@ -30,9 +30,4 @@ public interface JdiController {
      */
     void terminate();
 
-    void setOnConnectionClosedListener();
-
-    public class OnConnectionCLosedListener {
-        public void onConnectioListener(State state);
-    }
 }
