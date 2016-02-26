@@ -8,6 +8,7 @@ package cern.molr.inspector.gui;
 
 import cern.molr.commons.registry.ObservableRegistry;
 import cern.molr.inspector.domain.Session;
+import cern.molr.inspector.domain.impl.SessionRegistry;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -39,7 +40,7 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
     private final Button terminateButton = new Button("Terminate");
     private final Button terminateAllButton = new Button("Terminate all");
 
-    public SessionsListPane(ObservableRegistry<Session> sessionsRegistry) {
+    public SessionsListPane(SessionRegistry sessionsRegistry) {
         super();
         this.sessionsRegistry = sessionsRegistry;
         initUI();
@@ -117,6 +118,5 @@ public class SessionsListPane extends BorderPane implements ObservableRegistry.O
 
     private void terminateSession(Session session) {
         session.getController().terminate();
-        sessionsRegistry.removeEntry(session);
     }
 }

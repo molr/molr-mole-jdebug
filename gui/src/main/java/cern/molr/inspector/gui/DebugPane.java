@@ -6,11 +6,9 @@
 
 package cern.molr.inspector.gui;
 
-import cern.molr.commons.domain.Mission;
-import cern.molr.commons.registry.Registry;
 import cern.molr.inspector.DebugMoleSpawner;
+import cern.molr.inspector.controller.StatefulJdiController;
 import cern.molr.inspector.domain.Session;
-import cern.molr.inspector.entry.EntryListener;
 import cern.molr.inspector.entry.EntryState;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -23,10 +21,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -36,15 +34,16 @@ import java.util.Arrays;
  * @author tiagomr
  * @author mgalilee
  */
-public class DebugPane extends BorderPane {
+public class DebugPane extends BorderPane implements StatefulJdiController.JdiStateObserver {
 
     //TODO Tests have to be done
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugPane.class);
     private static final DebugMoleSpawner DEBUG_MOLE_SPAWNER = new DebugMoleSpawner();
 
+    private final String missionContentClassName;
+
     private final Session session;
-    private final Registry<Session> sessionRegistry;
     private int currentLine = 0;
 
     /* UI Components */
@@ -55,73 +54,69 @@ public class DebugPane extends BorderPane {
     private final Button terminateButton = new Button("Terminate");
     private final CheckBox scrollCheckBox = new CheckBox("Automatic Scroll");
 
-    public DebugPane(Session session, Registry<Session> sessionRegistry) {
+    public DebugPane(Session session) {
         super();
-        this.sessionRegistry = sessionRegistry;
         this.session = session;
 
-        stepOverButton.setDisable(true);
-        resumeButton.setDisable(true);
-
-        sessionRegistry.registerEntry(session);
         initUI();
-        String missionContentClassName = session.getMission().getMissionContentClassName();
+        missionContentClassName = session.getMission().getMissionContentClassName();
         initData(missionContentClassName);
-        session.getController().setEntryListener(new DebugEntryListener(missionContentClassName));
+        session.getController().addObserver(this);
+        session.getController()
+                .getLastKnownState()
+                .ifPresent(this::onLocationChange);
+
+        stepOverButton.setDisable(!canStep());
+        resumeButton.setDisable(!canStep());
+        terminateButton.setDisable(session.getController().isDead());
+
+        addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, event -> {
+            LOGGER.info("WINDOW_CLOSE_REQUEST");
+            session.getController().removeObserver(this);
+        });
     }
 
-    public DebugPane(Mission mission, Registry<Session> sessionRegistry) throws IOException {
-        this(DEBUG_MOLE_SPAWNER.spawnMoleRunner(mission), sessionRegistry);
+    private boolean canStep() {
+        return !session.getController().isDead() && session.getController().getLastKnownState().isPresent();
     }
 
-    private class DebugEntryListener implements EntryListener {
+    private boolean isMissionContentClass(String className) {
+        String properClassName = className.replaceFirst("\\.java", "").replaceAll("/", ".");
+        return missionContentClassName.equals(properClassName);
+    }
 
-        private final String missionContentClassName;
+    @Override
+    public void entryStateChanged() {
+        Platform.runLater(() -> {
+            stepOverButton.setDisable(!canStep());
+            resumeButton.setDisable(!canStep());
+        });
+        session.getController()
+                .getLastKnownState()
+                .ifPresent(this::onLocationChange);
+    }
 
-        DebugEntryListener(String missionContentClassName) {
-            this.missionContentClassName = missionContentClassName;
-        }
-
-        private boolean isMissionContentClass(String className) {
-            String properClassName = className.replaceFirst("\\.java", "").replaceAll("/", ".");
-            return missionContentClassName.equals(properClassName);
-        }
-
-        @Override
-        public void onLocationChange(EntryState state) {
-            LOGGER.info("onLocationChange {}", state);
-            if (isMissionContentClass(state.getClassName())) {
-                LOGGER.info("in class {}, stepping available", missionContentClassName);
-                Platform.runLater(() -> {
-                    setCurrentLine(state.getLine());
-                    stepOverButton.setDisable(false);
-                    resumeButton.setDisable(false);
-                });
-            } else {
-                LOGGER.info("out of class {}, resuming", missionContentClassName);
-                session.getController().resume();
-                Platform.runLater(() -> {
-                    stepOverButton.setDisable(true);
-                    resumeButton.setDisable(true);
-                });
-            }
-        }
-
-        @Override
-        public void onInspectionEnd(EntryState state) {
-            LOGGER.info("onInspectionEnd {}", state);
-        }
-
-        @Override
-        public void onVmDeath() {
-            LOGGER.info("onVmDeath received");
-            sessionRegistry.removeEntry(session);
+    private void onLocationChange(EntryState state) {
+        LOGGER.info("onLocationChange {}", state);
+        if (isMissionContentClass(state.getClassName())) {
             Platform.runLater(() -> {
-                stepOverButton.setDisable(true);
-                resumeButton.setDisable(true);
-                terminateButton.setDisable(true);
+                setCurrentLine(state.getLine());
             });
+            LOGGER.info("in class {}, stepping available", missionContentClassName);
+        } else {
+            LOGGER.info("out of class {}, resuming", missionContentClassName);
+            session.getController().resume();
         }
+    }
+
+    @Override
+    public void death() {
+        LOGGER.info("onVmDeath received");
+        Platform.runLater(() -> {
+            stepOverButton.setDisable(!canStep());
+            resumeButton.setDisable(!canStep());
+            terminateButton.setDisable(session.getController().isDead());
+        });
     }
 
     /**
@@ -164,7 +159,6 @@ public class DebugPane extends BorderPane {
         String sourceCodeText = DEBUG_MOLE_SPAWNER.getSource(className);
         Arrays.asList(sourceCodeText.split("\n")).forEach(line -> {
             Text text = new Text(line + "\n");
-            text.setOnMouseClicked(event -> setCurrentLine(textFlow.getChildren().indexOf(text) + 1));
             textFlow.getChildren().add(text);
         });
     }
@@ -174,14 +168,14 @@ public class DebugPane extends BorderPane {
         hBox.setAlignment(Pos.CENTER_LEFT);
         stepOverButton.setOnMouseClicked(event -> {
             session.getController().stepForward();
-            stepOverButton.setDisable(true);
-            resumeButton.setDisable(true);
+            stepOverButton.setDisable(!canStep());
+            resumeButton.setDisable(!canStep());
         });
         hBox.getChildren().add(stepOverButton);
         resumeButton.setOnMouseClicked(event -> {
             session.getController().resume();
-            stepOverButton.setDisable(true);
-            resumeButton.setDisable(true);
+            stepOverButton.setDisable(!canStep());
+            resumeButton.setDisable(!canStep());
         });
         hBox.getChildren().add(resumeButton);
         terminateButton.setOnMouseClicked(event -> terminateAction());
@@ -197,7 +191,7 @@ public class DebugPane extends BorderPane {
 
     private void terminateAction() {
         session.getController().terminate();
-        stepOverButton.setDisable(true);
-        resumeButton.setDisable(true);
+        stepOverButton.setDisable(!canStep());
+        resumeButton.setDisable(!canStep());
     }
 }
