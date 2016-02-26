@@ -7,6 +7,7 @@
 package cern.molr.jvm.impl;
 
 import cern.molr.commons.domain.Mission;
+import cern.molr.commons.mole.GenericMoleRunner;
 import cern.molr.jvm.JvmSpawnHelper;
 import cern.molr.jvm.MoleSpawner;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ import java.util.Arrays;
 
 /**
  * Implementation of {@link MoleSpawner} that uses an the {@link ProcessBuilder} class to start a new JVM
- * running cern.molr.mole.GenericMoleRunner#main.
+ * running {@link cern.molr.commons.mole.GenericMoleRunner#main}.
  * Executes the Moles as they are spawned.
  *
  * @author tiagomr
@@ -28,7 +29,7 @@ public class SimpleMoleRunnerSpawner implements MoleSpawner<Void> {
     //TODO test this class
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMoleRunnerSpawner.class);
-    private static final String AGENT_RUNNER_MAIN_CLASS = "cern.molr.GenericMoleRunner";
+    private static final String AGENT_RUNNER_MAIN_CLASS = GenericMoleRunner.class.getName();
     private static final String CURRENT_CLASSPATH_VALUE = System.getProperty("java.class.path");
 
     @Override
