@@ -56,3 +56,5 @@ project(":inspector") {
 project(":jdiscript") {
 
 }
+
+//task wrapper(type: Wrapper) { gradleVersion = '4.10.2' }
