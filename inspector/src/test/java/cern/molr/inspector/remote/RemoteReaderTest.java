@@ -4,7 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +26,8 @@ public class RemoteReaderTest {
     private RemoteReader reader;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+        Mockito.when(mockedReader.ready()).thenReturn(true);
         reader = new RemoteReader(mockedReader, ONE_MILLISECOND) {
             @Override
             protected void readCommand(BufferedReader reader) {

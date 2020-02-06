@@ -1,6 +1,6 @@
 /*
- * © Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
- * verbatim in the file “COPYING“.ing this licence, CERN does not waive the privileges and immunities granted
+ * ï¿½ Copyright 2016 CERN. This software is distributed under the terms of the Apache License Version 2.0, copied
+ * verbatim in the file ï¿½COPYINGï¿½.ing this licence, CERN does not waive the privileges and immunities granted
  * to it by virtue of its status as an Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -57,7 +57,6 @@ public class SimpleMoleRunnerSpawnerTest extends TestCase {
     public void testSpawnMoleRunner() throws IOException {
         when(mission.getMoleClassName()).thenReturn("MoleClassName");
         when(mission.getMissionContentClassName()).thenReturn("MissionContentClassName");
-        when(mission.getTasksNames()).thenReturn(Arrays.asList("Task1", "Task2"));
         simpleMoleRunnerSpawner.spawnMoleRunner(mission);
     }
 }

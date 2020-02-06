@@ -2,17 +2,31 @@ allprojects {
     apply plugin: "idea"
     apply plugin: "eclipse"
     apply plugin: "java"
+    apply plugin: 'jacoco'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    group = "cern.molr"
+    group = "io.molr"
 
     repositories {
         mavenCentral()
     }
     dependencies {
         compile 'org.slf4j:slf4j-api:1.7.16'
+    }
+
+    jacoco {
+        toolVersion = '0.8.4'
+    }
+
+    jacocoTestReport {
+        reports {
+            html.enabled = false
+            xml.enabled = true
+            xml.destination file("$buildDir/reports/jacoco/report.xml")
+            csv.enabled = false
+        }
     }
 
     tasks.withType(JavaCompile) {
@@ -40,5 +54,9 @@ project(":inspector") {
 }
 
 project(":jdiscript") {
+
+}
+
+subprojects {
 
 }
