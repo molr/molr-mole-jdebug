@@ -46,7 +46,6 @@ import com.sun.jdi.event.VMDisconnectEvent;
 /**
  * This class processes incoming JDI events
  *
- * @version @(#) EventThread.java 1.6 05/11/17 04:47:11
  * @author Robert Field
  * @author Jason Fager
  */

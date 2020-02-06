@@ -6,12 +6,12 @@
 
 package cern.molr.inspector.jdi;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.Location;
 import com.sun.jdi.Method;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An immutable range for a piece of code inside a {@link Method} of a {@link Class} measured in
