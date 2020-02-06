@@ -54,7 +54,7 @@ public class LocationRange {
      *
      * @param location The location to test.
      * @return True if the given location is within the same method as the range and that the following condition holds
-     * (in terms of line numbers): <code>start <= location <= end</code>.
+     * (in terms of line numbers): <code>start &lt;= location &lt;= end</code>.
      */
     public boolean isWithin(Location location) {
         return location.method().equals(start.method()) && location.lineNumber() >= start.lineNumber()
