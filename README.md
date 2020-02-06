@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/molr/molr-mole-jdebug.svg?branch=master)](https://travis-ci.org/molr/molr-mole-jdebug)
+[![codecov](https://codecov.io/gh/molr/molr-mole-jdebug/branch/master/graph/badge.svg)](https://codecov.io/gh/molr/molr-mole-jdebug)
 
 Ongoing work! This project is just in the process of being rewoked...
 
