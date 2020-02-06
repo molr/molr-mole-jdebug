@@ -1,8 +1,11 @@
-[![Travis build status](https://travis-ci.org/molr/molr.svg?branch=master)](https://travis-ci.org/molr/molr)
+[![Build Status](https://travis-ci.org/molr/molr-mole-jdebug.svg?branch=master)](https://travis-ci.org/molr/molr-mole-jdebug)
 
-A dynamic build system where jar files can be spawned on new JVM instances and controlled live by the user.
+Ongoing work! This project is just in the process of being rewoked...
+
+It is an attempt to use the java debugging api in order to expose missions which are pure java code through the molr API. Quite some way to go still ;-)
 
 Contributors:
 
 [tiagomr](https://github.com/tiagomr)
 [jegp](https://github.com/Jegp)
+[kaifox](https://github.com/kaifox)
