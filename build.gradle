@@ -56,7 +56,3 @@ project(":inspector") {
 project(":jdiscript") {
 
 }
-
-subprojects {
-
-}
