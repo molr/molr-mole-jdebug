@@ -6,9 +6,11 @@
 
 package cern.molr.commons.exception;
 
+import cern.molr.commons.domain.JdiMission;
+
 /**
  * Exception to be used whenever its not possible to
- * {@link cern.molr.commons.mole.Mole#run(String, Object...)} a {@link cern.molr.commons.domain.Mission}
+ * {@link cern.molr.commons.mole.Mole#run(String, Object...)} a {@link JdiMission}
  *
  * @author timartin
  */

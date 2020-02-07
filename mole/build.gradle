@@ -9,8 +9,5 @@ version = "0.1"
 dependencies {
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
     compile 'org.springframework:spring-context:4.2.4.RELEASE'
-
-
-    compile files("${System.properties['java.home']}/../lib/tools.jar")
-    compile  group: 'junit', name: 'junit', version: '4.11'
+    compile group: 'junit', name: 'junit', version: '4.11'
 }

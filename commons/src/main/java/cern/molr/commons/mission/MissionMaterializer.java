@@ -6,11 +6,11 @@
 
 package cern.molr.commons.mission;
 
-import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.JdiMission;
 import cern.molr.commons.exception.MissionMaterializationException;
 
 /**
- * Interface that provides a way to instantiate {@link Mission}s
+ * Interface that provides a way to instantiate {@link JdiMission}s
  *
  * @author tiagomr
  */
@@ -19,9 +19,9 @@ public interface MissionMaterializer {
     /**
      * Tries to instantiate a mission from a given {@link Class}
      *
-     * @param classType {@link Class} from which the {@link Mission} will be generated
-     * @return A {@link Mission}
-     * @see Mission
+     * @param classType {@link Class} from which the {@link JdiMission} will be generated
+     * @return A {@link JdiMission}
+     * @see JdiMission
      */
-    Mission materialize(Class<?> classType) throws MissionMaterializationException;
+    JdiMission materialize(Class<?> classType) throws MissionMaterializationException;
 }

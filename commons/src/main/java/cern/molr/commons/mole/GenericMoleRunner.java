@@ -6,11 +6,12 @@
 
 package cern.molr.commons.mole;
 
+import cern.molr.commons.domain.JdiMission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Main entry point for the JVM's to execute {@link cern.molr.commons.domain.Mission}s
+ * Main entry point for the JVM's to execute {@link JdiMission}s
  *
  * @author jepeders
  * @author tiagomr

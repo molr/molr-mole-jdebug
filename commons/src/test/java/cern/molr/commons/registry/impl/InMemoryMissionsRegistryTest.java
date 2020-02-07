@@ -6,7 +6,7 @@
 
 package cern.molr.commons.registry.impl;
 
-import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.JdiMission;
 import cern.molr.commons.mission.MissionsDiscoverer;
 import junitx.util.PrivateAccessor;
 import org.junit.Before;
@@ -33,26 +33,26 @@ public class InMemoryMissionsRegistryTest {
     private static final String ENTRIES_PRIVATE_FIELD_NAME = "entries";
 
     @Mock
-    private Mission mission1;
+    private JdiMission jdiMission1;
     @Mock
-    private Mission mission2;
-    private Set<Mission> testMissions;
+    private JdiMission jdiMission2;
+    private Set<JdiMission> testJdiMissions;
     @Mock
     private MissionsDiscoverer missionsDiscoverer;
     private InMemoryMissionsRegistry inMemoryMissionsRegistry;
 
     @Before
     public void setUp() {
-        testMissions = new HashSet<>(Arrays.asList(mission1, mission2));
+        testJdiMissions = new HashSet<>(Arrays.asList(jdiMission1, jdiMission2));
     }
 
     @Test
     public void testInstantiateInMemoryMissionsRegistry() throws NoSuchFieldException {
-        Mockito.when(missionsDiscoverer.availableMissions()).thenReturn(testMissions);
+        Mockito.when(missionsDiscoverer.availableMissions()).thenReturn(testJdiMissions);
         inMemoryMissionsRegistry = new InMemoryMissionsRegistry(missionsDiscoverer);
         @SuppressWarnings("unchecked")
-        Set<Mission> missions = (Set<Mission>) PrivateAccessor.getField(inMemoryMissionsRegistry, ENTRIES_PRIVATE_FIELD_NAME);
-        assertEquals(2, missions.size());
-        assertEquals(testMissions, missions);
+        Set<JdiMission> jdiMissions = (Set<JdiMission>) PrivateAccessor.getField(inMemoryMissionsRegistry, ENTRIES_PRIVATE_FIELD_NAME);
+        assertEquals(2, jdiMissions.size());
+        assertEquals(testJdiMissions, jdiMissions);
     }
 }

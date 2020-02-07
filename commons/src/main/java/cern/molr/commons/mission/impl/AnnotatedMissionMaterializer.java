@@ -6,7 +6,7 @@
 
 package cern.molr.commons.mission.impl;
 
-import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.JdiMission;
 import cern.molr.commons.domain.impl.MissionImpl;
 import cern.molr.commons.exception.MissionMaterializationException;
 import cern.molr.commons.mission.MissionMaterializer;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of {@link MissionMaterializer} that can instantiate {@link Mission}s from {@link Class}es
+ * Implementation of {@link MissionMaterializer} that can instantiate {@link JdiMission}s from {@link Class}es
  * annotated with {@link RunWithMole}
  *
  * @author tiagomr
@@ -32,7 +32,7 @@ public class AnnotatedMissionMaterializer implements MissionMaterializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotatedMissionMaterializer.class);
 
     @Override
-    public Mission materialize(Class<?> classType) throws MissionMaterializationException {
+    public JdiMission materialize(Class<?> classType) throws MissionMaterializationException {
         if (null == classType) {
             throw new MissionMaterializationException(new IllegalArgumentException("Class type cannot be null"));
         }

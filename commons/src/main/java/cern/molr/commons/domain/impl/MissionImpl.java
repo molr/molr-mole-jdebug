@@ -5,26 +5,26 @@
  */
 package cern.molr.commons.domain.impl;
 
-import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.JdiMission;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Simple implementation of {@link Mission}
+ * Simple implementation of {@link JdiMission}
  *
  * @author tiagomr
  * @author mgalilee
  */
-public class MissionImpl implements Mission {
+public class MissionImpl implements JdiMission {
 
     /**
-     * Name of the mole that can execute the {@link Mission}
+     * Name of the mole that can execute the {@link JdiMission}
      */
     private String moleClassName;
 
     /**
-     * Class used by the exposed {@link Mission}
+     * Class used by the exposed {@link JdiMission}
      */
     private String missionContentClassName;
 

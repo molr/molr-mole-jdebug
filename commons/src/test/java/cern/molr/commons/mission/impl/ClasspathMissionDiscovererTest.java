@@ -7,7 +7,7 @@
 package cern.molr.commons.mission.impl;
 
 import cern.molr.TestDefinitions;
-import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.JdiMission;
 import cern.molr.commons.mission.MissionMaterializer;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,29 +33,29 @@ import static org.mockito.Mockito.when;
 public class ClasspathMissionDiscovererTest {
 
     @Mock
-    private Mission mission1;
+    private JdiMission jdiMission1;
     @Mock
-    private Mission mission2;
+    private JdiMission jdiMission2;
     @Mock
-    private Mission mission3;
+    private JdiMission jdiMission3;
     @Mock
     private MissionMaterializer missionMaterializer;
-    private List<Mission> allMission;
+    private List<JdiMission> allJdiMission;
     private ClasspathMissionDiscoverer classpathMissionDiscoverer;
 
     @Before
     public void setUp() {
-        when(missionMaterializer.materialize(TestDefinitions.TestMission1.class)).thenReturn(mission1);
-        when(missionMaterializer.materialize(TestDefinitions.TestMission2.class)).thenReturn(mission2);
-        when(missionMaterializer.materialize(TestDefinitions.TestMission3.class)).thenReturn(mission3);
-        allMission = new ArrayList<>(Arrays.asList(mission1, mission2, mission3));
+        when(missionMaterializer.materialize(TestDefinitions.TestMission1.class)).thenReturn(jdiMission1);
+        when(missionMaterializer.materialize(TestDefinitions.TestMission2.class)).thenReturn(jdiMission2);
+        when(missionMaterializer.materialize(TestDefinitions.TestMission3.class)).thenReturn(jdiMission3);
+        allJdiMission = new ArrayList<>(Arrays.asList(jdiMission1, jdiMission2, jdiMission3));
         classpathMissionDiscoverer = new ClasspathMissionDiscoverer(missionMaterializer);
     }
 
     @Test
     public void testAvailableMissions() {
-        Set<Mission> missions = classpathMissionDiscoverer.availableMissions();
-        assertEquals(TestDefinitions.NUMBER_OF_TEST_MISSION_DEFINITIONS, missions.size());
-        assertTrue(allMission.stream().allMatch(missions::contains));
+        Set<JdiMission> jdiMissions = classpathMissionDiscoverer.availableMissions();
+        assertEquals(TestDefinitions.NUMBER_OF_TEST_MISSION_DEFINITIONS, jdiMissions.size());
+        assertTrue(allJdiMission.stream().allMatch(jdiMissions::contains));
     }
 }

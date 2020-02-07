@@ -2,7 +2,7 @@ allprojects {
     apply plugin: "idea"
     apply plugin: "eclipse"
     apply plugin: "java"
-    apply plugin: 'jacoco'
+    //apply plugin: 'jacoco'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -15,7 +15,7 @@ allprojects {
     dependencies {
         compile 'org.slf4j:slf4j-api:1.7.16'
     }
-
+/*
     jacoco {
         toolVersion = '0.8.4'
     }
@@ -28,7 +28,7 @@ allprojects {
             csv.enabled = false
         }
     }
-
+*/
     tasks.withType(JavaCompile) {
         options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
     }
@@ -49,7 +49,7 @@ project(":gui") {
 project(":inspector") {
     dependencies {
         compile project(":mole")
-        compile project(":jdiscript")
+      //  compile project(":jdiscript")
     }
 }
 

@@ -3,7 +3,7 @@
 
 Ongoing work! This project is just in the process of being rewoked...
 
-It is an attempt to use the java debugging api in order to expose missions which are pure java code through the molr API. Quite some way to go still ;-)
+It is an attempt to use the java debugging api in order to expose jdiMissions which are pure java code through the molr API. Quite some way to go still ;-)
 
 Contributors:
 

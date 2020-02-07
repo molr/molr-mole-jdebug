@@ -5,7 +5,7 @@
  */
 package cern.molr.commons.mole;
 
-import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.JdiMission;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,7 +13,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Provides information about which classes shall be exposed as {@link Mission}s and which {@link Mole} implementation must be
+ * Provides information about which classes shall be exposed as {@link JdiMission}s and which {@link Mole} implementation must be
  * used to execute the discovery and execution methods.
  *
  * @author tiagomr

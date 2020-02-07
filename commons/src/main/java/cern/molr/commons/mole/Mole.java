@@ -6,7 +6,7 @@
 
 package cern.molr.commons.mole;
 
-import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.JdiMission;
 import cern.molr.commons.exception.MissionExecutionException;
 
 import java.lang.reflect.Method;
@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Interface that allows for the dynamic creation of {@link Mole}s. {@link Mole}s are responsible for the discovery and
- * execution of {@link Mission}s
+ * execution of {@link JdiMission}s
  *
  * @author tiagomr
  */
@@ -29,10 +29,10 @@ public interface Mole {
     List<Method> discover(Class<?> clazz);
 
     /**
-     * Executes a {@link Mission}
+     * Executes a {@link JdiMission}
      *
-     * @param missionContentClassName A {@link String} with the fully qualified domain name of the {@link Mission}s content class
-     * @param args        An array of {@link Object}s to be passed as arguments to the {@link Mission}
+     * @param missionContentClassName A {@link String} with the fully qualified domain name of the {@link JdiMission}s content class
+     * @param args        An array of {@link Object}s to be passed as arguments to the {@link JdiMission}
      * @throws Exception Allows for any exception to be returned by the Mission execution behaviour, this is specific to
      *                   the execution implementation
      */
