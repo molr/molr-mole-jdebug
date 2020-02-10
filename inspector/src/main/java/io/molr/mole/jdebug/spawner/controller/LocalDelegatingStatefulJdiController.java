@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Objects.requireNonNull;
 
@@ -43,6 +44,7 @@ public class LocalDelegatingStatefulJdiController implements StatefulJdiControll
     @Override
     public void onLocationChange(EntryState state) {
         LOGGER.info("onLocationChange {}", state);
+        System.out.println(missionContentClassName);
         if (missionContentClassName.equals(state.getClassName())) {
             LOGGER.info("in class {}, stepping available", missionContentClassName);
             lastKnownState = Optional.of(state);

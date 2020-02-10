@@ -1,7 +1,7 @@
 package io.molr.mole.jdebug.spawner;
 
-import cern.molr.commons.annotations.Source;
 import cern.molr.commons.domain.JdiMission;
+import io.molr.mole.jdebug.sourcecode.SourceCodes;
 import io.molr.mole.jdebug.spawner.controller.StatefulJdiControllerImpl;
 import io.molr.mole.jdebug.spawner.domain.InstantiationRequest;
 import io.molr.mole.jdebug.spawner.domain.Session;
@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.Base64;
 import java.util.concurrent.Executors;
 
 /**
@@ -34,15 +33,8 @@ public class DebugMoleSpawner implements MoleSpawner<Session>, SourceFetcher {
             .registerTypeAdapter(JdiMission.class, new MissionTypeAdapter().nullSafe())
             .create();
 
-    public String getSource(String classname) {
-        try {
-            Source classSource = (Source) Class.forName(classname + "Source").newInstance();
-            String base64Source = classSource.base64Value();
-            return new String(Base64.getDecoder().decode(base64Source));
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | ClassCastException exception) {
-            LOGGER.error("Could not load source code for class", classname, exception);
-            return "";
-        }
+    public  String getSource(String classname) {
+        return SourceCodes.sourceCodeFor(classname);
     }
 
     @Override

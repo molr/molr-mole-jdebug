@@ -1,7 +1,7 @@
 package io.molr.mole.jdebug.spawner;
 
 import cern.molr.commons.domain.JdiMission;
-import io.molr.mole.jdebug.domain.Missions;
+import io.molr.mole.jdebug.domain.JdiMissions;
 import io.molr.mole.jdebug.spawner.controller.StatefulJdiController;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -12,7 +12,7 @@ public class DebugMoleSpawnerTest {
 
     @Test
     public void firstSpawning() throws InterruptedException {
-        JdiMission jdiMission = Missions.ofMain(PrimitiveTestingMain.class);
+        JdiMission jdiMission = JdiMissions.ofMain(PrimitiveTestingMain.class);
         Assertions.assertThat(jdiMission).isNotNull();
 
         StatefulJdiController controller = JdiMissionSpawner.start(jdiMission);

@@ -52,7 +52,9 @@ public class JdiControllerImpl implements JdiController, Closeable {
     @Override
     public void close() {
         entryRegistry.unregister();
-        onClose.run();
+        if (onClose != null) {
+            onClose.run();
+        }
     }
 
     public InputStream getProcessError() {

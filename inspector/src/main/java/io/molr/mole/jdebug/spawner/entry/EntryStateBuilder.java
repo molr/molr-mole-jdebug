@@ -17,7 +17,8 @@ public class EntryStateBuilder {
 
     public static Optional<EntryState> ofLocation(Location location) {
         try {
-            final String className = location.sourcePath();
+            location.sourceName();
+            final String className = location.declaringType().name();
             final String methodName = location.method().name();
             final EntryState entryState = new EntryStateImpl(className, methodName, location.lineNumber());
             return Optional.of(entryState);
