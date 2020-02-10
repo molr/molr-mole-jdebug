@@ -15,7 +15,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * This is first try of a wrapper implementation around a normal JdiController. This is far from beautiful,
  * but the first goal is to get some useful debugging running, without all the text-based communication.
- * </p>
+ * <p></p>
  * There is some ugliness: As the listener has to be set to the builder of {@link JdiControllerImpl} ... the instance
  * of this stateful controller is first created and then the delegate is set to it. As mentioned: Far from final ;-)
  *
