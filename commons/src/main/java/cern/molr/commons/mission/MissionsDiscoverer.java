@@ -6,12 +6,12 @@
 
 package cern.molr.commons.mission;
 
-import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.JdiMission;
 
 import java.util.Set;
 
 /**
- * Interface that provides a way to discover {@link Mission}s
+ * Interface that provides a way to discover {@link JdiMission}s
  *
  * @author timartin
  * @author mgalilee
@@ -19,9 +19,9 @@ import java.util.Set;
 public interface MissionsDiscoverer {
 
     /**
-     * Searches for available {@link Mission}s
+     * Searches for available {@link JdiMission}s
      *
-     * @return A {@link Set} of {@link Mission}s
+     * @return A {@link Set} of {@link JdiMission}s
      */
-    Set<Mission> availableMissions();
+    Set<JdiMission> availableMissions();
 }

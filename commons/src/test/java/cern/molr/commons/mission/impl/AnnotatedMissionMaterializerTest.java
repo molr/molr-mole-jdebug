@@ -7,7 +7,7 @@
 package cern.molr.commons.mission.impl;
 
 import cern.molr.TestDefinitions;
-import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.JdiMission;
 import cern.molr.commons.exception.MissionMaterializationException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,8 +62,8 @@ public class AnnotatedMissionMaterializerTest {
 
     @Test
     public void testMaterialize() {
-        Mission materializedMission = annotatedMissionMaterializer.materialize(TestDefinitions.TestMission3.class);
-        List<String> actualMethodNames = materializedMission.getTasksNames();
+        JdiMission materializedJdiMission = annotatedMissionMaterializer.materialize(TestDefinitions.TestMission3.class);
+        List<String> actualMethodNames = materializedJdiMission.getTasksNames();
         List<String> expectedMethodNames = TestDefinitions.METHODS_LIST.stream()
                 .map(method -> method.getName())
                 .collect(Collectors.toList());

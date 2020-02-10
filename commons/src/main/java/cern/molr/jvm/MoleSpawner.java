@@ -6,7 +6,7 @@
 
 package cern.molr.jvm;
 
-import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.JdiMission;
 
 /**
  * Interface that is responsible for spawning JVMs executing cern.jarrace.mole.AgentRunner
@@ -17,12 +17,12 @@ public interface MoleSpawner<T> {
     /**
      * Spawns a mole in a new JVM with the same classpath as the calling JVM
      *
-     * @param mission
+     * @param jdiMission
      * @param args
      * @return
      * @throws Exception
      */
-    T spawnMoleRunner(Mission mission, String... args) throws Exception;
+    T spawnMoleRunner(JdiMission jdiMission, String... args) throws Exception;
 
     /**
      * Spawns a mole in a new JVM
@@ -33,5 +33,5 @@ public interface MoleSpawner<T> {
      * @return
      * @throws Exception
      */
-    T spawnMoleRunner(Mission service, String classpath, String... args) throws Exception;
+    T spawnMoleRunner(JdiMission service, String classpath, String... args) throws Exception;
 }

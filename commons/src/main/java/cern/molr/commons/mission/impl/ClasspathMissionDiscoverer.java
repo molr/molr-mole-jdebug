@@ -5,7 +5,7 @@
  */
 package cern.molr.commons.mission.impl;
 
-import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.JdiMission;
 import cern.molr.commons.mission.MissionMaterializer;
 import cern.molr.commons.mission.MissionsDiscoverer;
 import cern.molr.commons.mole.RunWithMole;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link MissionsDiscoverer} which makes use of the {@link RunWithMole} annotation to discover
- * {@link Mission}s using classpath scans
+ * {@link JdiMission}s using classpath scans
  *
  * @author jepeders
  * @author tiagomr
@@ -40,7 +40,7 @@ public class ClasspathMissionDiscoverer implements MissionsDiscoverer {
     }
 
     @Override
-    public Set<Mission> availableMissions() {
+    public Set<JdiMission> availableMissions() {
         final Set<Class<?>> missionClasses = new HashSet<>();
         final Discoverer discoverer = new ClasspathDiscoverer();
         discoverer.addAnnotationListener(

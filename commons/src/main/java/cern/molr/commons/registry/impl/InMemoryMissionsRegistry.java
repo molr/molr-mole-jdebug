@@ -6,16 +6,16 @@
 
 package cern.molr.commons.registry.impl;
 
-import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.JdiMission;
 import cern.molr.commons.mission.MissionsDiscoverer;
 
 /**
- * In memory {@link Mission} registry that searches for {@link Mission}s on the construction phase using a
+ * In memory {@link JdiMission} registry that searches for {@link JdiMission}s on the construction phase using a
  * {@link MissionsDiscoverer}.
  *
  * @see ObservableInMemoryEntriesRegistry
  */
-public class InMemoryMissionsRegistry extends ObservableInMemoryEntriesRegistry<Mission> {
+public class InMemoryMissionsRegistry extends ObservableInMemoryEntriesRegistry<JdiMission> {
 
     public InMemoryMissionsRegistry() {
     }

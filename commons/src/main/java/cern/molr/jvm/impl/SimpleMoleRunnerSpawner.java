@@ -6,7 +6,7 @@
 
 package cern.molr.jvm.impl;
 
-import cern.molr.commons.domain.Mission;
+import cern.molr.commons.domain.JdiMission;
 import cern.molr.commons.mole.GenericMoleRunner;
 import cern.molr.jvm.JvmSpawnHelper;
 import cern.molr.jvm.MoleSpawner;
@@ -31,13 +31,13 @@ public class SimpleMoleRunnerSpawner implements MoleSpawner<Void> {
     private static final String CURRENT_CLASSPATH_VALUE = System.getProperty("java.class.path");
 
     @Override
-    public Void spawnMoleRunner(Mission mission, String... args) throws IOException {
-        return spawnMoleRunner(mission, CURRENT_CLASSPATH_VALUE, args);
+    public Void spawnMoleRunner(JdiMission jdiMission, String... args) throws IOException {
+        return spawnMoleRunner(jdiMission, CURRENT_CLASSPATH_VALUE, args);
     }
 
     @Override
-    public Void spawnMoleRunner(Mission mission, String classpath, String... args) throws IOException {
-        if (null == mission) {
+    public Void spawnMoleRunner(JdiMission jdiMission, String classpath, String... args) throws IOException {
+        if (null == jdiMission) {
             throw new IllegalArgumentException("The mission must not be null");
         }
         if(null == classpath) {
@@ -53,8 +53,8 @@ public class SimpleMoleRunnerSpawner implements MoleSpawner<Void> {
         if(args != null) {
             argsList.addAll(Arrays.asList(args));
         }
-        argsList.add(mission.getMoleClassName());
-        argsList.add(mission.getMissionContentClassName());
+        argsList.add(jdiMission.getMoleClassName());
+        argsList.add(jdiMission.getMissionContentClassName());
 
         ProcessBuilder processBuilder = JvmSpawnHelper.getProcessBuilder(
                 JvmSpawnHelper.appendToolsJarToClasspath(classpath),
