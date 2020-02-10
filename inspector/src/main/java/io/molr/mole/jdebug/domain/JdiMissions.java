@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.toSet;
 /**
  * Utility class that provides factory methods for mission domain objects.
  * These domain objects describe the class to execute and the entry points.
- * </p>
+ * <p></p>
  * These objects are then later fed into a {@link io.molr.mole.jdebug.spawner.controller.JdiControllerImpl} for instantiation.
  */
 public final class JdiMissions {
